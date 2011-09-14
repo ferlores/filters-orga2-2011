@@ -2,12 +2,14 @@
 
 global separar_canales_asm
 
+
 %include "macros.asm"
 
 section .text
 
 separar_canales_asm:
     convencion_c_in 0
+    
     
     
     
