@@ -15,17 +15,17 @@ section .text
 invertir_asm:
 	convencion_c_in 0
 	
-	mov esi, src
-	mov edi, dst
-	xor edx,edx
+  ; mov esi, src
+  ; mov edi, dst
+  ; xor edx,edx
 
-cicloFila:
-	xor ecx,ecx
-	mov eax, ALTO
-	cmp edi, eax
+;cicloFila:
+  ; xor ecx,ecx
+ ;  mov eax, ALTO
+  ; cmp edi, eax
 	
-	cicloColumna:
-		mov eax, RZ
+  ; cicloColumna:
+	 ;  mov eax, RZ
 		
 
 
