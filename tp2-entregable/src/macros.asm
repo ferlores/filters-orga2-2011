@@ -1,16 +1,12 @@
 ;************************************************************************************************************
-; 									     DEFINES PARAMETROS
+; 									     DEFINES PARAMETROS GENERICOS
 ;************************************************************************************************************
 
 %define src [ebp+8]
-%define dst_r [ebp+12]
-%define dst_g [ebp+16]
-%define dst_b [ebp+20]
-%define m [ebp+24]
-%define n [ebp+28]
-%define row_size [ebp+32]
-%define src_row_size [ebp+32]
-%define dst_row_size [ebp+36]
+%define dst [ebp+12]
+%define m [ebp+16]
+%define n [ebp+20]
+%define row_size [ebp+24]
 
 
 ;************************************************************************************************************
