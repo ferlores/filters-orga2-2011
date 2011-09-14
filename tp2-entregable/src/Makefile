@@ -9,7 +9,7 @@ OPENCV_LIB = `pkg-config --cflags --libs opencv`
 BIN = tp2
 BIN_DIR = ../bin
 
-OBJS = tp2.o utils.o \
+OBJS = tp2.o utils.o macros.o \
 	invertir_c.o invertir_asm.o \
 	monocromatizar_inf_c.o monocromatizar_inf_asm.o \
 	monocromatizar_uno_c.o monocromatizar_uno_asm.o \
