@@ -13,7 +13,7 @@ void monocromatizar_inf_c(unsigned char *src, unsigned char *dst, int h, int w, 
 		
 		while(contadorColumnas<w){//cada pixel esta compuesto por 3 bytes en la matriz de src
 			// estan en el orden B| G | R |
-			int blue = src[desplamiento+(contadorFilas*src_row_size)];  
+			int blue = src[desplazamiento+(contadorFilas*src_row_size)];  
 			int green = src[desplazamiento+(contadorFilas*src_row_size)+1];
 			int red= src[desplazamiento+(contadorFilas*src_row_size)+2];
 			
