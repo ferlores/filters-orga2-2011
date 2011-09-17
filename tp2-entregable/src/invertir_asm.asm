@@ -4,10 +4,6 @@ global invertir_asm
 
 %include "macros.asm"
 
-section .data
-mascara_255: dd 0xffffffff,0xffffffff,0xffffffff,0xffffffff
-
-
 section .text
 
 invertir_asm:
@@ -29,10 +25,12 @@ cicloFila:                                          ; WHILE(h!=0) DO
 ;       INSERTE SU CODIGO PARA ITERAR AQUI!
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		movdqu xmm0, [esi+ebx]
-		;~ movdqu xmm3,[mascara_255]
-		;~ psubd xmm0,xmm3
+        
+        pcmpeqb xmm7, xmm7                          ; xmm7 <- |FFFF....FFFF|
+        
+        psubb xmm7, xmm0                            ; xmm0 <- |255-src[i]|
 
-		movdqu [edi+ebx],xmm0
+		movdqu [edi+ebx],xmm7
 
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 		add ebx ,16                                 ;        #columnas_p <- #columnas_p + 16
