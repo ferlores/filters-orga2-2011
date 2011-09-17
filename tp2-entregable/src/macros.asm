@@ -4,8 +4,8 @@
 
 %define src [ebp+8]
 %define dst [ebp+12]
-%define m [ebp+16]
-%define n [ebp+20]
+%define h [ebp+16]
+%define w [ebp+20]
 %define row_size [ebp+24]
 
 
