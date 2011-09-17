@@ -29,11 +29,8 @@ cicloFila:                                          ; WHILE(h!=0) DO
 ;       INSERTE SU CODIGO PARA ITERAR AQUI!
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		movdqu xmm0, [esi+ebx]
-		;~ movdqu xmm3,[mascara_255]
-		;~ psubd xmm0,xmm3
 
 		movdqu [edi+ebx],xmm0
-
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 		add ebx ,16                                 ;        #columnas_p <- #columnas_p + 16
 		mov eax, row_size                           ;        eax <- row_size
