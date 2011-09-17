@@ -1,9 +1,8 @@
 ;==================================================================================
 ; Template para recorrer las imagenes controlando el padding
 ; esi <- *src
-; edi <- dst
-; ecx <- h
-; ebx <- #columnas_procesada
+; edi <- *dst
+; REGISTROS QUE USA PARA ITERAR: eax, ebx, ecx
 ;==================================================================================
 
 %include "macros.asm"
@@ -12,6 +11,15 @@ section .text
 
 invertir_asm:
 	convencion_c_in 0
+
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+;       INSERTE SU CODIGO PARA INICIALIZAR VARIABLES AQUI!
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
+
 	mov esi, src		                            ; esi <- *src
 	mov edi, dst		                            ; edi <- dst
 	mov ecx, h                                      ; ecx <- h
@@ -21,6 +29,8 @@ invertir_asm:
     ; ecx <- h
     ; ebx <- #columnas_procesada
     ;----------------------------------
+
+    
 cicloFila:                                          ; WHILE(h!=0) DO
 	xor ebx,ebx                                     ;     #columnas_p <- 0    
 	cicloColumna:	                                ;     WHILE(#columnas_p < row_size) DO
