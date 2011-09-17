@@ -1,12 +1,12 @@
-; void invertir_asm (unsigned char *src, unsigned char *dst, int h, int w, int row_size)
-
-global invertir_asm
+;==================================================================================
+; Template para recorrer las imagenes controlando el padding
+; esi <- *src
+; edi <- dst
+; ecx <- h
+; ebx <- #columnas_procesada
+;==================================================================================
 
 %include "macros.asm"
-
-section .data
-mascara_255: dd 0xffffffff,0xffffffff,0xffffffff,0xffffffff
-
 
 section .text
 
