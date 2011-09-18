@@ -46,23 +46,34 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		pslldq	xmm1, 1  	;xmm1  =     G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0
 		pslldq  xmm2, 2  	; xmm2 = 	 R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0 |0 
 		
-		pmaxub xmm0,xmm1	; xmm0 =     max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
-		pmaxub xmm0, xmm2 
+		pmaxub xmm0,xmm1	
+		pmaxub xmm0, xmm2   ; xmm0 =   max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
+		
+		modqu xmm4, xmm0    ; lo copio porque lo voy a usar despues pero por ahora me olvido
 		
 		pxor xmm3, xmm3
-		punpcklbw xmm3, xmm0	;  xmm3 =     0 m1 | 0 x | 0 x | 0 m2  |0 x  | 0 x | 0 m3 | 0 x
-		pxor xmm4, xmm4
-		pxor xmm4, xmm0
-		punpckhbw xmm4, xmm0    ;  xmm4 =       0 x | 0 m4 | 0 x | 0 x  |0 m5  | 0 x | 0 x | 0 m6
+		punpcklbw xmm0, xmm3	;  xmm0 =      m0 0| x 0| x 0 | m1 0 | x 0 | x 0 | m2  0| x 0
+
+		pshuflw xmm0, xmm0,  11100100b  ; xmm0 =  m0 0| m1 0| x 0 | m1 0 | x 0 | x 0 | m2  0| x 0
+		pshufhw xmm0, xmm0,  11100110b  ; xmm0 =  m0 0| m1 0| x 0 | m1 0 | m2 0 | x 0 | m2  0| x 0
 		
-		pshuflw xmm3, xmm3, 11101100b  ;  xmm3 =     0 m1 | 0m2 | 0 x | 0 m2  |0 x  | 0 x | 0 m3 | 0 x
-		pshufhw xmm3, xmm3, 11100110b  ;  xmm3 =     0 m1 | 0m2 | 0 x | 0 m2  |0 m3  | 0 x | 0 m3 | 0 x
+		phufd xmm0, xmm0 ,  11101010b   ; xmm0 =  m0 0| m1 0| m2 0 | x 0 | m2 0 | x 0 | m2  0| x 0
+		pxor xmm2, xmm2
+		packuswb xmm0,xmm2              ; xmm0 =  m0 | m1 | m2  | x | m2 | x | m2| x| 0|0 |0 |0 |0|0|0|0
 		
-		pshufd  xmm3, xmm3, 11101000b   ;   xmm3 =    
 		
-		packuswb xmm3, xmm3  			;  xmm3 =    0 | m1 | 0| m2 | 0|  x | 0 | m2 | 0 |  m3  |0|  x |0|  m3  | 0|  x 
+		punpckhbw xmm4, 
 		
-			
+		 ;xmm4 =   max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
+
+
+
+		;~ pxor xmm2, xmm2 ; limpio xmm2 que no lo voy a usar mas
+		;~ 
+		;~ pslldq	xmm4, 1  ;xmm4 =  x|x|max1|x |x|max2|x|x| max3|x|x|max4 |x|x|x|0
+		;~ pshufd xmm4,xmm4, 11101000b ;xmm4 =  x|x|max1|x  max3|x|x|max4  max3|x|x|max4 |x|x|x|0
+		;~ pshufd xmm4, xmm2,  00b
+		;~ ;pslldq xmm4,1   ;|xmm4=     x|max1|x|max3  |x|x|max4|max3 |x|x|max4|x  |x|x|0|0
 		
 		
 
