@@ -1,71 +1,129 @@
 ; void separar_canales_asm (unsigned char *src, unsigned char *dst_r, unsigned char *dst_g, unsigned char *dst_b, int m, int n, int src_row_size, int dst_row_size)
-%define dst_r [ebp+12]
-%define dst_g [ebp+16]
-%define dst_b [ebp+20]
-%define m [ebp+24]
-%define n [ebp+28]
-%define src_row_size [ebp+32]
-%define dst_row_size [ebp+36]
 
 global separar_canales_asm
 
-
 %include "macros.asm"
 
-section data
-mask1  dq 0x0FFFFF0EFFFF0DFF, 0xFF0CFFFF0BFFFF0A					; pshufb |BGR|BGR|BGR|BGR|BGR|B|, mask1 -> |BBBBBB|00000|00000|
-      
-mask2  dq 0xFFFF09FFFF08FFFF				; pshufb |GR|BGR|BGR|BGR|BGR|BG|, mask2 -> |000000|BBBBB|00000|
-mask2b dq 0x07FFFF06FFFF05FF				; 
-	  
-mask3  dq 0xFF04FFFF03FFFF02				; pshufb |R|BGR|BGR|BGR|BGR|BGR|, mask3 -> |000000|00000|BBBBB|
-mask3b dq 0xFFFF01FFFF00FFFF
+%define dst_r [ebp+12]
+%define dst_g [ebp+16]
+%define dst_b [ebp+20]
+%define h [ebp+24]
+%define w [ebp+28]
+%define src_row_size [ebp+32]
+%define dst_row_size [ebp+36]
+
 
 section .text
 
 separar_canales_asm:
-    convencion_c_in 0
-    mov esi, src												; esi <- *src
-    mov edi, dst_r												; edi <- *dst_r
-    mov ebx, dst_g												; ebx <- *dst_g
-    mov edx, dst_b												; edx <- *dst_b
-            
-	mov ecx, m													; ecx <- m	
-	sar ecx, 4													; ecx <- m/16
-	
-	;crea mascaras
-	pcmpeqb xmm1, xmm1											; xmm1 <- |FFFF....FFFF|
-	
-	
-ciclo: 															;WHILE(ecx < m/16)
-	;CARGA 16px del src
-	movdqu xmm5, [esi]											; xmm5 <- *src      |BGR|BGR|BGR|BGR|BGR|B|
-	movdqu xmm6, [esi+16]										; xmm6 <- *src+16	|GR|BGR|BGR|BGR|BGR|BG|
-	movdqu xmm7, [esi+32]										; xmm7 <- *src+32	|R|BGR|BGR|BGR|BGR|BGR|											
-    
-    ;ORDENA BYTES
-    movdqu xmm4, xmm5											; xmm4 <- *src      |BGR|BGR|BGR|BGR|BGR|B|
-    ;pshufb xmm4, mask1											; xmm4 <-|BBBBBB|00000|00000|    mask1
+	convencion_c_in 0
 
-    movdqu xmm3, xmm6											; xmm3 <- *src+16	|GR|BGR|BGR|BGR|BGR|BG|
-    ;pshufb xmm3, mask2											; xmm3 <-|000000|BBBBB|00000|    mask2
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+;       INSERTE SU CODIGO PARA INICIALIZAR VARIABLES AQUI!
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	pxor xmm7, xmm7									; xmm7 <- |00...00|
+	mov ecx, 0xFFFFFFFF								; ecx <- 0
+	pinsrw xmm7, ecx, 0								
+	pinsrw xmm7, ecx, 3
+	pinsrw xmm7, ecx, 6								; xmm7 <- |00|FF|00|00|FF|00|00|FF|
 
-	por xmm4, xmm3												; xmm4 <-|BBBBBB|BBBBB|00000|
+	; xmm7 <- mascara_B
 	
-	movdqu xmm3, xmm7											; xmm3 <- *src+32	|R|BGR|BGR|BGR|BGR|BGR|											
-    ;pshufb xmm3, mask3											; xmm3 <-|000000|00000|BBBBB|    mask3
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 
-	por xmm4, xmm3												; xmm4 <-|BBBBBB|BBBBB|BBBBB|
+	mov esi, src		                            ; esi <- *src
+	mov edi, dst_b		                            ; edi <- dst
+	mov ecx, h                                      ; ecx <- h
+    ;----------------------------------
+    ; esi <- *src
+    ; edi <- dst
+    ; ecx <- h
+    ; ebx <- #columnas_procesada_src
+    ; edx <- #columnas_procesada_dst    
+    ;----------------------------------
+
+    
+cicloFila:                                          ; WHILE(h!=0) DO
+	xor ebx, ebx                                    ;     #columnas_p_src <- 0    
+	xor edx, edx                                    ;     #columnas_p_dst <- 0    
+	cicloColumna:	                                ;     WHILE(#columnas_p < row_size) DO
+
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+;       INSERTE SU CODIGO PARA ITERAR AQUI!
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+		movdqu xmm0, [esi+ebx]						; xmm0 <- src 
+
+carga_distinto_ultima_columna:
+		;-----------------
+		; Proceso B
+		;-----------------
+		movdqu xmm1, xmm0							; xmm1 <- |BG|RB|GR|BG|RB|GR|BG|RB|
+		
+		psllw xmm1, 8					 			; 
+		psrlw xmm1, 8					 			; xmm1 <- |xx|0B|xx|xx|0B|xx|xx|0B|
+		psrlw xmm0, 8					 			; xmm0 <- |0B|xx|xx|0B|xx|xx|0B|xx|
+		
+		
+													; xmm7 <- |00|FF|00|00|FF|00|00|FF| mascara actual
+		pand xmm1, xmm7								; xmm1 <- |00|0B|00|00|0B|00|00|0B|
+		
+		pslldq xmm7, 1								; xmm7 <- |FF|00|00|FF|00|00|FF|00| ajusto mascara
+		pand xmm0, xmm7								; xmm0 <- |0B|00|00|0B|00|00|0B|00|
+
+		psrldq xmm7, 1								; xmm7 <- |00|FF|00|00|FF|00|00|FF| retorno mascara
 	
-    movdqu [edx], xmm4											; dst_b <- |BBBBBB|BBBBB|BBBBB|
-    
-    add esi, 48													; *src <- *src + 48
-    add edi, 16													; *dst_r <- *dst_r + 16
-    add ebx, 16													; *dst_g <- *dst_g + 16 
-    add edx, 16													; *dst_b <- *dst_b + 16
-    
-																; ecx--
-    loop ciclo													;ENDWHILE
-    
-    convencion_c_out 0
+		
+		; xmm0 <- |0B|00|00|0B|00|00|0B|00|
+		; xmm1 <- |00|0B|00|00|0B|00|00|0B|
+		por xmm0, xmm1								; xmm0 <- |B1|B2|00|B3|B4|00|B5|B6|
+		
+		pshufd xmm0, xmm0, 11000110b				; xmm0 <- |B1|B2|B5|B6|B4|00|00|B3|
+		pshuflw xmm0, xmm0, 00110110b    			; xmm0 <- |B1|B2|B5|B6|B3|B4|00|00|
+		pshufd xmm0, xmm0, 11011000b				; xmm0 <- |B1|B2|B3|B4|B5|B6|00|00| (word-packed)
+		
+		packuswb xmm0, xmm0							; xmm0 <- |B1|B2|B3|B4|B5|B6|0|0|B1|B2|B3|B4|B5|B6|0|0| (byte-packed)
+		
+		psrldq xmm0, 4								; xmm0 <- |0|0|0|0|B1|B2|B3|B4|B5|B6|0|0|B1|B2|B3|B4| (byte-packed)	
+		movd eax, xmm0								; eax <- |B1|B2|B3|B4|
+
+		;~ movdqu [edi+edx],xmm0
+		mov dword [edi+edx], eax 						
+;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
+		add edx ,4                                  ;        #columnas_p_dst <- #columnas_p_dst + 4
+		add ebx ,12                                 ;        #columnas_p_src <- #columnas_p_src + 12
+		mov eax, src_row_size                       ;        eax <- row_size_src
+		sub eax, ebx                                ;        eax <- row_size - #columnas_p_src
+        
+		cmp eax, 16                                 ;        IF (row_size - #columnas_p_src) < 16
+		jge cicloColumna                            ;          CONTINUE
+		
+        cmp eax, 5                                   ;        IF (row_size - #columnas_p_src) == 0
+		je termineCol                               ;          BREAK
+		
+        ;ultimos pixeles
+        mov ebx, src_row_size                       ;        ebx <- src_row_size
+        sub ebx,17                                  ;        ebx <- src_row_size - 13
+
+		
+		
+        mov edx, dst_row_size                       ;        edx <- dst_row_size
+        sub edx,5                                   ;        edx <- dst_row_size - 5
+
+		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |RB|GR|BG|RB|GR|BG|RB|GR|
+		pslldq xmm0, 4								
+		
+        jmp carga_distinto_ultima_columna           ;      ENDWHILE
+
+	
+    termineCol:
+		
+		add esi, src_row_size                       ;   src <- src + row_size
+		add edi, dst_row_size                       ;   dst <- dst + row_size
+        dec ecx                                     ;   h--
+		jnz cicloFila                               ; ENDWHILE
+
+fin_invertir:
+	convencion_c_out 0
 	ret
+

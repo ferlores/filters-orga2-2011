@@ -1,12 +1,6 @@
 ; void umbralizar_asm (unsigned char *src, unsigned char *dst, int h, int w, int row_size, unsigned char umbral_min, unsigned char umbral_max)
 
 global umbralizar_asm
-;==================================================================================
-; Template para recorrer las imagenes controlando el padding
-; esi <- *src
-; edi <- *dst
-; REGISTROS QUE USA PARA ITERAR: eax, ebx, ecx
-;==================================================================================
 
 %include "macros.asm"
 
