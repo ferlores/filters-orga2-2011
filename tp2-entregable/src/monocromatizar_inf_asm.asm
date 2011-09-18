@@ -49,7 +49,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		pmaxub xmm0,xmm1	
 		pmaxub xmm0, xmm2   ; xmm0 =   max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
 		
-		modqu xmm4, xmm0    ; lo copio porque lo voy a usar despues pero por ahora me olvido
+		movdqu xmm4, xmm0    ; lo copio porque lo voy a usar despues pero por ahora me olvido
 		
 		pxor xmm3, xmm3
 		punpcklbw xmm0, xmm3	;  xmm0 =      m0 0| x 0| x 0 | m1 0 | x 0 | x 0 | m2  0| x 0
@@ -57,12 +57,12 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		pshuflw xmm0, xmm0,  11100100b  ; xmm0 =  m0 0| m1 0| x 0 | m1 0 | x 0 | x 0 | m2  0| x 0
 		pshufhw xmm0, xmm0,  11100110b  ; xmm0 =  m0 0| m1 0| x 0 | m1 0 | m2 0 | x 0 | m2  0| x 0
 		
-		phufd xmm0, xmm0 ,  11101010b   ; xmm0 =  m0 0| m1 0| m2 0 | x 0 | m2 0 | x 0 | m2  0| x 0
+		pshufd xmm0, xmm0 ,1110100b   ; xmm0 =  m0 0| m1 0| m2 0 | x 0 | m2 0 | x 0 | m2  0| x 0
 		pxor xmm2, xmm2
 		packuswb xmm0,xmm2              ; xmm0 =  m0 | m1 | m2  | x | m2 | x | m2| x| 0|0 |0 |0 |0|0|0|0
 		
 		
-		punpckhbw xmm4, 
+		;punpckhbw xmm4, 
 		
 		 ;xmm4 =   max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
 
