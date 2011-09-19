@@ -35,6 +35,9 @@ monocromatizar_uno_asm:
 	pslldq  xmm2, 2  ; xmm2 = 	 R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0 |0
 					 ;xmm0 =     B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
 	
+	; debo desempaquetar
+	
+	
 	; multiplico por dos el xmm2			
 	psrlw xmm1,1      ; multiplico por dos cada word del xmm1 = G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0 *2 
 	paddb xmm0,xmm1 ;
