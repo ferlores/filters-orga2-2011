@@ -54,7 +54,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 		movdqu xmm0, [esi+ebx]						; xmm0 <- src 
 
-carga_distinto_ultima_columna:
+	carga_distinto_ultima_columna:
 		;-----------------
 		; Proceso B
 		;-----------------
@@ -84,7 +84,7 @@ carga_distinto_ultima_columna:
 		
 		packuswb xmm0, xmm0							; xmm0 <- |B1|B2|B3|B4|B5|B6|0|0|B1|B2|B3|B4|B5|B6|0|0| (byte-packed)
 		
-		psrldq xmm0, 4								; xmm0 <- |0|0|0|0|B1|B2|B3|B4|B5|B6|0|0|B1|B2|B3|B4| (byte-packed)	
+		psrldq xmm0, 2								; xmm0 <- |0|0|0|0|B1|B2|B3|B4|B5|B6|0|0|B1|B2|B3|B4| (byte-packed)	
 		movd eax, xmm0								; eax <- |B1|B2|B3|B4|
 
 		;~ movdqu [edi+edx],xmm0
@@ -92,34 +92,36 @@ carga_distinto_ultima_columna:
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 		add edx ,4                                  ;        #columnas_p_dst <- #columnas_p_dst + 4
 		add ebx ,12                                 ;        #columnas_p_src <- #columnas_p_src + 12
-		mov eax, src_row_size                       ;        eax <- row_size_src
-		sub eax, ebx                                ;        eax <- row_size - #columnas_p_src
+		
+		mov eax, w			                        ;        eax <- w
+		lea eax, [eax + 2*eax]						;        eax <- 3*w
+		
+		sub eax, ebx                                ;        eax <- 3*w - #columnas_p_src
         
-		cmp eax, 16                                 ;        IF (row_size - #columnas_p_src) < 16
+		cmp eax, 16                                 ;        IF (3*w - #columnas_p_src) < 16
 		jge cicloColumna                            ;          CONTINUE
 		
-        cmp eax, 5                                   ;        IF (row_size - #columnas_p_src) == 0
+        cmp eax, 4                                  ;        IF (3*w - #columnas_p_src) == 0
 		je termineCol                               ;          BREAK
 		
         ;ultimos pixeles
-        mov ebx, src_row_size                       ;        ebx <- src_row_size
-        sub ebx,17                                  ;        ebx <- src_row_size - 13
+        add ebx, eax		                        ;        ebx <- 3*w
+        sub ebx,16                                  ;        ebx <- 3*w - 17
 
 		
-		
-        mov edx, dst_row_size                       ;        edx <- dst_row_size
-        sub edx,5                                   ;        edx <- dst_row_size - 5
+        mov edx, w			                        ;        edx <- dst_row_size
+        sub edx,4                                   ;        edx <- dst_row_size - 5
 
-		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |RB|GR|BG|RB|GR|BG|RB|GR|
-		pslldq xmm0, 4								
+		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |RB|GR   |BG|RB|GR|BG|RB|GR|
+		psrldq xmm0, 4								
 		
         jmp carga_distinto_ultima_columna           ;      ENDWHILE
 
 	
     termineCol:
 		
-		add esi, src_row_size                       ;   src <- src + row_size
-		add edi, dst_row_size                       ;   dst <- dst + row_size
+		add esi, [ebp+32]                       ;   src <- src + row_size
+		add edi, [ebp+36]                       ;   dst <- dst + row_size
         dec ecx                                     ;   h--
 		jnz cicloFila                               ; ENDWHILE
 
