@@ -88,31 +88,35 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		
 		packuswb xmm0,xmm3 ; xmm0 <-   m0 |m1|m2 |m3 |m4 |m5 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0
 		
-	
+		movd eax, xmm0	
+		
 
-		movdqu [edi+ebx],xmm0
+		;movd [edi+ebx],eax  ; copio de a 4
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
-		add ebx ,16                                 ;        #columnas_p <- #columnas_p + 16
-		mov eax, row_size                           ;        eax <- row_size
-		sub eax, ebx                                ;        eax <- row_size - #columnas_p
-        
-		cmp eax, 16                                 ;        IF (row_size - #columnas_p) < 16
-		jge cicloColumna                            ;          CONTINUE
-		
-        cmp eax,0                                   ;        IF (row_size - #columnas_p)
-		je termineCol                               ;          BREAK
-		
-        ;ultimos pixeles
-        mov ebx, row_size                           ;        ebx <- row_size
-        sub ebx,17                                  ;        ebx <- row_size - 17
-        jmp cicloColumna                            ;      ENDWHILE
 	
-    termineCol:
-		
-		add esi,row_size                            ;   src <- src + row_size
-		add edi,row_size                            ;   dst <- dst + row_size
-        dec ecx                                     ;   h--
-		jnz cicloFila                               ; ENDWHILE
+	
+	
+		;~ add ebx ,16                                 ;        #columnas_p <- #columnas_p + 16
+		;~ mov eax, row_size                           ;        eax <- row_size
+		;~ sub eax, ebx                                ;        eax <- row_size - #columnas_p
+        ;~ 
+		;~ cmp eax, 16                                 ;        IF (row_size - #columnas_p) < 16
+		;~ jge cicloColumna                            ;          CONTINUE
+		;~ 
+        ;~ cmp eax,0                                   ;        IF (row_size - #columnas_p)
+		;~ je termineCol                               ;          BREAK
+		;~ 
+        ;~ ;ultimos pixeles
+        ;~ mov ebx, row_size                           ;        ebx <- row_size
+        ;~ sub ebx,17                                  ;        ebx <- row_size - 17
+        ;~ jmp cicloColumna                            ;      ENDWHILE
+	;~ 
+    ;~ termineCol:
+		;~ 
+		;~ add esi,row_size                            ;   src <- src + row_size
+		;~ add edi,row_size                            ;   dst <- dst + row_size
+        ;~ dec ecx                                     ;   h--
+		;~ jnz cicloFila                               ; ENDWHILE
 
 fin_invertir:
 	convencion_c_out 0
