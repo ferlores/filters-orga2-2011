@@ -25,9 +25,6 @@ pxor xmm7, xmm7
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
-
-;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
-
 	mov esi, src		                            ; esi <- *src
 	mov edi, dst		                            ; edi <- dst
 	mov ecx, h                                      ; ecx <- h
