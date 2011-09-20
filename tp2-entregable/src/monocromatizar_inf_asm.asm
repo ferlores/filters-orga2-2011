@@ -51,45 +51,62 @@ cicloFila:                                          ; WHILE(h!=0) DO
     carga_distinto_ultima_columna:
         
 		movdqu xmm1, xmm0  	;  
-		movdqu xmm2, xmm0   ; xmm0 <-     B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
+		movdqu xmm2, xmm0   
+							; xmm0 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
 		
-		psrldq	xmm1, 1  	;xmm1  <-     G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0
-		psrldq  xmm2, 2  	; xmm2 <- 	 R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0 |0 
+		psrldq	xmm1, 1  	; xmm1  <-    0 |R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
+		psrldq  xmm2, 2  	; xmm2 <- 	  0 |0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|
 		
 		pmaxub xmm0,xmm1	
-		pmaxub xmm0, xmm2   ; xmm0 <-   max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
+		pmaxub xmm0, xmm2   ;xmm0 <-   B5|x|x|x|max|x|x|max|x|x|max|x|x|max|x|x
+		; xmm0 <-   max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
 		
 		movdqu xmm1, xmm0    ; lo copio porque lo voy a usar despues pero por ahora me olvido
 		
-		psllw xmm1,8   ; xmm1 <-  0 m0 |0 x| 0 x | 0 m2 | 0 x | 0 x | 0 m4 |0 x  shiftee cada word 8 bits logico a derecha
+		psllw xmm1,8   	; xmm1 <-  x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
+		; xmm1 <-  0 m0 |0 x| 0 x | 0 m2 | 0 x | 0 x | 0 m4 |0 x  shiftee cada word 8 bits logico a derecha
 		
-		movdqu xmm2, xmm1  ; xmm2 <-  0 m0 |0 x| 0 x | 0 m2 | 0 x | 0 x | 0 m3 |0 x , me guarde una copia de xmm1
+		movdqu xmm2, xmm1  	; xmm1 <-  x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
 		
-		psrlw xmm0, 8  ;  xmm0 <- x 0 |m1 0|x 0| x 0 | m3 0 | x 0 | x 0 |m5 0
+		psrlw xmm0, 8  ;  xmm0 <- 0 m5|0 x|0 x| 0 m3 | 0 x | 0 x| 0 m1|0 x
+	
 		
-		psllw xmm0, 8  ;  xmm0 <- 0 x |0 m1|0 x| 0 x | 0 m3 | 0 x | 0 x |0 m5
+		psllw xmm0, 8  ;  xmm0 <- m5 0|x 0|x 0| m3 0| x 0 | x 0| m1 0| x 0
+		;  xmm0 <- 0 x |0 m1|0 x| 0 x | 0 m3 | 0 x | 0 x |0 m5
 		
-		pand xmm1, xmm7 ; xmm1 <- 0 m0 |0 0| 0 0 | 0 m2 | 0 0 | 0 0 | 0 m4 |0 0
+		pand xmm1, xmm7 ;xmm1 <-  0 0|m4 0| 0 0 | 0 0 |m2 0 | 0 0 | 0 0 |m0 0  hasta aca ok
+		; xmm1 <- 0 m0 |0 0| 0 0 | 0 m2 | 0 0 | 0 0 | 0 m4 |0 0
 		
-		pslldq xmm7, 2  ; xmm7 <-  00 |FF  |00 |00 |FF  |00 |00  |FF |
+		pslldq xmm7, 2  ; xmm7 <-  |00 |00 |FF  |00 |00  |FF |00
 		
-		pand xmm0, xmm7 ;  xmm0 <- 0 0|0 m1|0 0|0 0|0 m3|0 0|0 0 |0 m5
+		pand xmm0, xmm7 ;  xmm0 <- 0 0|0 0|0 0| m3 0| 0 0 | 0 0| m1 0| 0 0
+		;  xmm0 <- 0 0|0 m1|0 0|0 0|0 m3|0 0|0 0 |0 m5
 		
-		psrldq xmm7, 2  ; xmm7 <- |FF  |00 |00 |FF  |00 |00  |FF |00  , shift a iz dos bytes reacomodo mask
+		psrldq xmm7, 2  ; xmm7 <- 00 |FF  |00 |00 |FF  |00 |00  |FF | , shift a iz dos bytes reacomodo mask
 		
-		por xmm0,xmm1 ; xmm0 <-   0 m0|0 m1|0 0|0 m2|0 m3|0 0|0 m4 |0 m5
+		por xmm0,xmm1 ; xmm0 <- m5 0|m4 0|0 0| m3 0| m2 0 | 0 0| m1 0| m0 0  ; no ok vr si es 0 y arrastrar
+		; xmm0 <-   0 m0|0 m1|0 0|0 m2|0 m3|0 0|0 m4 |0 m5
 		
-		pshufd xmm0, xmm0, 01101100b  ; xmm0 <-  0 m0|0 m1|0 m4|0 m5|0 m3|0 0|0 0 |0 m2
+		pshufd xmm0, xmm0, 01101100b ;xmm0 <- m2 0|0 0|0 0| m3 0| m5 0 |m4 0| m1 0| m0 0
+		 ; xmm0 <-  0 m0|0 m1|0 m4|0 m5|0 m3|0 0|0 0 |0 m2
 		
-		pshufhw xmm0, xmm0, 01100011b ; xmm0 <-  0 m0|0 m1|0 m4|0 m5|0 m2|0 m3|0 0 |0 0
+		pshufhw xmm0, xmm0, 01100011b ;xmm0 <- 0 0|0 0|m3 0| m2 0| m5 0 |m4 0| m1 0| m0 0  si  no s car esta bien
 		
-		pshufd xmm0,xmm0,  11011000b  ; xmm0 <-  0 m0|0 m1|0 m2|0 m3|0 m4|0 m5|0 0 |0 0
+		 ; xmm0 <-  0 m0|0 m1|0 m4|0 m5|0 m2|0 m3|0 0 |0 0
 		
-		psrlw xmm0, 8   		 ; xmm0 <-   m0 0|m1 0|m2 0|m3 0|m4 0|m5 0|0 0 |0 0  corri 8 bits cada word
+		pshufd xmm0,xmm0,  11011000b  ;xmm0 <- 0 0|0 0|m5 0| m4 0| m3 0 |m2 0| m1 0| m0 0
+		;xmm0 <- m2 0|0 0|m5 0| m4 0| 0 0 |m3 0| m1 0| 0 0
+		; xmm0 <-  0 m0|0 m1|0 m2|0 m3|0 m4|0 m5|0 0 |0 0
+		
+		psrlw xmm0, 8   		;xmm0 <- 0 0|0 0|0 m5| 0 m4| 0 m3 |0 m2| 0 m1| 0 m0
+		 ;xmm0 <- 0 m2|0 0|0 m5| 0 m4| 0 0 |0 m3| 0 m1 | 0 0
+		; xmm0 <-   m0 0|m1 0|m2 0|m3 0|m4 0|m5 0|0 0 |0 0  corri 8 bits cada word
 		
 		pxor xmm3, xmm3
 		
-		packuswb xmm0,xmm3 ; xmm0 <-   m0 |m1|m2 |m3 |m4 |m5 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0
+		packuswb xmm0,xmm3 	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|m5|m4|m3|m2|m1|m0
+		; xmm0 <-   m0 |m1|m2 |m3 |m4 |m5 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0
+	
 		
 		movd eax, xmm0	
 		
