@@ -27,12 +27,17 @@ separar_canales_asm:
 	pinsrw xmm7, ecx, 3
 	pinsrw xmm7, ecx, 6								; xmm7 <- |00|FF|00|00|FF|00|00|FF|
 
+
+    movdqu xmm6, xmm7                               ; xmm6 <- |00|FF|00|00|FF|00|00|FF|
+    psrldq xmm6, 2	                                ; xmm6 <- |00|00|FF|00|00|FF|00|00|
+    
 	; xmm7 <- mascara_B
+	; xmm <- mascara_G
 	
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 
 	mov esi, src		                            ; esi <- *src
-	mov edi, dst_b		                            ; edi <- dst
+	
 	mov ecx, h                                      ; ecx <- h
     ;----------------------------------
     ; esi <- *src
@@ -55,40 +60,106 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		movdqu xmm0, [esi+ebx]						; xmm0 <- src 
 
 	carga_distinto_ultima_columna:
+
 		;-----------------
-		; Proceso B
+		; Prepara los datos
 		;-----------------
-		movdqu xmm1, xmm0							; xmm1 <- |BG|RB|GR|BG|RB|GR|BG|RB|
+        
+		movdqu xmm1, xmm0							; xmm1 <- |BR|GB|RG|BR|GB|RG|BR|GB|
 		
 		psllw xmm1, 8					 			; 
-		psrlw xmm1, 8					 			; xmm1 <- |xx|0B|xx|xx|0B|xx|xx|0B|
-		psrlw xmm0, 8					 			; xmm0 <- |0B|xx|xx|0B|xx|xx|0B|xx|
+		psrlw xmm1, 8					 			; xmm1 <- |0R|0B|0G|0R|0B|0G|0R|0B|
+		psrlw xmm0, 8					 			; xmm0 <- |0B|0G|0R|0B|0G|0R|0B|0G|
 		
-		
-													; xmm7 <- |00|FF|00|00|FF|00|00|FF| mascara actual
+        ; GUARDO LOS REGISTROS
+        movdqu xmm3, xmm1							; xmm3 <- |0R|0B|0G|0R|0B|0G|0R|0B|
+        movdqu xmm2, xmm0							; xmm2 <- |0B|0G|0R|0B|0G|0R|0B|0G|
+        
+		;-----------------
+		; Proceso B
+		;-----------------        
+        mov edi, dst_b		                        ; edi <- dst_b
+        
+                                                    ; xmm7 <- |00|FF|00|00|FF|00|00|FF|
 		pand xmm1, xmm7								; xmm1 <- |00|0B|00|00|0B|00|00|0B|
 		
 		pslldq xmm7, 1								; xmm7 <- |FF|00|00|FF|00|00|FF|00| ajusto mascara
 		pand xmm0, xmm7								; xmm0 <- |0B|00|00|0B|00|00|0B|00|
 
-		psrldq xmm7, 1								; xmm7 <- |00|FF|00|00|FF|00|00|FF| retorno mascara
-	
+        
 		
 		; xmm0 <- |0B|00|00|0B|00|00|0B|00|
 		; xmm1 <- |00|0B|00|00|0B|00|00|0B|
-		por xmm0, xmm1								; xmm0 <- |B1|B2|00|B3|B4|00|B5|B6|
+		por xmm0, xmm1								; xmm0 <- |B6|B5|00|B4|B3|00|B2|B1|
 		
-		pshufd xmm0, xmm0, 11000110b				; xmm0 <- |B1|B2|B5|B6|B4|00|00|B3|
-		pshuflw xmm0, xmm0, 00110110b    			; xmm0 <- |B1|B2|B5|B6|B3|B4|00|00|
-		pshufd xmm0, xmm0, 11011000b				; xmm0 <- |B1|B2|B3|B4|B5|B6|00|00| (word-packed)
+		pshufd xmm0, xmm0, 11000110b				; xmm0 <- |B6|B5|B2|B1|B3|00|00|B4|
+		pshuflw xmm0, xmm0, 00110110b   			; xmm0 <- |B6|B5|B2|B1|B4|B3|00|00|
+		pshufd xmm0, xmm0, 11011000b				; xmm0 <- |B6|B5|B4|B3|B2|B1|00|00| (word-packed)
 		
-		packuswb xmm0, xmm0							; xmm0 <- |B1|B2|B3|B4|B5|B6|0|0|B1|B2|B3|B4|B5|B6|0|0| (byte-packed)
+		packuswb xmm0, xmm0							; xmm0 <- |B6|B5|B4|B3|B2|B1|0|0|B6|B5|B4|B3|B2|B1|0|0| (byte-packed)
 		
-		psrldq xmm0, 2								; xmm0 <- |0|0|0|0|B1|B2|B3|B4|B5|B6|0|0|B1|B2|B3|B4| (byte-packed)	
-		movd eax, xmm0								; eax <- |B1|B2|B3|B4|
+		psrldq xmm0, 2								; xmm0 <- |0|0|B6|B5|B4|B3|B2|B1|0|0|B6|B5|B4|B3|B2|B1| (byte-packed)	
+		movd eax, xmm0								; eax <- |B4|B3|B2|B1|
 
-		;~ movdqu [edi+edx],xmm0
-		mov dword [edi+edx], eax 						
+		mov [edi+edx], eax 						
+
+        ;-----------------
+		; Proceso R
+		;-----------------        
+        mov edi, dst_r		                        ; edi <- dst_b
+
+        movdqu xmm1, xmm3							; xmm3 <- |0R|0B|0G|0R|0B|0G|0R|0B|
+        movdqu xmm0, xmm2							; xmm2 <- |0B|0G|0R|0B|0G|0R|0B|0G|
+        
+                                                    ; xmm7 <- |FF|00|00|FF|00|00|FF|00|
+		pand xmm1, xmm7								; xmm1 <- |0R|00|00|0R|00|00|0R|00|
+		
+                                                    ; xmm6 <- |00|00|FF|00|00|FF|00|00|
+		pand xmm0, xmm6								; xmm0 <- |00|00|0R|00|00|0R|00|00|
+
+		
+        ; xmm0 <- |00|00|0R|00|00|0R|00|00|
+        ; xmm1 <- |0R|00|00|0R|00|00|0R|00|
+		por xmm0, xmm1								; xmm0 <- |R5|00|R4|R3|00|R2|R1|00|
+		
+        pshuflw xmm0, xmm0, 11001001b   			; xmm0 <- |R5|00|R4|R3|00|00|R2|R1|
+		pshufd xmm0, xmm0, 11011000b				; xmm0 <- |R5|00|00|00|R4|R3|R2|R1|
+
+		packuswb xmm0, xmm0							; xmm0 <- |R5|0|0|0|R4|R3|R2|R1|R5|0|0|0|R4|R3|R2|R1| (byte-packed)
+		
+		movd eax, xmm0								; eax <- |R4|R3|R2|R1|
+
+		mov [edi+edx], eax 						
+        
+
+        ;-----------------
+		; Proceso G
+		;-----------------        
+        psrldq xmm7, 1								; xmm7 <- |00|FF|00|00|FF|00|00|FF| retorno mascara        
+        
+        mov edi, dst_g		                        ; edi <- dst_b
+
+		pand xmm2, xmm7								; xmm0 <- |00|0G|00|00|0G|00|00|0G|
+		
+                                                    ; xmm6 <- |00|00|FF|00|00|FF|00|00|
+		pand xmm3, xmm6								; xmm1 <- |00|00|0G|00|00|0G|00|00|
+
+		
+        ; xmm0 <- |00|0G|00|00|0G|00|00|0G|
+        ; xmm1 <- |00|00|0G|00|00|0G|00|00|
+		por xmm2, xmm3								; xmm0 <- |00|G5|G4|00|G3|G2|00|G1|
+		
+        pshuflw xmm2, xmm2, 01111000b   			; xmm0 <- |00|G5|G4|00|00|G3|G2|G1|
+		pshufd xmm2, xmm2, 01101100b				; xmm0 <- |00|G3|G4|00|00|G5|G2|G1|
+        pshufhw xmm2, xmm2, 11000110b   			; xmm0 <- |00|00|G4|G3|00|G5|G2|G1|
+        pshufd xmm2, xmm2, 11011000b				; xmm0 <- |00|00|00|G5|G4|G3|G2|G1|
+
+		packuswb xmm2, xmm2							; xmm0 <- |00|00|00|G5|G4|G3|G2|G1|00|00|00|G5|G4|G3|G2|G1| (byte-packed)
+		
+		movd eax, xmm2								; eax <- |G4|G3|G2|G1|
+
+		mov [edi+edx], eax 						
+        
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 		add edx ,4                                  ;        #columnas_p_dst <- #columnas_p_dst + 4
 		add ebx ,12                                 ;        #columnas_p_src <- #columnas_p_src + 12
@@ -110,7 +181,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 		
         mov edx, w			                        ;        edx <- dst_row_size
-        sub edx,4                                   ;        edx <- dst_row_size - 5
+        sub edx,4                                   ;        edx <- dst_row_size - 4
 
 		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |RB|GR   |BG|RB|GR|BG|RB|GR|
 		psrldq xmm0, 4								
@@ -120,8 +191,13 @@ cicloFila:                                          ; WHILE(h!=0) DO
 	
     termineCol:
 		
-		add esi, [ebp+32]                       ;   src <- src + row_size
-		add edi, [ebp+36]                       ;   dst <- dst + row_size
+		add esi, src_row_size                       ;   src <- src + src_row_size
+        
+        mov edi, dst_row_size
+		add dst_b, edi           	                ;   dst_b <- dst + dst_row_size
+        add dst_g, edi 	                            ;   dst_g <- dst + dst_row_size
+        add dst_r, edi       	                    ;   dst_r <- dst + dst_row_size
+        
         dec ecx                                     ;   h--
 		jnz cicloFila                               ; ENDWHILE
 

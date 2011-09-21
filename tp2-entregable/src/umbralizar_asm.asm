@@ -111,7 +111,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
         pcmpeqb xmm0, xmm7                          ; xmm0 <- |F..0..F..F..0| tengo F donde me sirve
         
         movdqu xmm2, xmm6                           ; xmm2 <- 128 (byte packed)
-        pand xmm2, xmm0                          ; xmm2 <- |128..0..128..128..0| tengo 128 donde me sirve
+        pand xmm2, xmm0                             ; xmm2 <- |128..0..128..128..0| tengo 128 donde me sirve
         
         por xmm2, xmm3                              ; xmm2 <- |128..0..F..128..F..0| tengo 0 donde me sirve
         
