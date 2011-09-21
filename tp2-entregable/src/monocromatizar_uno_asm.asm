@@ -38,46 +38,72 @@ cicloFila:                                          ; WHILE(h!=0) DO
 	cicloColumna:	                                ;     WHILE(#columnas_p < row_size) DO
 
 		
-		movdqu xmm0, [esi+ebx]; xmm0 = B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
+		movdqu xmm0, [esi+ebx]; xmm0 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
+		; xmm0 = B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
 	
 		carga_distinto_ultima_columna:
 		
-		movdqu xmm1, xmm0  ; xmm1 =  B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
-		movdqu xmm2, xmm0  ; xmm2 =  B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
+		movdqu xmm1, xmm0  ;xmm1 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
+		; xmm1 =  B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
+		
+		movdqu xmm2, xmm0  ;xmm2 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
+		;xmm1 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
+		; xmm2 =  B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
 				
 				
-		psrldq	xmm1, 1  ;xmm1 =     G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0
-		psrldq  xmm2, 2  ; xmm2 = 	 R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0 |0
+		psrldq	xmm1, 1  ; xmm1  <-    0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
+		;xmm1 =     G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0
+		
+		psrldq  xmm2, 2  ; xmm2 <- 	  0 |0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|
+		; xmm2 = 	 R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0 |0
 					
 					 ;xmm0 =     B0|G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5
 	
-		; debo desempaquetar xmm1 shit!
-		pxor xmm3, xmm3    ; dos registro con cero	
-		movdqu xmm5, xmm1
-	
-		punpcklbw xmm1, xmm3   ; xmm1 <- G0|0|R0|0|B1|0|G1|0|R1|0|B2|0|G2|0|R2|0 xmm1 parte baja de operndo 2
 		
-		punpckhbw xmm5, xmm3;    xmm5 <- B3|0|G3|0|R3|0|B4|0|G4|0|R4|0|B5|0|0|0	 xmm5 parte alta de operando2
+		pxor xmm3, xmm3    
+		movdqu xmm5, xmm1  ;  xmm5  <-   0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
 	
-		psrlw xmm1,1 ; xmm1 <- G0|0|R0|0|B1|0|G1|0|R1|0|B2|0|G2|0|R2|0 *2 de a words
-		psrlw xmm5,1 ; xmm5 <- B3|0|G3|0|R3|0|B4|0|G4|0|R4|0|B5|0|0|0	*2 de a words 
+		punpcklbw xmm1, xmm3   ;  xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|     xmm1 parte baja de operndo 2
+		; xmm1 <- G0|0|R0|0|B1|0|G1|0|R1|0|B2|0|G2|0|R2|0 
+		
+		punpckhbw xmm5, xmm3;   xmm5  <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3        xmm5 parte alta de operando2
+		
+		; xmm5 <- B3|0|G3|0|R3|0|B4|0|G4|0|R4|0|B5|0|0|0	 
+	
+		psrlw xmm1,1  ;xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|         *2 de a words
+		
+		; xmm1 <- G0|0|R0|0|B1|0|G1|0|R1|0|B2|0|G2|0|R2|0 *2 de a words
+		
+		psrlw xmm5,1  ;xmm5  <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3           *2 de a words
+		
+		; xmm5 <- B3|0|G3|0|R3|0|B4|0|G4|0|R4|0|B5|0|0|0	*2 de a words 
+		
 		; empaqueto de nuevo para tenerlos de byte
 		;packuswb  xmm1, xmm5 ; xmm1 <- G0|R0|B1|G1|R1|B2|G2|R2|B3|G3|R3|B4|G4|R4|B5|0 * 2
 	
 		pxor xmm3,xmm3
-		movdqu xmm4, xmm0
-		punpcklbw xmm0, xmm3   ; xmm0 <- B0|0|G0|0|R0|0|B1|0|G1|0|R1|0|B2|0|G2|0      xmm0 parte baja de operando 1
-		punpckhbw xmm4, xmm3   ; xmm4 <- R2|0|B3|0|G3|0|R3|0|B4|0|G4|0|R4|0|B5|0     xmm4 pate alta de operando1
+		movdqu xmm4, xmm0      
+		punpcklbw xmm0, xmm3   ; xmm0 <-  0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0   xmm0 parte baja de operando 1
+		; xmm0 <- B0|0|G0|0|R0|0|B1|0|G1|0|R1|0|B2|0|G2|0      
 		
-		;pxor xmm2,xmm2
+		punpckhbw xmm4, xmm3   ; xmm4 <- 0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3|0|R2     xmm4 pate alta de operando1
+		
+		;pxor xmm2,xmm2  
 		pxor xmm6,xmm6
-		movdqu xmm3, xmm2
-		punpcklbw xmm2, xmm6 ;xmm2 <- R0|0|B1|0|G1|0|R1|0|B2|0|G2|0|R2|0|B3|0   xmm2 parte baja de operando 3
-		punpckhbw xmm3, xmm6 ;xmm3 <- G3|0|R3|0|B4|0|G4|0|R4|0|B5|0|0|0|0  |0   xmm3 parte alta de operando 3
+		movdqu xmm3, xmm2  ;  xmm3 <- 0 |0|B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|   
+		punpcklbw xmm2, xmm6 ;xmm2 <- 0|B3|0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|    xmm2 parte baja de operando 3
+		
+		;xmm2 <- R0|0|B1|0|G1|0|R1|0|B2|0|G2|0|R2|0|B3|0  
+		
+		punpckhbw xmm3, xmm6 ; 0|0|0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|  xmm3 parte alta de operando 3
+		;xmm3 <- G3|0|R3|0|B4|0|G4|0|R4|0|B5|0|0|0|0  |0   
 		
 		;sumemos partes bajas
-		paddb xmm0,xmm1
-		paddb xmm0,xmm2    ; xmm0 suma partes bajas
+		paddb xmm0,xmm1  ;xmm0 <-  +  0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0
+						;             0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|      *2 de a words
+		
+		paddb xmm0,xmm2    ;		  0|B3|0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|
+		; xmm0 suma partes bajas
 		
 		paddb xmm4, xmm3
 		paddb xmm4, xmm5	;xmm4 suma partes altas

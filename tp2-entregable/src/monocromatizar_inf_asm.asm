@@ -54,11 +54,11 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		movdqu xmm2, xmm0   
 							; xmm0 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
 		
-		psrldq	xmm1, 1  	; xmm1  <-    0 |R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
+		psrldq	xmm1, 1  	; xmm1  <-    0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
 		psrldq  xmm2, 2  	; xmm2 <- 	  0 |0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|
 		
 		pmaxub xmm0,xmm1	
-		pmaxub xmm0, xmm2   ;xmm0 <-   B5|x|x|x|max|x|x|max|x|x|max|x|x|max|x|x
+		pmaxub xmm0, xmm2   ;xmm0 <-   B5|x|x|max|x|x|max|x|x|max|x|x|max|x|x|max
 		; xmm0 <-   max{B0,GO,R0)}|G0|R0|max{B1,G1,R1}|--|--|max ...|G2|R2|max..|G3|R3|max..|G4|R4|B5
 		
 		movdqu xmm1, xmm0    ; lo copio porque lo voy a usar despues pero por ahora me olvido
