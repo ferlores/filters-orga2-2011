@@ -47,6 +47,7 @@ umbralizar_asm:
     ; Mascara umbral maximo
     ;-----------------------
     mov eax, [ebp+32]                               ; eax <- umbral_max
+    inc eax                                         ; eax <- umbral_max + 1
     mov ebx, eax
     
     shl eax, 8
