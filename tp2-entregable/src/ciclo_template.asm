@@ -43,7 +43,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		movdqu [edi+ebx],xmm0
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 		add ebx ,16                                 ;        #columnas_p <- #columnas_p + 16
-		mov eax, row_size                           ;        eax <- row_size
+		mov eax, w                                  ;        eax <- row_size
 		sub eax, ebx                                ;        eax <- row_size - #columnas_p
         
 		cmp eax, 16                                 ;        IF (row_size - #columnas_p) < 16
@@ -53,8 +53,8 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		je termineCol                               ;          BREAK
 		
         ;ultimos pixeles
-        mov ebx, row_size                           ;        ebx <- row_size
-        sub ebx,17                                  ;        ebx <- row_size - 17
+        mov ebx, w                                  ;        ebx <- row_size
+        sub ebx,16                                  ;        ebx <- row_size - 17
         jmp cicloColumna                            ;      ENDWHILE
 	
     termineCol:

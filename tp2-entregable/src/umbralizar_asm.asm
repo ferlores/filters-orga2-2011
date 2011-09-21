@@ -120,18 +120,18 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		movdqu [edi+ebx],xmm2
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 		add ebx ,16                                 ;        #columnas_p <- #columnas_p + 16
-		mov eax, row_size                           ;        eax <- row_size
-		sub eax, ebx                                ;        eax <- row_size - #columnas_p
+		mov eax, w                                  ;        eax <- w
+		sub eax, ebx                                ;        eax <- w - #columnas_p
         
-		cmp eax, 16                                 ;        IF (row_size - #columnas_p) < 16
+		cmp eax, 16                                 ;        IF (w - #columnas_p) < 16
 		jge cicloColumna                            ;          CONTINUE
 		
-        cmp eax,0                                   ;        IF (row_size - #columnas_p)
+        cmp eax,0                                   ;        IF (w - #columnas_p)
 		je termineCol                               ;          BREAK
 		
         ;ultimos pixeles
-        mov ebx, row_size                           ;        ebx <- row_size
-        sub ebx,17                                  ;        ebx <- row_size - 17
+        mov ebx, w                                  ;        ebx <- w
+        sub ebx, 16                                 ;        ebx <- w - 17
         jmp cicloColumna                            ;      ENDWHILE
 	
     termineCol:
