@@ -11,10 +11,15 @@ void normalizar_c (unsigned char *src, unsigned char *dst, int m, int n, int row
             if(val < min) min = val;
         }
     }
+    
+    float k = 255/(float)(max-min);
+    
     //modifica src
     for(unsigned int i=0; i < m; i++){
         for(unsigned int j=0; j < n; j++){
-            dst[i*row_size +j] = 255 * ( src[i*row_size+j] - min ) / ( max - min );
+            
+            dst[i*row_size +j] = k* (float)( src[i*row_size+j] - min );
         }
     }
+    //printf("min:%d, max:%d, k:%30.30f\n", min, max, k);
 }
