@@ -20,13 +20,8 @@ pxor xmm7, xmm7
 	pinsrw xmm7, ecx, 3
 	pinsrw xmm7, ecx, 6								; xmm7 <- |FF|00|00|FF|00|00|FF|00
 													; xmm7 <- |00|FF|00|00|FF|00|00|FF
- ;~ pxor xmm7, xmm7									
-	 ;~ mov ecx, 0xFF0000FF								
-	 ;~ pinsrw xmm7, ecx, 0								
-	 ;~ pinsrw xmm7, ecx, 3
-	 ;~ pinsrw xmm7, ecx, 6			
-	
-	
+ 
+pxor xmm3, xmm3         ; xmm3 <- 0 util para desempaquetado y empaquetados
 	
 	mov esi, src		                            ; esi <- *src
 	mov edi, dst		                            ; edi <- dst
@@ -56,7 +51,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		psrldq	xmm1, 1         ; xmm1 <- 0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0| (byte packed)
 		psrldq  xmm2, 2         ; xmm2 <- 0 |0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0| (byte packed)
 		
-		pxor xmm3, xmm3         ; xmm3 <- 0
+		
 
         ;-------------------------------------------------------------------------
 		; xmm0 <- src_0 = |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0| (byte packed)
@@ -115,42 +110,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		psrlw xmm0, 2           ;xmm0 <- |xx|C2|xx|xx|C1|xx|xx|C0|   donde C = (B+2*G+R)/16
 		psrlw xmm4, 2           ;xmm4 <- |xx|xx|xx|C4|xx|xx|C3|xx|   donde C = (B+2*G+R)/16
 
-		; empaqueto
-		;~ packuswb xmm0, xmm4 ;xmm0 <- x|x|x|c4|x|x|c3|x|x|c2|x|x|c1|x|x|c0  
-		;~ 
-		;~ 
-		 ;~ movdqu xmm1, xmm0  ;xmm1 <- x|x|x|c4|x|x|c3|x|x|c2|x|x|c1|x|x|c0  
-		;~ 
-		 ;~ psllw xmm1,8       ;xmm1 <- x 0|c4 0|x 0|x 0|c2 0|x 0|x 0|c0 0 
-		;~ 
-	;~ ;	 movdqu xmm2, xmm1  ;xmm2 <- x 0|c4 0|x 0|x 0|c2 0|x 0|x 0|c0 0 
-		;~ 
-		 ;~ psrlw xmm0, 8   ;xmm0 <-  0 x|0 x|0 x|0 c3|0 x|0 x|0 c1|0 x  
-		 ;~ 
-		 ;~ psllw xmm0, 8 ;xmm0 <-   x 0|x 0|x 0|c3 0|x 0|x 0|c1 0|x 0 
-		;~ 
-		 ;~ pand xmm1, xmm7    ;xmm1 <- 0 0|c4 0|0 0|0 0|c2 0|0 0|0 0|c0 0 
-							;~ 
-							;~ 
-		;~ 
-		 ;~ pslldq xmm7, 2       ; xmm7 <- |FF|00|00|FF|00|00|FF|00
-		;~ 
-		 ;~ pand xmm0, xmm7      ;xmm0 <-   x 0|0 0|0 0|c3 0|0 0|0 0|c1 0|0 0 
-		
-		 ;~ psrldq xmm7, 2  	  ; xmm7 <- 00|FF|00|00|FF|00|00|FF|
-		;~ 
-		 ;~ por xmm0,xmm1        ;xmm0 <-   x 0|c4 0|0 0|c3 0|c2 0|0 0|c1 0|c0 0 
-		 ;~ 
-		 ;~ pshufd xmm0, xmm0, 01101100b   ;xmm0 <-   c2 0|0 0|0 0|c3 0|x 0|c4 0|c1 0|c0 0 
-		;~ 
-		 ;~ pshufhw xmm0, xmm0, 01100011b  ;xmm0 <-   0 0|0 0|c3 0|c2 0 |x 0|c4 0|c1 0|c0 0 
-		;~ 
-		;~ pshufd xmm0,xmm0,  11011000b    ;xmm0 <-   0 0|0 0|x 0|c4 0 |c3 0|c2 0|c1 0|c0 0 
-	    ;~ psrlw xmm0, 8 					;xmm0 <-   0 0|0 0|0 x|0 c4|0 c3|0 c2|0 c1|0 c0  
-		 ;~ pxor xmm3, xmm3
-		 ;~ packuswb xmm0,xmm3     	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|x|c4|c3|c2|c1|c0
-;-----------codigo antes		
-		;and con la mascara
+	
         
                                         ; xmm7 <- |00|FF|00|00|FF|00|00|FF|
 		pand xmm0,xmm7                  ; xmm0 <- |00|c2|00|00|c1|00|00|c0|  (word packed)
