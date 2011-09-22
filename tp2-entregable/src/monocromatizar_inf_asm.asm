@@ -64,7 +64,6 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		movdqu xmm1, xmm0    ; lo copio porque lo voy a usar despues pero por ahora me olvido
 		
 		psllw xmm1,8   	; xmm1 <-  x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
-		; xmm1 <-  0 m0 |0 x| 0 x | 0 m2 | 0 x | 0 x | 0 m4 |0 x  shiftee cada word 8 bits logico a derecha
 		
 		movdqu xmm2, xmm1  	; xmm1 <-  x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
 		
@@ -72,40 +71,37 @@ cicloFila:                                          ; WHILE(h!=0) DO
 	
 		
 		psllw xmm0, 8  ;  xmm0 <- m5 0|x 0|x 0| m3 0| x 0 | x 0| m1 0| x 0
-		;  xmm0 <- 0 x |0 m1|0 x| 0 x | 0 m3 | 0 x | 0 x |0 m5
+		
 		
 		pand xmm1, xmm7 ;xmm1 <-  0 0|m4 0| 0 0 | 0 0 |m2 0 | 0 0 | 0 0 |m0 0  hasta aca ok
-		; xmm1 <- 0 m0 |0 0| 0 0 | 0 m2 | 0 0 | 0 0 | 0 m4 |0 0
+		
 		
 		pslldq xmm7, 2  ; xmm7 <-  |00 |00 |FF  |00 |00  |FF |00
 		
 		pand xmm0, xmm7 ;  xmm0 <- 0 0|0 0|0 0| m3 0| 0 0 | 0 0| m1 0| 0 0
-		;  xmm0 <- 0 0|0 m1|0 0|0 0|0 m3|0 0|0 0 |0 m5
+		
 		
 		psrldq xmm7, 2  ; xmm7 <- 00 |FF  |00 |00 |FF  |00 |00  |FF | , shift a iz dos bytes reacomodo mask
 		
 		por xmm0,xmm1 ; xmm0 <- m5 0|m4 0|0 0| m3 0| m2 0 | 0 0| m1 0| m0 0  ; no ok vr si es 0 y arrastrar
-		; xmm0 <-   0 m0|0 m1|0 0|0 m2|0 m3|0 0|0 m4 |0 m5
+		
 		
 		pshufd xmm0, xmm0, 01101100b ;xmm0 <- m2 0|0 0|0 0| m3 0| m5 0 |m4 0| m1 0| m0 0
-		 ; xmm0 <-  0 m0|0 m1|0 m4|0 m5|0 m3|0 0|0 0 |0 m2
+		
 		
 		pshufhw xmm0, xmm0, 01100011b ;xmm0 <- 0 0|0 0|m3 0| m2 0| m5 0 |m4 0| m1 0| m0 0  si  no s car esta bien
 		
-		 ; xmm0 <-  0 m0|0 m1|0 m4|0 m5|0 m2|0 m3|0 0 |0 0
 		
 		pshufd xmm0,xmm0,  11011000b  ;xmm0 <- 0 0|0 0|m5 0| m4 0| m3 0 |m2 0| m1 0| m0 0
-		;xmm0 <- m2 0|0 0|m5 0| m4 0| 0 0 |m3 0| m1 0| 0 0
-		; xmm0 <-  0 m0|0 m1|0 m2|0 m3|0 m4|0 m5|0 0 |0 0
+		
 		
 		psrlw xmm0, 8   		;xmm0 <- 0 0|0 0|0 m5| 0 m4| 0 m3 |0 m2| 0 m1| 0 m0
-		 ;xmm0 <- 0 m2|0 0|0 m5| 0 m4| 0 0 |0 m3| 0 m1 | 0 0
-		; xmm0 <-   m0 0|m1 0|m2 0|m3 0|m4 0|m5 0|0 0 |0 0  corri 8 bits cada word
+		
 		
 		pxor xmm3, xmm3
 		
 		packuswb xmm0,xmm3 	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|m5|m4|m3|m2|m1|m0
-		; xmm0 <-   m0 |m1|m2 |m3 |m4 |m5 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0
+		
 	
 		
 		movd eax, xmm0	

@@ -19,7 +19,7 @@ pxor xmm7, xmm7
 	pinsrw xmm7, ecx, 0								
 	pinsrw xmm7, ecx, 3
 	pinsrw xmm7, ecx, 6								; xmm7 <- |FF|00|00|FF|00|00|FF|00
-
+													; xmm7 <- |00|FF|00|00|FF|00|00|FF
 	
 	mov esi, src		                            ; esi <- *src
 	mov edi, dst		                            ; edi <- dst
@@ -97,8 +97,44 @@ cicloFila:                                          ; WHILE(h!=0) DO
 			; divido por 4 casa suma y tengo la cuenta que queria llamo c a la cuenta que quiero
 		
 		psrlw xmm0, 2    ;xmm0 <- xx|c2|xx|xx|c1|xx|xx|c0|   de a words
-		psrlw xmm4, 2    ;xmm4 <- xx|xx|xx|c4|xx|xx|c3|xx|   de a words 
 		
+		
+		psrlw xmm4, 2    ;xmm4 <- xx|xx|xx|c4|xx|xx|c3|xx|   de a words 
+		; empaqueto
+		;~ packuswb xmm0, xmm4 ;xmm0 <- x|x|x|c4|x|x|c3|x|x|c2|x|x|c1|x|x|c0  
+		;~ 
+		;~ 
+		 ;~ movdqu xmm1, xmm0  ;xmm1 <- x|x|x|c4|x|x|c3|x|x|c2|x|x|c1|x|x|c0  
+		;~ 
+		 ;~ psllw xmm1,8       ;xmm1 <- x 0|c4 0|x 0|x 0|c2 0|x 0|x 0|c0 0 
+		;~ 
+	;~ ;	 movdqu xmm2, xmm1  ;xmm2 <- x 0|c4 0|x 0|x 0|c2 0|x 0|x 0|c0 0 
+		;~ 
+		 ;~ psrlw xmm0, 8   ;xmm0 <-  0 x|0 x|0 x|0 c3|0 x|0 x|0 c1|0 x  
+		 ;~ 
+		 ;~ psllw xmm0, 8 ;xmm0 <-   x 0|x 0|x 0|c3 0|x 0|x 0|c1 0|x 0 
+		;~ 
+		 ;~ pand xmm1, xmm7    ;xmm1 <- 0 0|c4 0|0 0|0 0|c2 0|0 0|0 0|c0 0 
+							;~ 
+							;~ 
+		;~ 
+		 ;~ pslldq xmm7, 2       ; xmm7 <- |FF|00|00|FF|00|00|FF|00
+		;~ 
+		 ;~ pand xmm0, xmm7      ;xmm0 <-   x 0|0 0|0 0|c3 0|0 0|0 0|c1 0|0 0 
+		
+		 ;~ psrldq xmm7, 2  	  ; xmm7 <- 00|FF|00|00|FF|00|00|FF|
+		;~ 
+		 ;~ por xmm0,xmm1        ;xmm0 <-   x 0|c4 0|0 0|c3 0|c2 0|0 0|c1 0|c0 0 
+		 ;~ 
+		 ;~ pshufd xmm0, xmm0, 01101100b   ;xmm0 <-   c2 0|0 0|0 0|c3 0|x 0|c4 0|c1 0|c0 0 
+		;~ 
+		 ;~ pshufhw xmm0, xmm0, 01100011b  ;xmm0 <-   0 0|0 0|c3 0|c2 0 |x 0|c4 0|c1 0|c0 0 
+		;~ 
+		;~ pshufd xmm0,xmm0,  11011000b    ;xmm0 <-   0 0|0 0|x 0|c4 0 |c3 0|c2 0|c1 0|c0 0 
+	    ;~ psrlw xmm0, 8 					;xmm0 <-   0 0|0 0|0 x|0 c4|0 c3|0 c2|0 c1|0 c0  
+		 ;~ pxor xmm3, xmm3
+		 ;~ packuswb xmm0,xmm3     	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|x|c4|c3|c2|c1|c0
+;-----------codigo antes		
 		;and con la mascara
 		pand xmm0,xmm7   ;xmm0 <- 00|c2|00|00|c1|00|00|c0|   de a words
 		
@@ -116,17 +152,21 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		
 		pshufhw xmm0, xmm0,  11010010b  ;xmm0 <- xx|00|c3|c2|00|c4|c1|c0|
 		
-		pshufd xmm0, xmm0, 11011000b     ;xmm0 <- xx|00|00|c4|c3|c2|c1|c0|
+		pshufd xmm0, xmm0, 11011000b     ;xmm0 <- xx|00|00|c4|c3|c2|c1|c0| cada uno es un word
 		
-		movd eax, xmm0
+		 pxor xmm3, xmm3
+		packuswb xmm0,xmm3     	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|x|c4|c3|c2|c1|c0
+		;~ 
+		  movd eax, xmm0
 		
 	
 		mov [edi+edx], eax  ; copio de a 4
-		;movqu [edi+edx], mm0
+		
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
 		add edx ,4                                 ;        #columnas_p_dst <- #columnas_p_dst + 4
 	                              ;        #columnas_p <- #columnas_p + 16
 		add ebx ,12
+		
 		
 		mov eax, w			                        ;        eax <- w
 		lea eax, [eax + 2*eax]						;        eax <- 3*w
@@ -135,6 +175,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
         
 		cmp eax, 16                                 ;        IF (3*w - #columnas_p) < 16
 		jge cicloColumna                            ;          CONTINUE
+		
 		
         cmp eax, 4                                   ;        IF (3*w - #columnas_p)
 		je termineCol                               ;          BREAK
