@@ -70,8 +70,8 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		punpcklbw xmm1, xmm3    ; xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|  (word packed)   xmm1 parte baja de operndo 2
 		punpckhbw xmm5, xmm3    ; xmm5 <- 0| 0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3|  (word packed)     xmm5 parte alta de operando2	 
 	
-		;~ psllw xmm1,1            ; xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|         *2 de a words
-		;~ psllw xmm5,1            ; xmm5 <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3           *2 de a words
+		psllw xmm1,1            ; xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|         *2 de a words
+		psllw xmm5,1            ; xmm5 <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3           *2 de a words
 		
         ;-------------------------------------------------------------------------
 		; xmm1 <- src_1_l = |0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0| (word packed)
@@ -100,24 +100,21 @@ cicloFila:                                          ; WHILE(h!=0) DO
         
         
 		;sumemos partes bajas
-		paddw xmm0,xmm1         ;xmm0 <-  +  0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0
-						;             0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|      *2 de a words
+		paddw xmm0,xmm1         ;xmm0 <-  +  |0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0|
+                                ;         +  |0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|   *2 de a words
+		paddw xmm0,xmm2         ;		     |0|B3|0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|
+                                ;xmm0 <-     |xxxx|  S2|xxxx|xxxx|  S1|xxxx|xxxx|  S0|   donde S = B+2*G+R   
 		
-		paddw xmm0,xmm2    ;		  0|B3|0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|
-		; xmm0 suma partes bajas  llamo "s" a la suma sin la division por 4
+        ; xmm0 suma partes bajas  llamo "s" a la suma sin la division por 4
 		
-							;xmm0 <- xx|s2|xx|xx|s1|xx|xx|s0|   de a words
-		
-		
-		paddw xmm4, xmm3    ;xmm4 suma partes altas
-		paddw xmm4, xmm5	;xmm4 <- xx|xx|xx|s4|xx|xx|s3|xx|   de a words 
+		paddw xmm4, xmm6        ;xmm4 suma partes altas
+		paddw xmm4, xmm5	    ;xmm4 <-     |xxxx|xxxx|xxxx|  S4|xxxx|xxxx|  S3|xxxx|   donde S = B+2*G+R   
 			
 			; divido por 4 casa suma y tengo la cuenta que queria llamo c a la cuenta que quiero
 		
-		psrlw xmm0, 2    ;xmm0 <- xx|c2|xx|xx|c1|xx|xx|c0|   de a words
-		
-		
-		psrlw xmm4, 2    ;xmm4 <- xx|xx|xx|c4|xx|xx|c3|xx|   de a words 
+		psrlw xmm0, 2           ;xmm0 <- |xx|C2|xx|xx|C1|xx|xx|C0|   donde C = (B+2*G+R)/16
+		psrlw xmm4, 2           ;xmm4 <- |xx|xx|xx|C4|xx|xx|C3|xx|   donde C = (B+2*G+R)/16
+
 		; empaqueto
 		;~ packuswb xmm0, xmm4 ;xmm0 <- x|x|x|c4|x|x|c3|x|x|c2|x|x|c1|x|x|c0  
 		;~ 
@@ -154,28 +151,23 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		 ;~ packuswb xmm0,xmm3     	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|x|c4|c3|c2|c1|c0
 ;-----------codigo antes		
 		;and con la mascara
-		pand xmm0,xmm7   ;xmm0 <- 00|c2|00|00|c1|00|00|c0|   de a words
+        
+                                        ; xmm7 <- |00|FF|00|00|FF|00|00|FF|
+		pand xmm0,xmm7                  ; xmm0 <- |00|c2|00|00|c1|00|00|c0|  (word packed)
 		
-		pslldq xmm7, 2  ; xmm7 <-  FF|00|00|FF|00|00|FF|00
-		
-		pand xmm4, xmm7  ;xmm4 <-  xx|00|00|c4|00|00|c3|00|   de a words 
+		pslldq xmm7, 2                  ; xmm7 <- |FF|00|00|FF|00|00|FF|00|
+		pand xmm4, xmm7                 ; xmm4 <- |xx|00|00|c4|00|00|c3|00|  (word packed)
 	
-		psrldq xmm7, 2  ; xmm7 <-  00|FF|00|00|FF|00|00|FF| , shift a iz dos bytes reacomodo mask
+		psrldq xmm7, 2                  ; xmm7 <- |00|FF|00|00|FF|00|00|FF| , shift a iz dos bytes reacomodo mask
+
+		por xmm0, xmm4                  ; xmm0 <- |xx|c2|00|c4|c1|00|c3|c0|
+		pshuflw xmm0, xmm0,  10011100b  ; xmm0 <- |xx|c2|00|c4|00|c3|c1|c0|
+		pshufd xmm0,xmm0,  11011000b    ; xmm0 <- |xx|c2|00|c3|00|c4|c1|c0|
+		pshufhw xmm0, xmm0,  11010010b  ; xmm0 <- |xx|00|c3|c2|00|c4|c1|c0|
+		pshufd xmm0, xmm0, 11011000b    ; xmm0 <- |xx|00|00|c4|c3|c2|c1|c0| (word packed)
 		
-		paddw xmm0, xmm4 ;xmm0 <- xx|c2|00|c4|c1|00|c3|c0|
-		
-		pshuflw xmm0, xmm0,  10011100b   ;xmm0 <- xx|c2|00|c4|00|c3|c1|c0|
-		
-		pshufd xmm0,xmm0,  11011000b     ;xmm0 <- xx|c2|00|c3|00|c4|c1|c0|
-		
-		pshufhw xmm0, xmm0,  11010010b  ;xmm0 <- xx|00|c3|c2|00|c4|c1|c0|
-		
-		pshufd xmm0, xmm0, 11011000b     ;xmm0 <- xx|00|00|c4|c3|c2|c1|c0| cada uno es un word
-		
-		 pxor xmm3, xmm3
-		packuswb xmm0,xmm3     	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|x|c4|c3|c2|c1|c0
-		;~ 
-		  movd eax, xmm0
+		packuswb xmm0,xmm3     	        ; xmm0 <- |0 |0| 0| 0 |0 |0| 0| 0| 0|0|x|c4|c3|c2|c1|c0
+        movd eax, xmm0
 		
 	
 		mov [edi+edx], eax  ; copio de a 4
