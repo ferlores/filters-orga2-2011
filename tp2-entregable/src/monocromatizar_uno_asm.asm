@@ -20,6 +20,13 @@ pxor xmm7, xmm7
 	pinsrw xmm7, ecx, 3
 	pinsrw xmm7, ecx, 6								; xmm7 <- |FF|00|00|FF|00|00|FF|00
 													; xmm7 <- |00|FF|00|00|FF|00|00|FF
+ ;~ pxor xmm7, xmm7									
+	 ;~ mov ecx, 0xFF0000FF								
+	 ;~ pinsrw xmm7, ecx, 0								
+	 ;~ pinsrw xmm7, ecx, 3
+	 ;~ pinsrw xmm7, ecx, 6			
+	
+	
 	
 	mov esi, src		                            ; esi <- *src
 	mov edi, dst		                            ; edi <- dst
