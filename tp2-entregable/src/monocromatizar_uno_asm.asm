@@ -50,46 +50,40 @@ cicloFila:                                          ; WHILE(h!=0) DO
 	
 		carga_distinto_ultima_columna:
 		
-		movdqu xmm1, xmm0  ;xmm1 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
-		
-		
-		movdqu xmm2, xmm0  ;xmm2 <-     B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
-		
+		movdqu xmm1, xmm0       ; xmm1 <- B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
+		movdqu xmm2, xmm0       ; xmm2 <- B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|B0
 				
-				
-		psrldq	xmm1, 1  ; xmm1  <-    0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
+		psrldq	xmm1, 1         ; xmm1 <-  0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0| (byte packed)
+		psrldq  xmm2, 2         ; xmm2 <-  0 |0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0| (byte packed)
 		
-		
-		psrldq  xmm2, 2  ; xmm2 <- 	  0 |0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|
-		
+		pxor xmm3, xmm3         ; xmm3 <- 0
+
+		movdqu xmm5, xmm1       ; xmm5 <- 0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
 	
-		pxor xmm3, xmm3    
-		movdqu xmm5, xmm1  ;  xmm5  <-   0 |B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|G0|
-	
-		punpcklbw xmm1, xmm3   ;  xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|     xmm1 parte baja de operndo 2
+		punpcklbw xmm1, xmm3    ; xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|  (word packed)   xmm1 parte baja de operndo 2
 		
-		punpckhbw xmm5, xmm3;   xmm5  <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3        xmm5 parte alta de operando2	 
+		punpckhbw xmm5, xmm3    ; xmm5 <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3    (word packed)     xmm5 parte alta de operando2	 
 	
-		psllw xmm1,1  ;xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|         *2 de a words
+		psllw xmm1,1            ; xmm1 <- 0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|         *2 de a words
 		
-		psllw xmm5,1  ;xmm5  <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3           *2 de a words
+		psllw xmm5,1            ; xmm5 <- 0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3           *2 de a words
 		
 
 		movdqu xmm4, xmm0      
-		punpcklbw xmm0, xmm3   ; xmm0 <-  0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0   xmm0 parte baja de operando 1 
+		punpcklbw xmm0, xmm3    ; xmm0 <-  0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0   xmm0 parte baja de operando 1 
 		
-		punpckhbw xmm4, xmm3   ; xmm4 <- 0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3|0|R2     xmm4 pate alta de operando1
-		
-		
-		movdqu xmm6, xmm2  ;  xmm6 <- 0 |0|B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|   
-		
-		punpcklbw xmm2, xmm3 ;xmm2 <-  0|B3|0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|    xmm2 parte baja de operando 3
+		punpckhbw xmm4, xmm3    ; xmm4 <- 0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|0|B3|0|R2     xmm4 pate alta de operando1
 		
 		
-		punpckhbw xmm6, xmm3 ; xmm6 <- 0|0|0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|  xmm6 parte alta de operando 3 
+		movdqu xmm6, xmm2       ; xmm6 <- 0 |0|B5|R4|G4|B4|R3|G3|B3|R2|G2|B2|R1|G1|B1|R0|   
+		
+		punpcklbw xmm2, xmm3    ; xmm2 <-  0|B3|0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|    xmm2 parte baja de operando 3
+		
+		
+		punpckhbw xmm6, xmm3    ; xmm6 <- 0|0|0|0|0|B5|0|R4|0|G4|0|B4|0|R3|0|G3|  xmm6 parte alta de operando 3 
 		
 		;sumemos partes bajas
-		paddw xmm0,xmm1  ;xmm0 <-  +  0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0
+		paddw xmm0,xmm1         ;xmm0 <-  +  0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|0|B0
 						;             0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|0|G0|      *2 de a words
 		
 		paddw xmm0,xmm2    ;		  0|B3|0|R2|0|G2|0|B2|0|R1|0|G1|0|B1|0|R0|
