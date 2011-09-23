@@ -1,0 +1,23 @@
+#!/bin/bash
+
+BASEIMGDIR=../testImagenesRandom/imagenes
+TESTINDIR=../testImagenesRandom/imagenesMuestra
+
+sizes=(375x 982 121x 131 )
+
+rm -rf ../testImagenesRandom/imagenesMuestra.in
+touch ../testImagenesRandom/imagenesMuestra.in
+
+for f in $( ls $BASEIMGDIR );
+do
+	echo $f
+
+	for s in ${sizes[*]}
+	do
+		echo "  *" $s		
+	
+		`echo  "convert -resize $s!" $BASEIMGDIR/$f ` $TESTINDIR/`echo "$f" | cut -d'.' -f1`.$s.bmp
+
+		echo  `echo "$f" | cut -d'.' -f1`.$s.bmp >> ../testImagenesRandom/imagenesMuestra/imagenesMuestra.in	
+	done
+done
