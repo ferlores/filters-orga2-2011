@@ -1,0 +1,108 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{array} 
+\usepackage{tabularx}
+\usepackage[spanish, activeacute]{babel}
+\usepackage[small]{caption}
+\usepackage[txt]{caratula}
+\usepackage{a4wide}
+
+\makeatletter
+\newcommand\textsubscript[1]{\@textsubscript{\selectfont#1}}
+\def\@textsubscript#1{{\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
+\newcommand\textbothscript[2]{%
+  \@textbothscript{\selectfont#1}{\selectfont#2}}
+\def\@textbothscript#1#2{%
+  {\m@th\ensuremath{%
+    ^{\mbox{\fontsize\sf@size\z@#1}}%
+    _{\mbox{\fontsize\sf@size\z@#2}}}}}
+\def\@super{^}\def\@sub{_}
+
+\catcode`^\active\catcode`_\active
+\def\@super@sub#1_#2{\textbothscript{#1}{#2}}
+\def\@sub@super#1^#2{\textbothscript{#2}{#1}}
+\def\@@super#1{\@ifnextchar_{\@super@sub{#1}}{\textsuperscript{#1}}}
+\def\@@sub#1{\@ifnextchar^{\@sub@super{#1}}{\textsubscript{#1}}}
+\def^{\let\@next\relax\ifmmode\@super\else\let\@next\@@super\fi\@next}
+\def_{\let\@next\relax\ifmmode\@sub\else\let\@next\@@sub\fi\@next}
+\makeatother
+
+\newcolumntype{C}{>{\footnotesize\centering\arraybackslash}X}
+
+\newcommand{\xmmW}[2]{
+\fontfamily{pcr}\selectfont	
+\begin{center}
+\begin{tabularx}{400pt}{@{}p{60pt}|C|C|C|C|C|C|C|C|l}
+\cline{2-9}
+#1 & #2 &\\
+\cline{2-9}
+\multicolumn{1}{r@{}}{^{\emph{128}}} & \multicolumn{8}{c}{\textit{\scriptsize(word packed)}} & \multicolumn{1}{@{}l}{^{\emph{0}}}\\
+\end{tabularx}
+\end{center}
+}
+
+\newcommand{\xmmD}[2]{
+\fontfamily{pcr}\selectfont	
+\begin{center}
+\begin{tabularx}{400pt}{@{}p{60pt}|C|C|C|C|l}
+\cline{2-5}
+#1 & #2 &\\
+\cline{2-5}
+\multicolumn{1}{r@{}}{^{\emph{128}}} & \multicolumn{4}{c}{\textit{\scriptsize(double-word packed)}} & \multicolumn{1}{@{}l}{^{\emph{0}}}\\
+\end{tabularx}
+\end{center}
+}
+
+
+% Fancy Header
+\usepackage{fancyhdr}
+\fancyhf{}
+\fancyhead{}
+\lhead{Seccion} % texto izquierda de la cabecera
+\rhead{\Titulo} % número de página a la derecha
+\lfoot{} % texto izquierda del pie
+\rfoot{\thepage} 
+\pagestyle{fancy}
+
+
+% Carátula
+\materia{Organizaci\'on del Computador II}
+\submateria{Segundo Cuatrimestre del 2011}
+\titulo{Trabajo Pr\'actico N\'umero 2}
+\subtitulo{Filtros de im\'agen}
+\integrante{Celave, Martin}{530/08}{tolacelave@gmail.com}
+\integrante{Colombo, Ricardo Gaston}{156/08}{ricardogcolombo@gmail.com}
+\integrante{Lores, Fernando}{718/01}{ferlores@gmail.com}
+\grupo{Lider espiritual: Angiulino "El chino" Cubrepileta}
+
+\begin{document}
+
+\maketitle
+
+
+\include{intro}
+\include{monocromatizar}
+\include{separarcanales}
+\include{umbralizar}
+\include{invertir}
+\include{suavizar}
+\include{normalizar}
+%\include{mediciones}
+%\include{conclusiones}
+
+\begin{figure}
+\xmmW{shift }{B_5R_4 & G_4B_4 & R_3G_3 & B_3R_2 & G_2B_2 & R_1G_1 & B_1R_0 & G_0B_0}
+\xmmD{shift }{0G_2 0B_2 & R_1G_1 & B_1R_0 & G_0B_0}
+\caption{Estrat'egia de normalizar\_asm}
+\label{est:m-uno}
+\end{figure}
+
+
+
+
+
+
+\end{document}
