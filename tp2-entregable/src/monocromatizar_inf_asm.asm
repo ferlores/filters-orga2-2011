@@ -63,54 +63,45 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		
 		movdqu xmm1, xmm0    ; lo copio porque lo voy a usar despues pero por ahora me olvido
 		
-		psllw xmm1,8   	; xmm1 <-  x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
+		psllw xmm1,8   	     ; xmm1 <- x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
 		
-		movdqu xmm2, xmm1  	; xmm1 <-  x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
+		movdqu xmm2, xmm1    ; xmm1 <- x 0 |m4 0| x 0 | x 0 |m2 0 | x 0 | x 0 |m0 0
 		
-		psrlw xmm0, 8  ;  xmm0 <- 0 m5|0 x|0 x| 0 m3 | 0 x | 0 x| 0 m1|0 x
-	
+		psrlw xmm0, 8        ; xmm0 <- 0 m5|0 x|0 x| 0 m3 | 0 x | 0 x| 0 m1|0 x
+		psllw xmm0, 8        ; xmm0 <- m5 0|x 0|x 0| m3 0| x 0 | x 0| m1 0| x 0
 		
-		psllw xmm0, 8  ;  xmm0 <- m5 0|x 0|x 0| m3 0| x 0 | x 0| m1 0| x 0
+		pand xmm1, xmm7      ; xmm1 <- 0 0|m4 0| 0 0 | 0 0 |m2 0 | 0 0 | 0 0 |m0 0  hasta aca ok
 		
+		pslldq xmm7, 2       ; xmm7 <- |00 |00 |FF  |00 |00  |FF |00
+		pand xmm0, xmm7      ; xmm0 <- 0 0|0 0|0 0| m3 0| 0 0 | 0 0| m1 0| 0 0
+        psrldq xmm7, 2       ; xmm7 <- 00 |FF  |00 |00 |FF  |00 |00  |FF | , shift a iz dos bytes reacomodo mask
 		
-		pand xmm1, xmm7 ;xmm1 <-  0 0|m4 0| 0 0 | 0 0 |m2 0 | 0 0 | 0 0 |m0 0  hasta aca ok
-		
-		
-		pslldq xmm7, 2  ; xmm7 <-  |00 |00 |FF  |00 |00  |FF |00
-		
-		pand xmm0, xmm7 ;  xmm0 <- 0 0|0 0|0 0| m3 0| 0 0 | 0 0| m1 0| 0 0
-		
-		
-		psrldq xmm7, 2  ; xmm7 <- 00 |FF  |00 |00 |FF  |00 |00  |FF | , shift a iz dos bytes reacomodo mask
-		
-		por xmm0,xmm1 ; xmm0 <- m5 0|m4 0|0 0| m3 0| m2 0 | 0 0| m1 0| m0 0  ; no ok vr si es 0 y arrastrar
+		por xmm0,xmm1        ; xmm0 <- m5 0|m4 0|0 0| m3 0| m2 0 | 0 0| m1 0| m0 0  ; no ok vr si es 0 y arrastrar
 		
 		
 		pshufd xmm0, xmm0, 01101100b ;xmm0 <- m2 0|0 0|0 0| m3 0| m5 0 |m4 0| m1 0| m0 0
-		
-		
 		pshufhw xmm0, xmm0, 01100011b ;xmm0 <- 0 0|0 0|m3 0| m2 0| m5 0 |m4 0| m1 0| m0 0  si  no s car esta bien
-		
-		
 		pshufd xmm0,xmm0,  11011000b  ;xmm0 <- 0 0|0 0|m5 0| m4 0| m3 0 |m2 0| m1 0| m0 0
-		
 		
 		psrlw xmm0, 8   		;xmm0 <- 0 0|0 0|0 m5| 0 m4| 0 m3 |0 m2| 0 m1| 0 m0
 		
-		
-		pxor xmm3, xmm3
+		;~ pxor xmm3, xmm3
 		
 		packuswb xmm0,xmm3 	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|m5|m4|m3|m2|m1|m0
 		
-	
-		
 		movd eax, xmm0	
-		
-
 		mov [edi+edx], eax  ; copio de a 4
+        
+        
+        psrldq xmm0, 4
+        movd eax, xmm0								; eax <- |xx|xx|xx|m5|
+
+		mov [edi+edx+4], al 						
+
+        
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
-        add edx ,4                                  ;        #columnas_p_dst <- #columnas_p_dst + 4
-		add ebx ,12                                 ;        #columnas_p <- #columnas_p + 16
+        add edx ,5                                  ;        #columnas_p_dst <- #columnas_p_dst + 4
+		add ebx ,15                                 ;        #columnas_p <- #columnas_p + 16
 
 		mov eax, w			                        ;        eax <- w
 		lea eax, [eax + 2*eax]						;        eax <- 3*w
@@ -120,17 +111,17 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		cmp eax, 16                                 ;        IF (3*w - #columnas_p) < 16
 		jge cicloColumna                            ;          CONTINUE
 		
-        cmp eax, 4                                   ;        IF (3*w - #columnas_p)
+        cmp eax, 1                                   ;        IF (3*w - #columnas_p)
 		je termineCol                               ;          BREAK
 		
         ;ultimos pixeles
         add ebx, eax		                        ;        ebx <- 3*w
-        sub ebx,16                                  ;        ebx <- 3*w - 17
-         mov edx, w			                        ;        edx <- dst_row_size
-        sub edx,4                                   ;        edx <- dst_row_size - 5
+        sub ebx,16                                  ;        ebx <- 3*w - 16
+        mov edx, w			                        ;        edx <- dst_row_size
+        sub edx,5                                   ;        edx <- dst_row_size - 4
 
-		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |RB|GR   |BG|RB|GR|BG|RB|GR|
-		psrldq xmm0, 4								
+		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |R    B|GR|BG|RB|GR|BG|RB|GR|
+		psrldq xmm0, 1								
 		
         jmp carga_distinto_ultima_columna           ;      ENDWHILE
 	

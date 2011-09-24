@@ -131,11 +131,17 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		
 	
 		mov [edi+edx], eax  ; copio de a 4
-		
+
+        psrldq xmm0, 4
+        movd eax, xmm0								; eax <- |0|0|0|c4|
+
+		mov [edi+edx+4], al 						
+        
+        		
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
-		add edx ,4                                 ;        #columnas_p_dst <- #columnas_p_dst + 4
+		add edx ,5                                 ;        #columnas_p_dst <- #columnas_p_dst + 4
 	                              ;        #columnas_p <- #columnas_p + 16
-		add ebx ,12
+		add ebx ,15
 		
 		
 		mov eax, w			                        ;        eax <- w
@@ -147,17 +153,17 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		jge cicloColumna                            ;          CONTINUE
 		
 		
-        cmp eax, 4                                   ;        IF (3*w - #columnas_p)
+        cmp eax, 1                                   ;        IF (3*w - #columnas_p)
 		je termineCol                               ;          BREAK
 		
         ;ultimos pixeles
         add ebx, eax		                        ;        ebx <- 3*w
-        sub ebx,16                                  ;        ebx <- 3*w - 17
+        sub ebx,16                                  ;        ebx <- 3*w - 16
          mov edx, w			                        ;        edx <- dst_row_size
-        sub edx,4                                   ;        edx <- dst_row_size - 5
+        sub edx,5                                   ;        edx <- dst_row_size - 5
 
-		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |RB|GR   |BG|RB|GR|BG|RB|GR|
-		psrldq xmm0, 4								
+		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |R   B|GR|BG|RB|GR|BG|RB|GR|
+		psrldq xmm0, 1								
 		
         jmp carga_distinto_ultima_columna           ;      ENDWHILE
 	

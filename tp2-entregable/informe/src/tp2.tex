@@ -9,6 +9,8 @@
 \usepackage[small]{caption}
 \usepackage[txt]{caratula}
 \usepackage{a4wide}
+\usepackage[chapter]{algorithm}
+
 
 \makeatletter
 \newcommand\textsubscript[1]{\@textsubscript{\selectfont#1}}
@@ -56,6 +58,8 @@
 \end{center}
 }
 
+\newcommand{\ass}{\textit{assembler}}
+\newcommand{\C}{\textbf{C}}
 
 % Fancy Header
 \usepackage{fancyhdr}
@@ -72,7 +76,7 @@
 \materia{Organizaci\'on del Computador II}
 \submateria{Segundo Cuatrimestre del 2011}
 \titulo{Trabajo Pr\'actico N\'umero 2}
-\subtitulo{Filtros de im\'agen}
+\subtitulo{Filtros de imagen}
 \integrante{Celave, Martin}{530/08}{tolacelave@gmail.com}
 \integrante{Colombo, Ricardo Gaston}{156/08}{ricardogcolombo@gmail.com}
 \integrante{Lores, Fernando}{718/01}{ferlores@gmail.com}
@@ -84,7 +88,7 @@
 
 
 \include{intro}
-\include{ciclos}
+\include{ciclo}
 \include{monocromatizar}
 \include{separarcanales}
 \include{umbralizar}

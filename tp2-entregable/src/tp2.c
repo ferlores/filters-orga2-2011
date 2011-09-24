@@ -22,6 +22,8 @@ void aplicar_separar_canales (int tiempo, int cant_iteraciones, const char *nomb
 void aplicar_suavizar (int tiempo, int cant_iteraciones, const char *nomb_impl, const char* nomb_arch_entrada);
 void aplicar_umbralizar (int tiempo, int cant_iteraciones, const char *nomb_impl, const char* nomb_arch_entrada, unsigned char umbral_min, unsigned char umbral_max);
 
+void initialize(unsigned char *dst, int m, int row_size);
+
 int main( int argc, char** argv ) {
 	int siguiente_opcion;
 
@@ -284,6 +286,10 @@ void aplicar_monocromatizar_inf (int tiempo, int cant_iteraciones, const char *n
 	// Creo una IplImage para cada salida esperada
 	if( (dst = cvCreateImage (cvGetSize (src), IPL_DEPTH_8U, 1) ) == 0 )
 		exit(EXIT_FAILURE);
+        
+        
+    initialize( (unsigned char*)dst->imageData, dst->height, dst->widthStep);
+
 
 	typedef void (monocromatizar_inf_fn_t) (unsigned char*, unsigned char*, int, int, int, int);
 
@@ -600,4 +606,10 @@ void aplicar_umbralizar (int tiempo, int cant_iteraciones, const char *nomb_impl
 
 	cvReleaseImage(&src);
 	cvReleaseImage(&dst);
+}
+
+void initialize(unsigned char *dst, int n, int row_size){
+    for(int f = 0 ; f < n*row_size; f++) {
+        dst[f] = 255;
+    }
 }

@@ -1,4 +1,11 @@
 \section{Algoritmos}
-\subsection{Iterarando imagenes a color}
 
-\subsection{Iterarando imagenes con escala de grises}
+\subsection{Iterarando im'agenes}
+La primera decisi'on a tomar a la hora de implementar los algoritmos es como vamos a recorrer las im'agenes. Para la implementaci'on en \C optamos por una manera convencional iteraci'on, recorriendo secuencialmente la matriz y leyendo de a pixeles. Es claro que no es la manera mas eficiente pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos.
+
+Por otro lado, la implementaci'on en \ass fu'e mas ingeniosa ya que al utilizar la tecnolog'ia SSE debiamos, en principio, aprovechar al m'aximo el hecho de que podiamos leer de a 16 bytes. Los problemas se presentan, ademas de como procesar los bytes leidos, cuando quiero asegurarme que estoy procesando todos los pixeles y estoy evitando correctamente el \textit{padding}. En este trab'ajo pr'actico tuvimos que procesar im'agenes a color y en escala de grises. Aunque la estrategia fue la misma, la implementacion fue ligeramente distinta. 
+
+\subsubsection{Im'agenes escala de grises}
+En este caso, cada pixel es representado por un byte. Por lo tanto, cada ver que cargamos un registro SSE estamos leyendo 16 pixeles. Es importante destacar que podemos suponer que las imagenes tienen 16 pixeles como m'inimo\footnote{mencinado en el enunciado del TP}, por lo que podemos realizar una lectura con total seguridad de no estar rompiendo nada 
+
+\subsubsection{Im'agenes RGB}

@@ -3,7 +3,8 @@
 BASEIMGDIR=../data/base
 TESTINDIR=../data/test-in
 
-sizes=(159x 159 200x200 201x201 202x202 203x203 204x204 205x205 206x206 207x207 208x208 256x256 512x512 513x513 1023x767)
+#sizes=(200x200)
+sizes=(800x600 16x30000 17x28234 28234x17 30000x16 30000x1 28234x1 30000x2 28234x2)
 
 rm -rf ../data/test-in/test.in
 touch ../data/test-in/test.in

@@ -103,6 +103,11 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 		mov [edi+edx], eax 						
 
+        psrldq xmm0, 4
+        movd eax, xmm0								; eax <- |xx|xx|xx|B5|
+
+		mov [edi+edx+4], al 						
+
         ;-----------------
 		; Proceso R
 		;-----------------        
@@ -124,6 +129,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		
         pshuflw xmm0, xmm0, 11001001b   			; xmm0 <- |R5|00|R4|R3|00|00|R2|R1|
 		pshufd xmm0, xmm0, 11011000b				; xmm0 <- |R5|00|00|00|R4|R3|R2|R1|
+		
 
 		packuswb xmm0, xmm0							; xmm0 <- |R5|0|0|0|R4|R3|R2|R1|R5|0|0|0|R4|R3|R2|R1| (byte-packed)
 		
@@ -131,7 +137,11 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 		mov [edi+edx], eax 						
         
+        psrldq xmm0, 7
+        movd eax, xmm0								; eax <- |xx|xx|xx|R5|
 
+		mov [edi+edx+4], al 						
+        
         ;-----------------
 		; Proceso G
 		;-----------------        
@@ -159,10 +169,15 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		movd eax, xmm2								; eax <- |G4|G3|G2|G1|
 
 		mov [edi+edx], eax 						
+
+        psrldq xmm2, 4
+        movd eax, xmm2								; eax <- |0|0|0|G5|
+
+		mov [edi+edx+4], al 						
         
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX				   
-		add edx ,4                                  ;        #columnas_p_dst <- #columnas_p_dst + 4
-		add ebx ,12                                 ;        #columnas_p_src <- #columnas_p_src + 12
+		add edx ,5                                  ;        #columnas_p_dst <- #columnas_p_dst + 4
+		add ebx ,15                                 ;        #columnas_p_src <- #columnas_p_src + 12
 		
 		mov eax, w			                        ;        eax <- w
 		lea eax, [eax + 2*eax]						;        eax <- 3*w
@@ -172,7 +187,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		cmp eax, 16                                 ;        IF (3*w - #columnas_p_src) < 16
 		jge cicloColumna                            ;          CONTINUE
 		
-        cmp eax, 4                                  ;        IF (3*w - #columnas_p_src) == 0
+        cmp eax, 1                                  ;        IF (3*w - #columnas_p_src) == 0
 		je termineCol                               ;          BREAK
 		
         ;ultimos pixeles
@@ -181,10 +196,10 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 		
         mov edx, w			                        ;        edx <- dst_row_size
-        sub edx,4                                   ;        edx <- dst_row_size - 4
+        sub edx,5                                   ;        edx <- dst_row_size - 4
 
-		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |RB|GR   |BG|RB|GR|BG|RB|GR|
-		psrldq xmm0, 4								
+		movdqu xmm0, [esi+ebx]						;        xmm0 <- ultimos_16b(src) |R   B|GR|BG|RB|GR|BG|RB|GR|
+		psrldq xmm0, 1								
 		
         jmp carga_distinto_ultima_columna           ;      ENDWHILE
 
