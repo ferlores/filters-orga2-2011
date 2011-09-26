@@ -99,9 +99,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		packuswb xmm0, xmm0							; xmm0 <- |B6|B5|B4|B3|B2|B1|0|0|B6|B5|B4|B3|B2|B1|0|0| (byte-packed)
 		
 		psrldq xmm0, 2								; xmm0 <- |0|0|B6|B5|B4|B3|B2|B1|0|0|B6|B5|B4|B3|B2|B1| (byte-packed)	
-		movd eax, xmm0								; eax <- |B4|B3|B2|B1|
-
-		mov [edi+edx], eax 						
+		movd [edi+edx], xmm0						; eax <- |B4|B3|B2|B1|
 
         psrldq xmm0, 4
         movd eax, xmm0								; eax <- |xx|xx|xx|B5|
@@ -133,9 +131,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 		packuswb xmm0, xmm0							; xmm0 <- |R5|0|0|0|R4|R3|R2|R1|R5|0|0|0|R4|R3|R2|R1| (byte-packed)
 		
-		movd eax, xmm0								; eax <- |R4|R3|R2|R1|
-
-		mov [edi+edx], eax 						
+		movd [edi+edx], xmm0						; eax <- |R4|R3|R2|R1|
         
         psrldq xmm0, 7
         movd eax, xmm0								; eax <- |xx|xx|xx|R5|
@@ -166,9 +162,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 		packuswb xmm2, xmm2							; xmm0 <- |00|00|00|G5|G4|G3|G2|G1|00|00|00|G5|G4|G3|G2|G1| (byte-packed)
 		
-		movd eax, xmm2								; eax <- |G4|G3|G2|G1|
-
-		mov [edi+edx], eax 						
+		movd [edi+edx], xmm2						; eax <- |G4|G3|G2|G1|
 
         psrldq xmm2, 4
         movd eax, xmm2								; eax <- |0|0|0|G5|

@@ -127,11 +127,8 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		pshufd xmm0, xmm0, 11011000b    ; xmm0 <- |xx|00|00|c4|c3|c2|c1|c0| (word packed)
 		
 		packuswb xmm0,xmm3     	        ; xmm0 <- |0 |0| 0| 0 |0 |0| 0| 0| 0|0|x|c4|c3|c2|c1|c0
-        movd eax, xmm0
+        movd [edi+edx], xmm0
 		
-	
-		mov [edi+edx], eax  ; copio de a 4
-
         psrldq xmm0, 4
         movd eax, xmm0								; eax <- |0|0|0|c4|
 

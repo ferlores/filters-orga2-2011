@@ -43,8 +43,6 @@ cicloFila:                                          ; WHILE(h!=0) DO
 
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ;       INSERTE SU CODIGO PARA ITERAR AQUI!
-
-
 ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		movdqu xmm0, [esi+ebx]
 		
@@ -89,9 +87,7 @@ cicloFila:                                          ; WHILE(h!=0) DO
 		
 		packuswb xmm0,xmm3 	; xmm0 <-  0 |0| 0| 0 |0 |0| 0| 0| 0|0|m5|m4|m3|m2|m1|m0
 		
-		movd eax, xmm0	
-		mov [edi+edx], eax  ; copio de a 4
-        
+		movd [edi+edx], xmm0	
         
         psrldq xmm0, 4
         movd eax, xmm0								; eax <- |xx|xx|xx|m5|
