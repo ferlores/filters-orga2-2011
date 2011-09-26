@@ -1,1 +1,48 @@
 \subsection{Normalizar}
+El objetivo de este algoritmo es que modificar cada pixel para ampliar el rango de valores de toda la imagen. Para esto utilizamos la f'ormula general (ecuaci'on \ref{eq:normalizar}), estableciendo los valores m'aximos y m'inimos posibles para el caso de las imagenes en escala de grises (255 y 0 respectivamente). Luego realizamos algunas operaciones 'algebraicas a fin de poder establecer una constante de multiplicacion que procesar'a cada pixel.
+
+Entonces el algoritmo queda divido en dos partes: la primera busca el m'aximo y m'inimo de la imagen, mientras que la segunda procesa los valores aplicando la ecuaci'on ya descripta
+
+\begin{equation}
+\begin{array}{rl}
+I_{out}(i,j) &= (I_{in}(i,j) - max) \times \left( \dfrac{a-b}{max-min} \right) + a  \\
+\\
+I_{out}(i,j) &= (I_{in}(i,j) - max) \times \left( \dfrac{255-0}{max-min} \right) + 255  \\
+\\
+I_{out}(i,j) &= \dfrac{255 \times (I_{in}(i,j) - min)}{max-min}  $\hspace{10pt} \textit{\scriptsize factor comun (max - min)}$ \\
+\\
+$Sea $ K &\leftarrow \dfrac{255}{max-min}  \\
+\\
+I_{out}(i,j) &= K \times (I_{in}(i,j) - min) \\
+\\ \\
+$Ecuaci'on \theequation:$&$Desarrollo de la f'ormula de normalizado$
+\end{array} 
+\label{eq:normalizar}
+\end{equation}
+
+
+\subsubsection*{B'usqueda de m'aximo y m'inimo}
+
+Para encontrar los valores m'aximos y m'inimos nos valemos de las instrucciones \textit{pmaxub} y \textit{pminub}. Las mismas comparan los valores byte a byte quedandose con los correspondientes a cada funci'on. Entonces, despues de recorrer la matriz obtenemos dos registros, uno con los candidatos a m'aximo y otro con los candidatos a m'inimo (paso 0). 
+
+Lo que queda por hacer entonces es comparar los bytes dentro de cada registro para identificar al mayor y menor. Para ello duplicamos el registro y realizamos sucesivos intercambios para comparar todos con todos. Iniciamos invirtiendo la parte alta por la parte baja de registro y volviendo a utilizar las instruciones de m'aximo y mi'nimo para comparar (paso 1). Entonces ahora tenemos ocho candidatos en la parte alta del registro. Repetimos el proceso utilizando intercambiando los dos double-words mas significativos (paso 2). Ahora tenemos cuatro candidatos, una vez mas repetimos la operacion intercambiando ahora los words mas significativos (paso 3).
+
+En este punto tenemos dos candidatos en el word mas significativo del registro. Para compararlos, duplicamos el registro y hacemos un desplazamiento a izquierda de un byte (paso 4). De esta manera, al comparar queda en el byte mas significativo el valor buscado. 
+
+Una vez obtenido estos dos valores, hacemos un desplazamiento a izquierda de tres bytes, y en el double word mas significativo nos queda el valor deseado. Ahora hacemos un \textit{broadcast} a todos los double words y el registro nos queda con los valores deseados empaquetados a double word.
+
+La Figura \ref{est:normalizar-1} muestra como se van reduciendo los candidatos aplicando las operaciones antes descriptas.
+
+\begin{figure}[ht]
+\xmmW{paso 0.}{cc & cc & cc & cc & cc & cc & cc & cc}
+\xmmW{paso 1.}{cc & cc & cc & cc & xx & xx & xx & xx}
+\xmmW{paso 2.}{cc & cc & xx & xx & xx & xx & xx & xx}
+\xmmW{paso 3.}{cc & xx & xx & xx & xx & xx & xx & xx}
+\xmmW{paso 4.}{mx & xx & xx & xx & xx & xx & xx & xx}
+\xmmD{paso 5.}{00 0m & 00 0m & 00 0m & 00 0m}
+\caption{\textit{busqueda de m'aximo y m'inimo}}
+\label{est:normalizar-1}
+\end{figure}
+
+
+\subsubsection*{C'alculo de valores}

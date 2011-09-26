@@ -14,7 +14,7 @@ En este caso cada p'ixel es representado por un byte. La iteraci'on en \C\ es ba
 \caption{\sc{iteraci'on en c - escala de grises}}\label{alg:iteracionC-BN}
 \begin{algorithmic}[1]
 \FOR{$i=0$ to $n$}
-	\STATE fila $\leftarrow$ i $*$ row\_size
+	\STATE fila $\leftarrow$ i $\times$ row\_size
 	\FOR{$pos=0$ to $m$}
 		\STATE dst[fila + pos] $\leftarrow$ \textit{procesar}(src[fila + pos])
 	\ENDFOR
@@ -26,7 +26,7 @@ En este caso cada p'ixel es representado por un byte. La iteraci'on en \C\ es ba
 \caption{\sc{iteraci'on en assembler - escala de grises}}\label{alg:iteracionASM-BN}
 \begin{algorithmic}[1]
 \FOR{$i=0$ to $n$}
-	\STATE fila $\leftarrow$ i $*$ row\_size
+	\STATE fila $\leftarrow$ i $\times$ row\_size
 	\FOR{$pos=0$ to $m$}
 		\STATE dst[fila + pos] $\leftarrow$ \textit{procesar_{16}}(src[fila + pos])
 		\STATE pos $\leftarrow$ pos + 16		
@@ -49,8 +49,8 @@ En este caso cada pixel de las imagenes de entrada esta representado por tres by
 \caption{\sc{iteraci'on en c - color}}\label{alg:iteracionC-RGB}
 \begin{algorithmic}[1]
 \FOR{$i=0$ to $n$}
-	\STATE fila_s $\leftarrow$ i $*$ src\_row\_size	
-	\STATE fila_d $\leftarrow$ i $*$ dst\_row\_size
+	\STATE fila_s $\leftarrow$ i $\times$ src\_row\_size	
+	\STATE fila_d $\leftarrow$ i $\times$ dst\_row\_size
 	\FOR{$pos=0$ to $m$}
 		\STATE dst[fila_d + pos] $\leftarrow$ \textit{procesar}(src[fila_s + 3 $*$ pos])
 	\ENDFOR
@@ -68,8 +68,8 @@ Por otro lado, una vez que realizamos la ultima iteraci'on, debemos ajustar la c
 \caption{\sc{iteraci'on en assembler - color}}\label{alg:iteracionASM-RGB}
 \begin{algorithmic}[1]
 \FOR{$i=0$ to $n$}
-	\STATE fila_s $\leftarrow$ i $*$ src\_row\_size	
-	\STATE fila_d $\leftarrow$ i $*$ dst\_row\_size
+	\STATE fila_s $\leftarrow$ i $\times$ src\_row\_size	
+	\STATE fila_d $\leftarrow$ i $\times$ dst\_row\_size
 	\FOR{$pos=0$ to $m$}
 		\STATE dato_{$16$} $\leftarrow$ src[fila + pos]
 		\STATE dst[fila + pos] $\leftarrow$ \textit{procesar_{16}}(dato)

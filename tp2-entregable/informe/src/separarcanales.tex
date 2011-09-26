@@ -22,8 +22,8 @@ Una vez desempaquetados estos datos, preparamos m'ascaras para colocar ceros en 
 Ahora resta reacomodar los datos para poder escribirlos en memoria. Para esto usamos las instrucciones de intercambio que el procesador nos ofrece: \textit{pshufd, pshuflw y pshufhw}. Con estas tres instrucciones es posible realizar las tres funciones mas comunes de intercambio a nivel de words: \textit{broadcast}, \textit{swap}, \textit{reverse}\footnote{Intel^{\copyright} 64 and IA-32 Architectures Optimization Reference Manual, secci'on 5.4.11}. La Figura \ref{est:separar-3} muestra como reacomodamos los words (lineas g y h) y empaquetamos para obtener en los bytes menos significativos los cuatro pixeles ya procesados (linea i). En este punto solo nos queda escribir en la imagen destino esos 4 bytes, desplazar el registro SSE de modo que el quinto valor quede en la parte menos significativa, y tambi'en escribirlo. Cabe destacar que para hacer esta 'ultima escritura ultilizamos un registro de prop'osito general, porque no existe una instrucci'on que nos permita copiar un byte determinado del registro SSE a memoria.
 
 \begin{figure}[ht]
-\xmmW{g) pshufld f, (3,0,2,1)}{0R_4 & 00 & 0R_3 & 0R_2 & 00 & 00 & 0R_1 & 0R_0}
-\xmmD{h) pshufld g, (3,1,2,0)}{0R_4  00 & 00  00 & 0R_3  0R_2 & 0R_1  0R_0}
+\xmmW{g) pshuflw f, (3,0,2,1)}{0R_4 & 00 & 0R_3 & 0R_2 & 00 & 00 & 0R_1 & 0R_0}
+\xmmD{h) pshufd g, (3,1,2,0)}{0R_4  00 & 00  00 & 0R_3  0R_2 & 0R_1  0R_0}
 \xmmW{i) packuswb h }{xx & xx & xx & xx & 0R_4 & 00 & R_3R_2 & R_1R_0}
 \caption{\textit{swap} de words y double-words}
 \label{est:separar-3}
