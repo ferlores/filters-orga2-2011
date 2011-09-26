@@ -9,8 +9,9 @@
 \usepackage[small]{caption}
 \usepackage[txt]{caratula}
 \usepackage{a4wide}
-%\usepackage[chapter]{algorithm}
-
+\usepackage{ifthen}
+\usepackage[section]{algorithm}
+\usepackage{algorithmic}
 
 \makeatletter
 \newcommand\textsubscript[1]{\@textsubscript{\selectfont#1}}
@@ -39,9 +40,9 @@
 \begin{center}
 \begin{tabularx}{400pt}{@{}p{60pt}|C|C|C|C|C|C|C|C|l}
 \cline{2-9}
-#1 & #2 &\\
+\footnotesize{#1} & #2 &\\
 \cline{2-9}
-\multicolumn{1}{r@{}}{^{\emph{128}}} & \multicolumn{8}{c}{\textit{\scriptsize(word packed)}} & \multicolumn{1}{@{}l}{^{\emph{0}}}\\
+\multicolumn{1}{r@{}}{^{\emph{\tiny 128}}} & \multicolumn{8}{c}{\textit{\scriptsize(word packed)}} & \multicolumn{1}{@{}l}{^{\emph{\tiny 0}}}\\
 \end{tabularx}
 \end{center}
 }
@@ -51,15 +52,15 @@
 \begin{center}
 \begin{tabularx}{400pt}{@{}p{60pt}|C|C|C|C|l}
 \cline{2-5}
-#1 & #2 &\\
+\footnotesize{#1} & #2 &\\
 \cline{2-5}
 \multicolumn{1}{r@{}}{^{\emph{128}}} & \multicolumn{4}{c}{\textit{\scriptsize(double-word packed)}} & \multicolumn{1}{@{}l}{^{\emph{0}}}\\
 \end{tabularx}
 \end{center}
 }
 
-\newcommand{\ass}{\textit{assembler} }
-\newcommand{\C}{\textbf{C} }
+\newcommand{\ass}{\textit{assembler}}
+\newcommand{\C}{\textbf{C}}
 
 % Fancy Header
 \usepackage{fancyhdr}
@@ -81,6 +82,11 @@
 \integrante{Colombo, Ricardo Gaston}{156/08}{ricardogcolombo@gmail.com}
 \integrante{Lores, Fernando}{718/01}{ferlores@gmail.com}
 \grupo{Lider espiritual: Angiulino "El chino" Cubrepileta}
+
+
+% Algoritmos
+\floatname{algorithm}{Algoritmo}
+\algsetup{indent=2em}
 
 \begin{document}
 

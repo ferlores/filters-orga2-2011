@@ -1,11 +1,95 @@
 \section{Algoritmos}
 
 \subsection{Iterarando im'agenes}
-La primera decisi'on a tomar a la hora de implementar los algoritmos es como vamos a recorrer las im'agenes. Para la implementaci'on en \C optamos por una manera convencional iteraci'on, recorriendo secuencialmente la matriz y leyendo de a pixeles. Es claro que no es la manera mas eficiente pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos.
+La primera decisi'on a tomar a la hora de implementar los algoritmos fue como recorreremos las im'agenes. En \C\ optamos por la manera convencional, recorriendo secuencialmente la matriz, leyendo de a p'ixeles y cuando llegamos al final de cada fila salteamos el padding. Es claro que hay maneras mas eficiente pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos. 
 
-Por otro lado, la implementaci'on en \ass fu'e mas ingeniosa ya que al utilizar la tecnolog'ia SSE debiamos, en principio, aprovechar al m'aximo el hecho de que podiamos leer de a 16 bytes. Los problemas se presentan, ademas de como procesar los bytes leidos, cuando quiero asegurarme que estoy procesando todos los pixeles y estoy evitando correctamente el \textit{padding}. En este trab'ajo pr'actico tuvimos que procesar im'agenes a color y en escala de grises. Aunque la estrategia fue la misma, la implementacion fue ligeramente distinta. 
+Por otro lado, la implementaci'on en \ass\ fu'e mas ingeniosa ya que al utilizar la tecnolog'ia SSE debiamos, en principio, aprovechar al m'aximo lectura de a 16 bytes. Los problemas se presentan cuando quiero asegurarme de que estoy procesando todos los p'ixeles y que estoy evitando correctamente el \textit{padding}. En este trab'ajo pr'actico procesamos im'agenes a color y en escala de grises. Aunque la estrategia fue la misma, se presentaron sutilies diferencias para estos dos casos. 
+
 
 \subsubsection{Im'agenes escala de grises}
-En este caso, cada pixel es representado por un byte. Por lo tanto, cada ver que cargamos un registro SSE estamos leyendo 16 pixeles. Es importante destacar que podemos suponer que las imagenes tienen 16 pixeles como m'inimo\footnote{mencinado en el enunciado del TP}, por lo que podemos realizar una lectura con total seguridad de no estar rompiendo nada 
+En este caso cada p'ixel es representado por un byte. La iteraci'on en \C\ es bastante simple (Algoritmo \ref{alg:iteracionC-BN}). En cambio en \ass, cada vez que accedemos a memoria con un registro SSE estamos cargando 16 p'ixeles. Por lo tanto la estrategia ser'a recorrer cada fila realizando sucesivas lecturas hasta que queden menos de 16 p'ixeles para que termine la fila. Para procesar los 'ultimos datos, reposicionamos el 'indice para cargar los 'ultimos pixeles y volvemos a iterar. Es claro que algunos pixeles ser'an recalculados, pero de esta manera podemos reutilizar el c'odigo de las iteraciones normales. Cuando inicio el proceso de la nueva fila, avanzo el 'indice teniendo en cuenta el \textit{padding}. Podemos observar el pseudoc'odigo en el Algoritmo \ref{alg:iteracionASM-BN}. Cabe aclarar que los pseudoc'odigos presentados en el informe son de caracter ilustrativo, con el objetivo de explicar las estrategias utilizadas. Para un pseudoc'odigo mas detallado remitirse a los comentarios del c'odigo \ass.
 
-\subsubsection{Im'agenes RGB}
+\begin{algorithm}[h!]
+\caption{\sc{iteraci'on en c - escala de grises}}\label{alg:iteracionC-BN}
+\begin{algorithmic}[1]
+\FOR{$i=0$ to $n$}
+	\STATE fila $\leftarrow$ i $*$ row\_size
+	\FOR{$pos=0$ to $m$}
+		\STATE dst[fila + pos] $\leftarrow$ \textit{procesar}(src[fila + pos])
+	\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[h!]
+\caption{\sc{iteraci'on en assembler - escala de grises}}\label{alg:iteracionASM-BN}
+\begin{algorithmic}[1]
+\FOR{$i=0$ to $n$}
+	\STATE fila $\leftarrow$ i $*$ row\_size
+	\FOR{$pos=0$ to $m$}
+		\STATE dst[fila + pos] $\leftarrow$ \textit{procesar_{16}}(src[fila + pos])
+		\STATE pos $\leftarrow$ pos + 16		
+		\IF{pos $=$ m}
+			\STATE \textit{procesar\_siguiente\_fila}
+		\ELSIF{pos $>$ m}		 
+			\STATE pos $\leftarrow$ w - 16
+		\ENDIF
+		
+	\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Im'agenes a color}
+En este caso cada pixel de las imagenes de entrada esta representado por tres bytes(BGR). La 'unica modificacion que sufre la implementacion en \C\ es que a la hora de acceder a la matriz de entrada multiplicamos el iterador de la columna por tres. Ademas podemos acceder a los distintos colores RGB desplazandonos cero, una o dos posiciones a partir de esa posicion (Algoritmo \ref{alg:iteracionC-RGB}).
+
+
+\begin{algorithm}[h!]
+\caption{\sc{iteraci'on en c - color}}\label{alg:iteracionC-RGB}
+\begin{algorithmic}[1]
+\FOR{$i=0$ to $n$}
+	\STATE fila_s $\leftarrow$ i $*$ src\_row\_size	
+	\STATE fila_d $\leftarrow$ i $*$ dst\_row\_size
+	\FOR{$pos=0$ to $m$}
+		\STATE dst[fila_d + pos] $\leftarrow$ \textit{procesar}(src[fila_s + 3 $*$ pos])
+	\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+En \ass (Algoritmo \ref{alg:iteracionASM-RGB}), las lecturas de a 16 bytes nos dejan en los registros 5 p'ixeles completos mas el primer byte del siguiente. Aqui decidimos descartar ese 'ultimo byte, procesar los datos y escribir en la imagen de salida solamente los resultados obtenidos. Es decir que mientras la imagen de entrada es recorrida de a 15 bytes(5 p'ixeles), la imagen de salida es recorrida de a 5 bytes. Por este motivo resulta imperioso llevar dos iteradores de posicion.
+
+Tambi'en es necesario ajustar la ultima iteraci'on de cada fila. Cuando la lectura de los 'ultimos 16 bytes, estos no quedan cargados como queremos. Para poder procesar los 'ultimos 5 p'ixeles con las mismas instrucciones que tenemos en el ciclo debemos realizar un desplazamiento a derecha de un byte (Figura \ref{est:ciclo}).
+Por otro lado, una vez que realizamos la ultima iteraci'on, debemos ajustar la condicion de corte. Como estamos avanzando de a 15 bytes, vamos a haber finalizado la columna cuando la diferencia entre el iterador y el ancho total en bytes de la imagen de entrada sea igual a uno. Es facil de ver que esto solo sucede cuando se reajusta el 'indice, ya que no existe un caso donde se cumpla esa condici'on sin haber pasado antes por el reajuste porque la cantidad de bytes es siempre m'ultiplo de tres. 
+
+\begin{algorithm}[h!]
+\caption{\sc{iteraci'on en assembler - color}}\label{alg:iteracionASM-RGB}
+\begin{algorithmic}[1]
+\FOR{$i=0$ to $n$}
+	\STATE fila_s $\leftarrow$ i $*$ src\_row\_size	
+	\STATE fila_d $\leftarrow$ i $*$ dst\_row\_size
+	\FOR{$pos=0$ to $m$}
+		\STATE dato_{$16$} $\leftarrow$ src[fila + pos]
+		\STATE dst[fila + pos] $\leftarrow$ \textit{procesar_{16}}(dato)
+		\label{alg:iteracionASM-RGB:entry}
+		\STATE pos $\leftarrow$ pos + 15		
+		\IF{pos + 1 $=$ m}
+			\STATE \textit{procesar\_siguiente\_fila}
+		\ELSIF{pos $>$ m}		 
+			\STATE pos $\leftarrow$ w - 16
+			\STATE dato_{$16$} $\leftarrow$ desplazar_{1b}(src[fila + pos])
+			\STATE \textbf{goto} \ref{alg:iteracionASM-RGB:entry}
+		\ENDIF		
+	\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{figure}[hb]
+\xmmW{src[15$*$i]}{XR_4 & G_4B_4 & R_3G_3 & B_3R_2 & G_2B_2 & R_1G_1 & B_1R_0 & G_0B_0}
+\xmmW{src[3*w-16]}{R_4G_4 & B_4R_3 & G_3B_3 & R_2G_2 & B_2R_1 & G_1B_1 & R_0G_0 & B_0R_{-1}}
+\caption{reajuste de carga en la 'ultima iteraci'on de imagenes a color}
+\label{est:ciclo}
+\end{figure}
+
