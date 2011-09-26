@@ -48,11 +48,13 @@
 
 
 % Macros para XMM
-\newcolumntype{C}{>{\footnotesize\centering\arraybackslash}X}
+%\newcolumntype{C}{>{\footnotesize\centering\arraybackslash}X}
+\newcolumntype{C}{>{\footnotesize\centering}p{18pt}}
+\newcolumntype{D}{>{\footnotesize\centering}p{48.5pt}}
 \newcommand{\xmmW}[2]{
 \fontfamily{pcr}\selectfont	
 \begin{center}
-\begin{tabularx}{400pt}{@{}p{60pt}|C|C|C|C|C|C|C|C|l}
+\begin{tabularx}{400pt}{@{}p{120pt}|C|C|C|C|C|C|C|C|@{}p{5pt}@{}}
 \cline{2-9}
 \footnotesize{#1} & #2 &\\
 \cline{2-9}
@@ -64,11 +66,11 @@
 \newcommand{\xmmD}[2]{
 \fontfamily{pcr}\selectfont	
 \begin{center}
-\begin{tabularx}{400pt}{@{}p{60pt}|C|C|C|C|l}
+\begin{tabularx}{400pt}{@{}p{120pt}|D|D|D|D|@{}p{5pt}@{}}
 \cline{2-5}
 \footnotesize{#1} & #2 &\\
 \cline{2-5}
-\multicolumn{1}{r@{}}{^{\emph{128}}} & \multicolumn{4}{c}{\textit{\scriptsize(double-word packed)}} & \multicolumn{1}{@{}l}{^{\emph{0}}}\\
+\multicolumn{1}{r@{}}{^{\emph{\tiny128}}} & \multicolumn{4}{c}{\textit{\scriptsize(double-word packed)}} & \multicolumn{1}{@{}l}{^{\emph{\tiny0}}}\\
 \end{tabularx}
 \end{center}
 }
@@ -107,7 +109,7 @@
 \include*{normalizar}
 \include*{mediciones}
 \include*{conclusiones}
-
+\include*{referencias}
 
 
 \end{document}

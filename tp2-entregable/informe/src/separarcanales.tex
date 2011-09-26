@@ -1,1 +1,34 @@
 \subsection{Separar canales}
+El objetivo de este filtro es generar tres im'agenes distintas en escala de grises. Cada imagen debe contener en cada pixel lo correspondiente al valor de la capa que estamos separando del pixel original. Por lo tanto debemos aislar cada valor RGB de manera que posteriormente podamos manipularlos. En general esto se hace con instrucciones de desempaquetado. Sin embargo en nuestro caso preferimos utilizar otra estrategia. La idea es realizar desplazamientos (empaquetados de words) a izquierda y derecha para desempaquetar todos los valores. En la Figura \ref{est:separar-1} podemos observar como con un desplazamiento a derecha de un byte (linea b) podemos desempaquetar ciertos datos, mientras que con un desplazamiento primero a izquierda y luego a derecha, logramos separar los valores que estaban faltando (linea c).
+
+\begin{figure}[ht]
+\xmmW{a) src[15$*$i]}{XR_4 & G_4B_4 & R_3G_3 & B_3R_2 & G_2B_2 & R_1G_1 & B_1R_0 & G_0B_0}
+\xmmW{b) psrlw 1}{0X& 0G_4 & 0R_3 & 0B_3 & 0G_2 & 0R_1 & 0B_1 & 0G_0}
+\xmmW{c) psllw 1, psrlw 1}{0R_4 & 0B_4 & 0G_3 & 0R_2 & 0B_2 & 0G_1 & 0R_0 & 0B_0}
+\caption{Estrategia de desempaquetamiento im'agenes a color}
+\label{est:separar-1}
+\end{figure}
+
+Una vez desempaquetados estos datos, preparamos m'ascaras para colocar ceros en los words que no necesitamos. Si prestamos atenci'on en como quedan conformados los registros desempaquetados notamos que a veces vamos a necesitar filtrar tres words y a veces dos words. Es por eso que solo dos mascaras (desplazandolas a izquierda y derecha) fueron suficientes para separar todos los B, luego los R y por 'utimo los G. Las m'ascaras estan compuestas por words de \textit{unos} donde estan los datos que queremos y ceros donde estan los valores que no necesitamos en este momento. En la Figura \ref{est:separar-2} podemos observar como quedan los registros despues de utilizar las mascaras para filtrar los valores G (lineas d y e) y como queda combinado en un solo registro todos los valores que necesitamos (linea f).
+
+\begin{figure}[ht]
+\xmmW{d) pand b, mask_1}{00 & 00 & 0R_3 & 00 & 00 & 0R_1 & 00 & 00}
+\xmmW{e) pand c, mask_2}{0R_4 & 00 & 00 & 0R_2 & 00 & 00 & 0R_0 & 00}
+\xmmW{f) por d, e}{0R_4 & 00 & 0R_3 & 0R_2 & 00 & 0R_1 & 0R_0 & 00}
+\caption{filtrado y combinaci'on usando m'ascaras \sc{\scriptsize 0000FF0000FF0000} y \sc{\scriptsize FF0000FF0000FF00}}
+\label{est:separar-2}
+\end{figure}
+
+Ahora resta reacomodar los datos para poder escribirlos en memoria. Para esto usamos las instrucciones de intercambio que el procesador nos ofrece: \textit{pshufd, pshuflw y pshufhw}. Con estas tres instrucciones es posible realizar las tres funciones mas comunes de intercambio a nivel de words: \textit{broadcast}, \textit{swap}, \textit{reverse}\footnote{Intel^{\copyright} 64 and IA-32 Architectures Optimization Reference Manual, secci'on 5.4.11}. La Figura \ref{est:separar-3} muestra como reacomodamos los words (lineas g y h) y empaquetamos para obtener en los bytes menos significativos los cuatro pixeles ya procesados (linea i). En este punto solo nos queda escribir en la imagen destino esos 4 bytes, desplazar el registro SSE de modo que el quinto valor quede en la parte menos significativa, y tambi'en escribirlo. Cabe destacar que para hacer esta 'ultima escritura ultilizamos un registro de prop'osito general, porque no existe una instrucci'on que nos permita copiar un byte determinado del registro SSE a memoria.
+
+\begin{figure}[ht]
+\xmmW{g) pshufld f, (3,0,2,1)}{0R_4 & 00 & 0R_3 & 0R_2 & 00 & 00 & 0R_1 & 0R_0}
+\xmmD{h) pshufld g, (3,1,2,0)}{0R_4  00 & 00  00 & 0R_3  0R_2 & 0R_1  0R_0}
+\xmmW{i) packuswb h }{xx & xx & xx & xx & 0R_4 & 00 & R_3R_2 & R_1R_0}
+\caption{\textit{swap} de words y double-words}
+\label{est:separar-3}
+\end{figure}
+
+El proceso de los otros canales son similares. Siempre utilizamos la misma estrategia: separamos los valores, los enmascaramos, los combinamos, y por ultimo realizamos los intercambios necesarios para poder bajarlos a memoria. Para mayor detalle de como procesamos los canales B y G remitirse a los comentarios del c'odigo adjunto.
+
+
