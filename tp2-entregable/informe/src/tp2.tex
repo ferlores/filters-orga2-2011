@@ -1,4 +1,7 @@
 \documentclass[10pt,a4paper]{article}
+\usepackage{a4wide}
+%\usepackage[top=2.5cm, bottom=2cm, left=1.5cm, right=1.5cm, a4paper]{geometry}
+
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -7,12 +10,22 @@
 \usepackage{tabularx}
 \usepackage[spanish, activeacute]{babel}
 \usepackage[small]{caption}
-\usepackage[txt]{caratula}
-\usepackage{a4wide}
 \usepackage{ifthen}
-\usepackage[section]{algorithm}
-\usepackage{algorithmic}
+\usepackage{newclude}
 
+% Carátula
+\usepackage[txt]{caratula}
+\materia{Organizaci\'on del Computador II}
+\submateria{Segundo Cuatrimestre del 2011}
+\titulo{Trabajo Pr\'actico N\'umero 2}
+\subtitulo{Filtros de imagen}
+\integrante{Celave, Martin}{530/08}{tolacelave@gmail.com}
+\integrante{Colombo, Ricardo Gaston}{156/08}{ricardogcolombo@gmail.com}
+\integrante{Lores, Fernando}{718/01}{ferlores@gmail.com}
+\grupo{Lider espiritual: Angiulino "El chino" Cubrepileta}
+
+
+%Macro para subscript fuera de modo matematico
 \makeatletter
 \newcommand\textsubscript[1]{\@textsubscript{\selectfont#1}}
 \def\@textsubscript#1{{\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
@@ -33,8 +46,9 @@
 \def_{\let\@next\relax\ifmmode\@sub\else\let\@next\@@sub\fi\@next}
 \makeatother
 
-\newcolumntype{C}{>{\footnotesize\centering\arraybackslash}X}
 
+% Macros para XMM
+\newcolumntype{C}{>{\footnotesize\centering\arraybackslash}X}
 \newcommand{\xmmW}[2]{
 \fontfamily{pcr}\selectfont	
 \begin{center}
@@ -65,26 +79,16 @@
 % Fancy Header
 \usepackage{fancyhdr}
 \fancyhf{}
+\fancyfoot{}
 \fancyhead{}
-\lhead{Seccion} % texto izquierda de la cabecera
+\lhead{\slshape \rightmark} % texto izquierda de la cabecera
 \rhead{\Titulo} % número de página a la derecha
-\lfoot{} % texto izquierda del pie
 \rfoot{\thepage} 
 \pagestyle{fancy}
 
-
-% Carátula
-\materia{Organizaci\'on del Computador II}
-\submateria{Segundo Cuatrimestre del 2011}
-\titulo{Trabajo Pr\'actico N\'umero 2}
-\subtitulo{Filtros de imagen}
-\integrante{Celave, Martin}{530/08}{tolacelave@gmail.com}
-\integrante{Colombo, Ricardo Gaston}{156/08}{ricardogcolombo@gmail.com}
-\integrante{Lores, Fernando}{718/01}{ferlores@gmail.com}
-\grupo{Lider espiritual: Angiulino "El chino" Cubrepileta}
-
-
 % Algoritmos
+\usepackage[section]{algorithm}
+\usepackage{algorithmic}
 \floatname{algorithm}{Algoritmo}
 \algsetup{indent=2em}
 
@@ -93,16 +97,16 @@
 \maketitle
 
 
-\include{intro}
-\include{ciclo}
-\include{separarcanales}
-\include{monocromatizar}
-\include{umbralizar}
-\include{invertir}
-\include{suavizar}
-\include{normalizar}
-%\include{mediciones}
-%\include{conclusiones}
+\include*{intro}
+\include*{ciclo}
+\include*{separarcanales}
+\include*{monocromatizar}
+\include*{umbralizar}
+\include*{invertir}
+\include*{suavizar}
+\include*{normalizar}
+\include*{mediciones}
+\include*{conclusiones}
 
 
 

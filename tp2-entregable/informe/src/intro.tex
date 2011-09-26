@@ -1,7 +1,14 @@
 \section{Introducci'on}
 
-El objeto de este informe es describir el proceso de como la aplicacion algoritmica de filtros sobre imagenes
-puede ser optimizada notablemente(en comparaci'on con ANSI C) si se aprovecha el modelo de instrucciones
-SIMD. Como conjetura inicial afirmamos que los debe haber una  gran diferencia en cuanto a los ciclos
-de clock utilizados, y a lo largo de este informe verificaremos que dicha conjetura es en realidad cierta
-debido a la multiplicidad de de procesamiento de datos.
+El objetivo de este informe es describir el proceso de como la aplicacion algoritmica de filtros sobre imagenes
+puede ser optimizada notablemente(en comparaci'on con ANSI \C) si se aprovecha el modelo de instrucciones SIMD. 
+
+Para ello implementamos siete algoritmos en \C\ y en \ass. Los mismos recorren las im'agenes aplicando diferentes c'alculos. Las implementaciones de alto nivel son bastantes triviales y directas gracias a la posibilidad que nos brinda el lenguaje para acceder a las distintas posiciones de memoria. Sin embargo la gran desventaja que tenemos aqui es que accedemos y procesamos los datos de a uno. En cambio, en la implementaci'on de bajo nivel, si bien podemos acceder a una gran cantidad de datos por vez, el acceso a ellos hace que los algortimos a veces se vuelvan ingeniosos. 
+
+En la siguiente secci'on explicaremos como encaramos la implementaci'on de los filtros pedidos. Primero describiremos la estrategia que elegimos para iterar las im'agenes junto con sus variaciones. Luego nos abocaremos a describir la mec'anica que utilizamos en cada algoritmo para procesar los datos. Como dijimos antes, las implementaciones en alto nivel son bastantes directas, por lo que no nos detendremos mucho explicandolas. El lector puede remitirse driectamente al c'odigo para un mayor detalle de los mismos.
+
+En la secci'on \ref{sec:mediciones} realizaremos mediciones de las distintas implementaciones sobre un conjunto de imagenes dado, comparando y analizando los resultados obtenidos. Es claro inmaginar que deber'ia haber una  gran diferencia en cuanto \textit{performance} y esperamos a lo largo de este informe verificar dicha conjetura. Sin embargo tambien veremos que existen casos menos favorables que otros donde la mejora no es tan grande comparada como en otros casos. 
+
+Por 'ultimo en la secci'on \label{sec:conclusiones} recapitularemos los resultados obtenidos, analizando la relaci'on costo-beneficio de las distintas implementaciones. Ademas comentaremos las principales dificultades encontradas y otras experiencias que obtuvimos durante la realizaci'on de este trabajo pr'actico
+
+\nopagebreak[4]

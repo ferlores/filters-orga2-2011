@@ -1,4 +1,5 @@
 \section{Algoritmos}
+\label{sec:algoritmos}
 
 \subsection{Iterarando im'agenes}
 La primera decisi'on a tomar a la hora de implementar los algoritmos fue como recorreremos las im'agenes. En \C\ optamos por la manera convencional, recorriendo secuencialmente la matriz, leyendo de a p'ixeles y cuando llegamos al final de cada fila salteamos el padding. Es claro que hay maneras mas eficiente pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos. 
@@ -60,7 +61,8 @@ En este caso cada pixel de las imagenes de entrada esta representado por tres by
 En \ass (Algoritmo \ref{alg:iteracionASM-RGB}), las lecturas de a 16 bytes nos dejan en los registros 5 p'ixeles completos mas el primer byte del siguiente. Aqui decidimos descartar ese 'ultimo byte, procesar los datos y escribir en la imagen de salida solamente los resultados obtenidos. Es decir que mientras la imagen de entrada es recorrida de a 15 bytes(5 p'ixeles), la imagen de salida es recorrida de a 5 bytes. Por este motivo resulta imperioso llevar dos iteradores de posicion.
 
 Tambi'en es necesario ajustar la ultima iteraci'on de cada fila. Cuando la lectura de los 'ultimos 16 bytes, estos no quedan cargados como queremos. Para poder procesar los 'ultimos 5 p'ixeles con las mismas instrucciones que tenemos en el ciclo debemos realizar un desplazamiento a derecha de un byte (Figura \ref{est:ciclo}).
-Por otro lado, una vez que realizamos la ultima iteraci'on, debemos ajustar la condicion de corte. Como estamos avanzando de a 15 bytes, vamos a haber finalizado la columna cuando la diferencia entre el iterador y el ancho total en bytes de la imagen de entrada sea igual a uno. Es facil de ver que esto solo sucede cuando se reajusta el 'indice, ya que no existe un caso donde se cumpla esa condici'on sin haber pasado antes por el reajuste porque la cantidad de bytes es siempre m'ultiplo de tres. 
+
+Por otro lado, una vez que realizamos la ultima iteraci'on, debemos ajustar la condicion de corte(linea \ref{alg:iteracionASM-RGB:corte}). Como estamos avanzando de a 15 bytes, vamos a haber finalizado la columna cuando la diferencia entre el iterador y el ancho total en bytes de la imagen de entrada sea igual a uno. Es facil de ver que esto solo sucede cuando se reajusta el 'indice(linea \ref{alg:iteracionASM-RGB:reajuste}), ya que no existe un caso donde falte procesar un solo byte si vengo iterando de a multiplos de 3.
 
 \begin{algorithm}[h!]
 \caption{\sc{iteraci'on en assembler - color}}\label{alg:iteracionASM-RGB}
@@ -73,12 +75,12 @@ Por otro lado, una vez que realizamos la ultima iteraci'on, debemos ajustar la c
 		\STATE dst[fila + pos] $\leftarrow$ \textit{procesar_{16}}(dato)
 		\label{alg:iteracionASM-RGB:entry}
 		\STATE pos $\leftarrow$ pos + 15		
-		\IF{pos + 1 $=$ m}
+		\IF{pos + 1 $=$ m} 		\label{alg:iteracionASM-RGB:corte}
 			\STATE \textit{procesar\_siguiente\_fila}
 		\ELSIF{pos $>$ m}		 
-			\STATE pos $\leftarrow$ w - 16
-			\STATE dato_{$16$} $\leftarrow$ desplazar_{1b}(src[fila + pos])
-			\STATE \textbf{goto} \ref{alg:iteracionASM-RGB:entry}
+			\STATE pos $\leftarrow$ w - 16 \label{alg:iteracionASM-RGB:reajuste}
+			\STATE dato_{$16$} $\leftarrow$ desplazar\_der_{1b}(src[fila + pos]) 
+			\STATE \textbf{goto} linea \ref{alg:iteracionASM-RGB:entry}
 		\ENDIF		
 	\ENDFOR
 \ENDFOR
