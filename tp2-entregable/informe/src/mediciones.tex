@@ -1,0 +1,65 @@
+
+\subsection{Mediciones}
+Una vez desarrolados los filtros tanto en \C \  como en \ass, necesitabamos par'ametros de comparaci'on
+para ver si efectivamente nuestras conjeturas iniciales eran ciertas o no.
+Adem'as de correr los test solicitados por la c'atedra se generaron casos de prueba,
+especificamente pensados para poner a prueba los algoritmos en los casos borde y en algunos casos
+favorables.\\
+\subsection{An'alisis de factores}
+Antes de generar los casos de prueba, analizamos con que tipo de im'agenes nuestros algoritmos pod'ian
+llegar a comportarse una una manera inusual. Como conjetura inicial establecimos que no deberia haber 
+fluctuaciones en el las funciones desarrolladas en \C \ ya que el recorrido de la matriz es lineal y
+de a un elemento por vez, con lo cual las dimensiones no deber'ian ser un factor relevante. \\
+Para el caso de las funciones en \ass, creemos que los principales factores que pueden afectar la 
+performance son : \\
+\begin{itemize}
+ \item{Cantidad de accesos a memoria}.
+ \item{Cantidad de instrucciones de movimiento interno de bits en registro}
+ \item{Dimensiones de la matriz,(par'ametro de entrada)}
+\end{itemize}
+El primer factor pudo subsanarse construyendo un c'odigo m'as eficiente que su version inicial, 
+usando instrucciones y direccionamientos adecuados(que permitieran ganar m'as performance).
+El segundo factor pudo reducirse en gran parte con el uso de m'ascaras, sin embargo en algunos casos
+no se pudieron sacar ya que sin ellos no pod'ia obtenerse la funcionalidad deseada.\\
+El tercer factor esta determinado por la entrada y el algoritmo, se explica en la secci'on siguiente.
+\subsection{Estableciendo Criterios}
+En primer lugar se estableci'o como criterio de cantidad de pixeles los mas aproximado posible
+a 480000.\\
+Como se menciona anteriormente el algoritmo del filtro es el que va determinar que casos son borde
+y en cuales se puede tener una performance 'optima. Para ello, es necesario diferenciar  dos tipos de
+filtro: Los que van de color a escala de grises( monocromatizar,separar canales) y en blanco y negro
+(umbralizar,invertir,normalizar,suavizar). \\
+Para los que toman imagen en color,en el ciclo principal si bien las lecturas son de 16 bytes se procesa 
+de a 5 pixeles por vez, con lo cual si la cantidad de pixeles de ancho es multiplo de 5 el algoritmo 
+realizar'ia la cantidad justa de lecturas en memoria, en este caso deberia consumir menos
+ciclos de reloj. 
+En el caso contrario en que la anchura no se multiplo de 5 el algoritmo debe realizar una lectura
+mas de la prevista en el final de cada ciclo que recorre columnas, con lo cual deberia consumir
+mas ciclos de reloj, mas aun si la cantidad de pixeles alto aumenta, el costo de esas lecturas extra por 
+columna se har'ia evidente en una eventual medici'on.
+Teniendo en cuenta esto se decidi'o medir con im'agenes de la siguiente distribuci'on de pixeles:
+ \begin{itemize}
+ \item{800x600}.
+ \item{10x48000}
+ \item{11x43636}
+\end{itemize}
+Para los filtros que trabajan im'agenes blanco y Negro ocurre algo similar a lo anterior solo que cada
+pixel esta representado por un byte por lo tanto por cada lectura se procesa de a 16 pixeles. De forma
+an'aloga asociamos mejor performance con las im'agenes cuyo anchura en pixeles es un multiplo de 16, y 
+una peor performance con las que son coprimas con 16, ya que necesitara una lectura mas por cada columna
+de la matriz, mas a'un procesaran algunos datos dos veces. \\
+Los \textit{sizes} elegidos para estos caso fueron:\\
+\begin{itemize}
+ \item{800x600}.
+ \item{16x30000}
+ \item{17x28235}
+\end{itemize}
+\subsection{Opciones descartadas}
+En un momento se penso ver cual era el rendimiento de los algoritmos con una distribuci'on 
+aleatoria de im'agenes, pero decidimos omitirla debido a que era muy costosa y no nos 
+daria informaci'on valiosa acerca del comportamiento ya que los \textit{sizes} variables pueden comportarse 
+de manera an'aloga por la forma de procesar los datos y no habria una diversidad de comportamiento.\\
+Se decidio enfocar los casos de prueba en los \textit{sizes} de im'agen y no tanto en el contenido de 
+sus pixeles, vale decir no se buscaron especificamente im'agnes con muchos blancos, grises o negros.   
+
+
