@@ -1,3 +1,5 @@
+
+# medir.sh
 Para realizar mediciones ejecutar medir.sh pasandole como parametro el 
 directorio que tiene la definicion del caso a medir.
 
@@ -10,7 +12,10 @@ imagenes.in. En el primero estan especificadas las funciones que
 queremos medir, una por linea, mientras que en segundo estan las 
 imagenes que queremos que sean medidas, tambien una por linea
 
-El resultado del script es impreso en pantalla y puede ser interpretado 
-como un archivo csv (comma separated value). Por lo que si se redirecciona
-la salida a un archivo se puede levantar con una planilla de calculos
+El resultado del script es impreso en pantalla y ademas es agregado al final
+del archivo mediciones.csv, por lo puede ser levantado con una planilla de calculos
 
+
+# medirTodo.sh
+Para automatizar todas las mediciones utilizamos un script que vacia el directorio 
+de las imagenes de prueba, las recrea y ejecuta todos los casos de test
