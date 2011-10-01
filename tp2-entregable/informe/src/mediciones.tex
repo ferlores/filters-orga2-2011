@@ -64,6 +64,35 @@ Los \textit{sizes} elegidos para estos caso fueron:\\
  \item{16x30000}
  \item{17x28235}
 \end{itemize}
+\subsection{Analisis de Rendimiento}
+Para empezar a entender el an'alisis de rendimiento, es necesario aclarar que tomamos una cantidad
+de pixeles fija(480000) y en base a este \textit{size} realizamos las mediciones.
+Adem'as pusimos a prueba los casos patol'ogicos de cada algoritmo con distribuciones espec'ificas en
+alto y ancho para cada uno, las analizaremos a medida que avance esta secci'on.\\
+Como indices comunes analizaremos los :\\
+\begin{itemize}
+ \item{} \textbf{ciclos}: ciclos de reloj consumidos por cada implementaci'on.
+ \item{} \textbf{diferencia de ciclos}: modulo de la diferencia entre ciclos de reloj en \C \ y en \ass.
+ \item{} \textbf{porcentaje de mejora}: porcentaje de eficiencia de un implementaci'on con respecto a la otra.
+\end{itemize}
+%En la primer tabla puede apreciarse el rendimiento en una dimnesion que llamaremos \textbf{caso base} 
+Como mencionamos en el inicio de esta secci'on trabajamos con una im'agen de 480000 pixeles, esta vez
+distribuidos en 800x600 dimnesion que llamaremos \textbf{caso base}. Podemos observar que en todos los filtros 
+la implementaci'on en \ass consume
+menos ciclos de reloj, un resultado a que esta dentro de lo esperado, sin embargo llama la atenci'on
+lo significativa que es esta diferencia. Por ejemplo en el filtro invertir, que es el que menos instrucciones
+realiza, obtuvimos un porcentaje de mejora superior al 96 $\%$. El caso del filtro que menos porcentaje
+de mejora tuvo fue monocromatizar_uno que no obstante obtuvo una mejora superior al 50 $\%$. Si bien
+suponiamos que podia haber una diferencia en la eficiencia no sabiamos que seria tan marcada, lo cual es muy 
+positivo, ya que significa que dio r'editos implementar en un lenguaje de m'as bajo nivel y mayor dificultad
+de a cambio de un mejor rendimiento.\\
+  
+ 
+
+
+
+
+
 \subsection{Opciones descartadas}
 En un momento se penso ver cual era el rendimiento de los algoritmos con una distribuci'on 
 aleatoria de im'agenes, pero decidimos omitirla debido a que era muy costosa y no nos 
