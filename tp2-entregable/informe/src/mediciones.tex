@@ -57,100 +57,84 @@ Los \textit{sizes} elegidos para estos caso fueron:\\
  \item{16x30000}
  \item{17x28235}
 \end{itemize}
-\subsection{Analisis de Rendimiento}
-Para empezar a entender el an'alisis de rendimiento, es necesario aclarar que tomamos una cantidad
-de pixeles fija(480000) y en base a este \textit{size} realizamos las mediciones.
-Adem'as pusimos a prueba los casos patol'ogicos de cada algoritmo con distribuciones espec'ificas en
-alto y ancho para cada uno, las analizaremos a medida que avance esta secci'on.\\
-Como indices comunes analizaremos los :\\
+
+
+\subsection{Experimentos}
+\subsubsection{Caso base}
+En este experimento se miden los siguientes 'indice:
 \begin{itemize}
  \item{} \textbf{ciclos}: ciclos de reloj consumidos por cada implementaci'on.
  \item{} \textbf{diferencia de ciclos}: modulo de la diferencia entre ciclos de reloj en \C \ y en \ass.
  \item{} \textbf{porcentaje de mejora}: porcentaje de eficiencia de un implementaci'on con respecto a la otra.
 \end{itemize}
-%En la primer tabla puede apreciarse el rendimiento en una dimnesion que llamaremos \textbf{caso base} 
-Como mencionamos en el inicio de esta secci'on trabajamos con una im'agen de 480000 pixeles, esta vez
-distribuidos en 800x600 dimnesion que llamaremos \textbf{caso base}. Podemos observar que en todos los filtros 
+
+Podemos observar que en todos los filtros 
 la implementaci'on en \ass \ consume
 menos ciclos de reloj, un resultado a que esta dentro de lo esperado, sin embargo llama la atenci'on
 lo significativa que es esta diferencia. Por ejemplo en el filtro invertir, que es el que menos instrucciones
-realiza, obtuvimos un porcentaje de mejora superior al 96 $\%$. El caso del filtro que menos porcentaje
-de mejora tuvo fue monocromatizar_uno que no obstante obtuvo una mejora superior al 50 $\%$. Si bien
+realiza, obtuvimos un porcentaje de mejora superior al 96$\%$. El caso del filtro que menos porcentaje
+de mejora tuvo fue monocromatizar_uno, que no obstante, obtuvo una mejora superior al 50$\%$. Si bien
 suponiamos que podia haber una diferencia en la eficiencia no sabiamos que seria tan marcada, lo cual es muy 
 positivo, ya que significa que dio r'editos implementar en un lenguaje de m'as bajo nivel y mayor dificultad
-de a cambio de un mejor rendimiento.\\
-\subsection{Casos no estandar}
-En esta secci'on analizaremos los rendimientos de los filtros en imagenes de la misma cantidad de pixeles que antes
-o aproximadamente la misma, pero con anchos y altos especi'ficos que afectan al rendimiento de cada funci'on.\\
-A su vez diferenciamos dos tipos de filtros \textbf{Blanco y negro} y \textbf{color}, si bien
-son clasificaciones ortogonales el caso ancho pudimos expresarlo en una sola tabla ya que encontramos
-un ancho que sea multiplo de 10 pixeles y a su vez de 16, que sirve tanto para las imagenes color como
-para las blanco y negro. Como notaci'on diremos que que un ancho es \textbf{favorable} a un filtro si es
- multiplo de la cantidad de pixeles que procesa por lectura a memoria, y no \textbf{no favorable}
-si es coprima con esta.\\    
-Vale aclarar tambi'en que el procesamiento de datos usando tenconolgia \textit{sse} es una ventaja, pero 
-podr'ia no llegar a serlo de esa manera, si el ancho en pixiles de la matriz no es favorable, es decir
-debo reprocesar  algunos datos m'as de una vez por cada ciclo en que recorro las columnas, es por eso 
-que agregamos un nuevo 'indice de medicion al que denominaremos 
-\textbf{penalizaci'on}.Este 'indice tiene como par'ametros de comparaci'on a los ciclos necesarios por
+ a cambio de un mejor rendimiento,siempre utilizando la tecnologia \textit{SSE}.\\
+
+\subsubsection{Imagenes altas}
+A partir de este exprimento introducimos un nuevo concepto de indice denominado
+\textbf{penalizaci'on}. Este 'indice tiene como par'ametros de comparaci'on a los ciclos necesarios por
 cada implementaci'on en \ass, mide que porcentaje representa la cantidad de ciclos en un ancho 
-favorable con respecto a uno no favorable. Aclarado esto comenzemos con el analisis de rendimiento 
-con las distintas clasificaciones de criterios.
-\subsubsection{Caso alto variable}
-En esta secci'on vamos a analizar rendimientos para cada filtro donde el ancho es favorable y cuando no.\\
+favorable con respecto a uno no favorable.
+
 Estudiemos primero el caso de los filtros blanco y negro. Como muestra la tabla a'un existe una 
-concordancia entre el porcentaje de mejora en las dimensiones de 16x30000 y 17x28234, m'as a'un 
-en el caso favorable ese 'indice de mejora permaneci'o con respecto al caso base. En el ancho
-no favorable el porcentaje de mejora fue menor, pero aun asi superior al 70\% en todos los casos.
-Esto probablemnte se deba a que la implementaci'on en \C \ al recorrer linealmente no es un factor
-determinante si al ancho es favorable o no, mas bien con todos los anchos es lo mismo.\\
+mejora de \ass  con respecto a \C \  en las dimensiones de 16x30000 y 17x28234. Con esto concluimos que aun
+en un caso no favorable es \ass \ sigue siendo m'as eficiente.
+
 Otra observacio'n interesante es el porcentaje de penalizaci'on, notemos que dan 340\%, 165\% y
 234\%, para invertir, normalizar y umbralizar respectivamente, estos porcentajes son altos 
-y seguramente se debe a lo que dijimos en un principio, que el algoritmo de reprocesar datos m'as de 
-una vez.\\%El unico caso donde esto no ocurre es el suavizado probablemente haya que tratarlo con
-%\textit{suavidad} cuak!. \\
-Haciendo un an'alisis similar para el caso color, establecemos las dimensiones de 10x48000 y 11x43636
-como casos favorables y no favorables respectivamente. \\
-Podemos apreciar la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
-alto( mayor a 50\%) y con casi la misma regularidad en cuanto al porcentaje en los casos favorables.
-Con el caso no favorable el resultado es an'alogo al del parrafo anterior no hay una regularidad con respecto 
-al caso base y eso se debe a la iteracion lineal del algoritmo en \C,\ la diferencia de 
-casos favorables contra no favorables entre porcentajes
-de mejora supera el 10\% en todos los casos(tanto blanco y negro como color), si bien esto no es muy 
-interesante y sale trivialmente de observar la tabla es un indicador de que los casos de prueba estuvieron
- bien seleccionados.\\
-Detengamonos un momento en los indices de penalizaci'on, podemos apreciar que los porcentajes son mucho 
+y seguramente se debe a lo que dijimos en un principio, que el algoritmo debe reprocesar datos m'as de 
+una vez cada vez que itera sobre las 'ultima columnas.
+
+Haciendo un an'alisis similar para el caso color, 
+podemos apreciar la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
+alto( mayor a 50\%) y el diferencial es similar en todos los filtros es decir,
+la diferencia m'axima entre el porcentaje de caso favorable y caso no favorable es de n 12\% para la funci'on monocromatizar_uno,
+el resto se mantiene abajo del 10\%. Un muy buen indicador de rendimiento ya que hay poca diferencia de mejora de
+comportamiento entre un caso favorable y otro no favorable.
+
+Para los casos no favorables es de espera que no haya una similitud con respecto al caso base en cuanto a ciclo de 
+reloj(implementacion en \ass ), esto se debe al reprocesaiento de datos. Al igual que en el caso de filtro blanco y negro
+hay el porcentaje de mejora de ciclos cay'o, conusmiendo mas ciclos en los casos no favorables, si bien esto es una 
+oservacion trivial, es un buen indicador de que los casos de prueba fueron bien seleccionados.
+
+Deteng'amonos un momento en los 'indices de penalizaci'on, podemos apreciar que los porcentajes son mucho 
 menores con respecto al caso de blanco y negro,lo cual significa que el costo de reprocesar de datos en
-las funciones de color fue mucho menor que en las funciones de blanco y negro.\\
-\subsubsection{Ancho variable}
-Como mencionamos en el inicio de la secci'on principal,logramos conseguir una cota paa el ancho que sea
-multiplo de 16 pixeles y de 10 a la vez para no tener que discriminar entre los filtros de blanco-negro
-y color, a su vez deb'iamos mantener una constante de pixeles lo mas aproximada a 480000, 
-teniendo im'agenes lo m'as anchas posibles, finalmente elegimos casos de 1441x333 y 1440x333 como no 
-favorables y favorables respectivamente. \textquestiondown Porque 1440x333 ? Esto se debe como dijimos antes a que no es 
-coprimo ni con 10 ni con 16,pero adem'a no pudimos elegir un ancho mas grande ya que la libreria openCV
-nos premite operar con buffer de hasta 1456 pixeles de ancho, luego de esto genera un error de memoria, y
-el pr'oximo n'umero n que cumple n $\equiv$ 0 (10) y n $\equiv$ 0 (16) es mayor a 1456, para ver esto hay que resolver 
-aplicar el teorema chino del resto, pero esa cuenta no aparecer'a en este informe.\\
-Volviendo al an'alisis, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
+las funciones de color fue mucho menor que en dichas funciones,esto seguamente se debe a que los filtros de de color
+trabajan con pixeles de 3 bytes cada uno, por lo tanto rerocesa menos pixeles.
+
+Como una observaci'on general de estas mediciones de imagenes altas en contraste con el caso base podemos apreciar la 
+similitud en los ciclos de reloj de las implementaciones en \C \ y las diferencias en \ass \ sobre todo en los 
+casos no favorables esto se debe a la distribuci'on de los pixeles.
+
+\subsubsection{Imagenes anchas}
+Analizemos la tabla de im'agenes anchas, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
 casi tan alto como el de el caso base, en todos los filtros, esto a simple vista no deber'ia
- sorprendernos pero si observemos m'as atentamente el porcentaje de mejora en los casos desfavorables es 
-casi tan alto como en el caso favorable,algo que con \textbf{alto variables} no ocurria, por el contrario
-decaia bastante. Esto es positivo en terminos de performance y probablemente se debe a que si bien
-debe reprocesar datos, no son influyente ya que los aproximadamente 480000  est'an distribuidos en
-pocas filas.\\
+ sorprendernos pero si observamos m'as atentamente el porcentaje de mejora en los casos desfavorables es 
+casi tan alto como en el caso favorable,algo que con \textbf{imagenes altas} no ocurria, por el contrario
+deca'ia bastante. Esto es positivo en terminos de performance y probablemente se debe a que si bien
+debe reprocesar datos, no son influyentes ya que los aproximadamente 480000 est'an distribuidos en
+pocas filas.
+
 Observemos ahora los'indices de penalizaci'on podemos notar que si bien existen (vale decir hay un porcentaje
- de penalizaci'on es significativamente menor al de \textbf{alto variable} para todos los filtros,esto
+ de penalizaci'on) este es significativamente menor al de \textbf{imagenes altas} para todos los filtros,esto
 deber'ia captar nuesta atenci'on ya que por cada columna en los casos no favorables se reprocesan datos,pero
 si lo pensamos dos veces tiene mucho sentido, ya que cuando el ancho era variable, las matrices
 tenian m'as filas con lo cual asint'oticamente esa penalizaci'on iria incrementando, ahora las matrices
-tiene una cantida de filas constantes (que encima es comparativamente chica con respecto al ancho),
-por lo tanto ese reprocesamiento de datos, si bien no es despreciables, es efectivamente muchisimo menor
-a tal punto de no afectar a la \textit{performance} del filtro.\\
+tienen una cantidad de filas constantes (que encima es comparativamente chica con respecto al ancho),
+por lo tanto ese reprocesamiento de datos, si bien no es despreciables, es efectivamente mucho menor
+a tal punto de no afectar a la \textit{performance} del filtro.
 
-   
-
-
+Como otra observaci'on general notemos que la cantidad de ciclos consumidos por la implementaci'on en \C \ es
+similar al de los casos base, por el lado de la implementaci'on en \ass \ en todos los casos salvo normalizar,
+los filtros consumen m'as ciclos que en su caso base.
 
 \subsection{Opciones descartadas}
 En un momento se penso ver cual era el rendimiento de los algoritmos con una distribuci'on 
