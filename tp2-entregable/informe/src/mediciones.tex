@@ -52,10 +52,10 @@ realiza, obtuvimos un porcentaje de mejora superior al 96$\%$. El caso del filtr
 de mejora tuvo fue monocromatizar_uno, que no obstante, obtuvo una mejora superior al 50$\%$. Si bien
 suponiamos que podia haber una diferencia en la eficiencia no sabiamos que seria tan marcada, lo cual es muy 
 positivo, ya que significa que dio r'editos implementar en un lenguaje de m'as bajo nivel y mayor dificultad
- a cambio de un mejor rendimiento,siempre utilizando la tecnologia \textit{SSE}.\\
+ a cambio de un mejor rendimiento,siempre utilizando la tecnologia \textit{SSE}.
 
 \subsubsection{Imagenes altas}
-A partir de este exprimento introducimos un nuevo concepto de indice denominado
+A partir de este experimento introdugimos un nuevo concepto de indice denominado
 \textbf{penalizaci'on}. Este 'indice tiene como par'ametros de comparaci'on a los ciclos necesarios por
 cada implementaci'on en \ass, mide que porcentaje representa la cantidad de ciclos en un ancho 
 favorable con respecto a uno no favorable.
@@ -78,13 +78,19 @@ comportamiento entre un caso favorable y otro no favorable.
 
 Para los casos no favorables es de espera que no haya una similitud con respecto al caso base en cuanto a ciclo de 
 reloj(implementacion en \ass ), esto se debe al reprocesaiento de datos. Al igual que en el caso de filtro blanco y negro
-hay el porcentaje de mejora de ciclos cay'o, conusmiendo mas ciclos en los casos no favorables, si bien esto es una 
-oservacion trivial, es un buen indicador de que los casos de prueba fueron bien seleccionados.
+hay el porcentaje de mejora de ciclos cay'o, consumiendo mas ciclos en los casos no favorables, si bien esto es una 
+observacion trivial, es un buen indicador de que los casos de prueba fueron bien seleccionados.
 
 Deteng'amonos un momento en los 'indices de penalizaci'on, podemos apreciar que los porcentajes son mucho 
 menores con respecto al caso de blanco y negro,lo cual significa que el costo de reprocesar de datos en
 las funciones de color fue mucho menor que en dichas funciones,esto seguamente se debe a que los filtros de de color
-trabajan con pixeles de 3 bytes cada uno, por lo tanto rerocesa menos pixeles.
+trabajan con pixeles de 3 bytes cada uno, por lo tanto reprocesa menos pixeles.
+
+El 'unico filtro que result'o  llamativo el porcentaje de penalizaci'on es el suavizado, ya que dicho porcentaje es bajo lo cual
+nos hace inferir que tiene menos diferencia de comportamiento entre casos favorables y casos no favorables, a diferencia
+de los otros filtros donde la penalizaci'on es mayor. Si bien un bajo i'ndce de penalizaci'on podria significar algo bueno,
+tambien puede ocurrir que se deba a que en un caso favorable el algoritmo se comporta de manera similar a un caso no favorable
+y eso es claramente malo. 
 
 Como una observaci'on general de estas mediciones de imagenes altas en contraste con el caso base podemos apreciar la 
 similitud en los ciclos de reloj de las implementaciones en \C \ y las diferencias en \ass \ sobre todo en los 
@@ -105,13 +111,16 @@ deber'ia captar nuesta atenci'on ya que por cada columna en los casos no favorab
 si lo pensamos dos veces tiene mucho sentido, ya que cuando el ancho era variable, las matrices
 tenian m'as filas con lo cual asint'oticamente esa penalizaci'on iria incrementando, ahora las matrices
 tienen una cantidad de filas constantes (que encima es comparativamente chica con respecto al ancho),
-por lo tanto ese reprocesamiento de datos, si bien no es despreciables, es efectivamente mucho menor
+por lo tanto ese reprocesamiento de datos, si bien no es despreciable, es efectivamente mucho menor,
 a tal punto de no afectar a la \textit{performance} del filtro.
 
 Como otra observaci'on general notemos que la cantidad de ciclos consumidos por la implementaci'on en \C \ es
 similar al de los casos base, por el lado de la implementaci'on en \ass \ en todos los casos salvo normalizar,
 los filtros consumen m'as ciclos que en su caso base.
 
-
+Otro dato que llama la atenci'on es el filtro de suavizar que mantiene una regularidad en los i'ndices de 
+\textbf{diferencia de ciclos} y \textbf{ciclosASM} con respecto al caso base, lo que nos permite concluir que es el filtro que
+presento la mayor similitud de rendimiento con a pesar de que la cantidad de filas es casi la mitad con respecto al caso
+base.
 
 
