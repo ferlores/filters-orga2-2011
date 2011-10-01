@@ -6,7 +6,7 @@ Para realizar las mediciones utilizamos las herramientas provistas por la c'ated
 Antes de comenzar tuvimos que tomar ciertas decisiones de c'omo ibamos a realizar dichas mediciones. El primer problema que encontramos al utilizar el reloj del procesador para medir es que nuestro proceso puede llegar a ser interrumpido por otros procesos o por el sistema operativo. Hemos tomado dos medidas al respecto, la primera es ejecutar las mediciones estableciendo m'axima la priodidad del proceso. Para ello Linux provee el comando \texttt{nice}, que ejecutandolo como \textit{root}, permite decirle al sistema operativo que nuestras mediciones tienen prioridad sobre los otros programas en ejecuci'on. 
 Mientras que la segunda medida fue realizar mil mediciones por cada prueba, promediando el resultado. El n'umero elegido aparece como una soluci'on de compromiso con el tiempo de ejecuci'on de las muestras.
 
-Otro factor a analizar fu'e que muestras seleccionamos para medir. Debido a la naturaleza de los algoritmos implementados, podemos ver facilmente que la complejidad esta relacionada directamente con el tama'no de la entrada. Es decir que las dos implementaciones de cada filtro se van a comportar diferente dependiendo del tama'no de la im'agen\footnote{Es importante aclarar que consideramos como tama'no de la imagen, la cantidad total de p'ixeles que esta tiene} y no del tipo de imagen a procesar. Por lo tanto podriamos tomar imagenes de distinto tama'no y comparar como se comportan los distintos filtros y las distintas implementaciones, observando las variaciones de \textit{clocks} con respecto a la cantidad de p'ixeles procesados. Sin embargo elegimos otro camino. Decidimos utilizar un tama'no fijo (dentro de los posible) de p'ixeles y analizar el comportamiento de los algoritmos al variar la relaci'on entre la cantidad de filas y de columnas de la imagen. 
+Otro factor a analizar fue que muestras seleccionamos para medir. Debido a la naturaleza de los algoritmos implementados, podemos ver facilmente que la complejidad esta relacionada directamente con el tama'no de la entrada. Es decir que las dos implementaciones de cada filtro se van a comportar diferente dependiendo del tama'no de la im'agen\footnote{Es importante aclarar que consideramos como tama'no de la imagen, la cantidad total de p'ixeles que esta tiene} y no del tipo de imagen a procesar. Por lo tanto podriamos tomar imagenes de distinto tama'no y comparar como se comportan los distintos filtros y las distintas implementaciones, observando las variaciones de \textit{clocks} con respecto a la cantidad de p'ixeles procesados. Sin embargo elegimos otro camino. Decidimos utilizar un tama'no fijo (dentro de los posible) de p'ixeles y analizar el comportamiento de los algoritmos al variar la relaci'on entre la cantidad de filas y de columnas de la imagen. 
 
 Para las mediciones base utilizamos una imagen de 800x600. Es decir que estamos trabajando con im'agenes de 480.000 p'ixeles (aprox. $0,5Mp$). Luego tomamos distintas ima'genes reacomodando las filas y columnas, seg'un criterios que explicaremos en la siguiente secc'on. Sin embargo a veces no fue posible llegar a la misma cantidad exacta de pixeles. En estos casos elegimos combinaciones donde la diferencia sea m'inima y podemos asegurar que en ningun caso la diferencia de tama'no supera un $0,1\%$ del total.
 
@@ -16,25 +16,23 @@ llegar a comportarse una una manera especial. Como conjetura inicial establecimo
 fluctuaciones en el las funciones desarrolladas en \C \ ya que el recorrido de la matriz es lineal y
 de a un elemento por vez, con lo cual las dimensiones no deber'ian ser un factor relevante. 
 
-En cambio, para el caso de las funciones en \ass, podemos observar que su gran ventaja es que pueden procesar de a muchos datos. Sin embargo su desventaja es que si la imagen no es m'ultiplo de la cantidad de p'ixeles que procesa por iteracion, entonces se debe realizar el reajuste. El mismo que fue expicado en la secci'on \label{sec:ciclos}, con el objetivo de procesar los 'ultimos p'ixeles de la fila reprocesa algunos m'as. 
+En cambio, para el caso de las funciones en \ass, podemos observar que su gran ventaja es que pueden procesar de a muchos datos. Sin embargo su desventaja es que si la imagen no es m'ultiplo de la cantidad de p'ixeles que procesa por iteracion, entonces se debe realizar un reajuste (ver secci'on \label{sec:ciclos}), con el objetivo de procesar los 'ultimos p'ixeles de la fila.
 
-%\begin{itemize}
-% \item{Cantidad de accesos a memoria}.
-% \item{Cantidad de instrucciones de movimiento interno de bits en registro}
-% \item{Dimensiones de la matriz,(par'ametro de entrada)}
-%\end{itemize}
-%
-%El primer factor pudo subsanarse construyendo un c'odigo m'as eficiente que su version inicial, 
-%usando instrucciones y direccionamientos adecuados(que permitieran ganar m'as performance).
-%El segundo factor pudo reducirse en gran parte con el uso de m'ascaras, sin embargo en algunos casos
-%no se pudieron sacar ya que sin ellos no pod'ia obtenerse la funcionalidad deseada.\\
-%El tercer factor esta determinado por la entrada y el algoritmo, se explica en la secci'on siguiente.
-
-Entonces, para elegir exactamente las combinaciones de filas/columnas tene que diferenciar dos tipos de
+Entonces, para elegir exactamente las combinaciones de filas/columnas tenemos que diferenciar dos tipos de
 filtros: Los que toman como par'ametro de entrada im'agenes a color (monocromatizar, separar canales) y los que toman im'agenes en blanco y negro
 (umbralizar, invertir, normalizar, suavizar).
 
-Para los que toman imagen en color, en el ciclo principal si bien las lecturas son de 16 bytes se procesa de a 5 pixeles por vez, con lo cual si la cantidad de pixeles de ancho es multiplo de 5 el algoritmo realizar'ia la cantidad justa de lecturas en memoria. En el caso contrario en que la anchura no se multiplo de 5 el algoritmo debe realizar una lectura extra al final de cada fila, con su consecuente procesamiento. Tal vez esto se har'ia para solo procesar un pixel. Es decir, estariamos recalculando 15 bytes para procesar solo uno. Esta diferencia se ver'ia acrecentada si la cantidad de filas es grande, y el costo de esas lecturas extra por columna se har'ia evidente en una eventual medici'on.
+Para los que toman imagen blanco y negro, los algoritmos procesan de a 16 pixeles por vez, con lo cual si el ancho es multiplo de 16 el algoritmo realizar'ia una cantidad justa de lecturas en memoria (\textit{caso favorable}). Por el contrario, cuando la anchura no es multiplo de 5 el algoritmo debe realizar una lectura extra al final de cada fila para procesar los bytes restantes(\textit{caso desfavorable}). Es posible que esta lectura extra se haga solo para procesar un pixel. Es decir que estariamos recalculando 15 bytes para procesar solo uno. Esta penalizaci'on se ver'ia acrecentada conforme aumenta la cantidad de filas.
+
+En cambio, los algoritmos que procesan im'agenes a color avanzan de a cinco p'ixeles. Por lo que podemos aplicar el mismo razonamiento que para los algoritmos en blanco y negro modificando el factor de multiplicidad a 5.
+
+\subsection{Eleccion de im'agenes}
+Como primera medida, realizamos mediciones con una im'agen de 800x600, para poder establecer un punto de comparaci'on para las otras im'agenes de entrada. Luego, teniendo en cuenta lo descripto en la secci'on anterior, elegimos tama'nos de im'agenes que provoquen casos favorables y casos desfavorables, para poder compararlos. 
+
+Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y negro im'agenes de 16 y 17 p'ixeles de ancho para los casos favorable y desfavorable respectivamente. Estos valores son los anchos m'as pequeños que producen los casos que buscamos. Por el contrario, para los algoritmos a color elegimos anchos de 10 y 11 p'ixeles. Es de esperar que en este conjunto de mediciones la penalizac'ion del \ass se vea exagerada.
+
+Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando, a priori, diluir las penalizaciones cuando las haya. En este punto encontramos un imprevisto. La librer'ia openCV genera un error al intentar abrir im'agenes mas anchas que 1453 p'ixeles. Es por eso que elegimos un ancho lo mas cercano a ese valor y que fuera m'ultiplo de 16 y de 5, de esta manera nos servir'ia como caso favorable tanto para los algoritmos a color como los de blanco y negro. El ancho elegido fue 1440, ya que cumple las condiciones anteriores. Por otra parte elegimos como ancho para los casos desfavorables el valor 1441.
+
 
 %----------------------------------------------------------
 % Hasta aca reviso Fer
