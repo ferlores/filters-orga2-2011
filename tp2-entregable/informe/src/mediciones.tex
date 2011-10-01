@@ -34,29 +34,6 @@ Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y neg
 Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando, a priori, diluir las penalizaciones cuando las haya. En este punto encontramos un imprevisto. La librer'ia openCV genera un error al intentar abrir im'agenes mas anchas que 1453 p'ixeles. Es por eso que elegimos un ancho lo mas cercano a ese valor y que fuera m'ultiplo de 16 y de 5, de esta manera nos servir'ia como caso favorable tanto para los algoritmos a color como los de blanco y negro. El ancho elegido fue 1440, ya que cumple las condiciones anteriores. Por otra parte elegimos como ancho para los casos desfavorables el valor 1441.
 
 
-%----------------------------------------------------------
-% Hasta aca reviso Fer
-%----------------------------------------------------------
-
-Teniendo en cuenta esto se decidi'o medir con im'agenes de la siguiente distribuci'on de pixeles:
- \begin{itemize}
- \item{800x600}.
- \item{10x48000}
- \item{11x43636}
-\end{itemize}
-Para los filtros que trabajan im'agenes blanco y Negro ocurre algo similar a lo anterior solo que cada
-pixel esta representado por un byte por lo tanto por cada lectura se procesa de a 16 pixeles. De forma
-an'aloga asociamos mejor performance con las im'agenes cuyo anchura en pixeles es un multiplo de 16, y 
-una peor performance con las que son coprimas con 16, ya que necesitara una lectura mas por cada columna
-de la matriz, mas a'un procesaran algunos datos dos veces. \\
-Los \textit{sizes} elegidos para estos caso fueron:\\
-\begin{itemize}
- \item{800x600}.
- \item{16x30000}
- \item{17x28235}
-\end{itemize}
-
-
 \subsection{Experimentos}
 \subsubsection{Caso base}
 En este experimento se miden los siguientes 'indice:
