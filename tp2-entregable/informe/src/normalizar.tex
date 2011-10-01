@@ -1,7 +1,7 @@
 \subsection{Normalizar}
 El objetivo de este algoritmo es que modificar cada pixel para ampliar el rango de valores de toda la imagen. Para esto utilizamos la f'ormula general (ecuaci'on \ref{eq:normalizar}), estableciendo los valores m'aximos y m'inimos posibles para el caso de las imagenes en escala de grises (255 y 0 respectivamente). Luego realizamos algunas operaciones 'algebraicas a fin de poder establecer una constante de multiplicacion que procesar'a cada pixel.
 
-Entonces el algoritmo queda divido en dos partes: la primera busca el m'aximo y m'inimo de la imagen, mientras que la segunda procesa los valores aplicando la ecuaci'on ya descripta
+Entonces el algoritmo queda divido en tres partes: la primera busca el m'aximo y m'inimo de la imagen, la segunda calcula la constante $K$ mientras que la segunda procesa los valores aplicando la ecuaci'on ya descripta.
 
 \begin{equation}
 \begin{array}{rl}
@@ -29,7 +29,7 @@ Lo que queda por hacer entonces es comparar los bytes dentro de cada registro pa
 
 En este punto tenemos dos candidatos en el word mas significativo del registro. Para compararlos, duplicamos el registro y hacemos un desplazamiento a izquierda de un byte (paso 4). De esta manera, al comparar queda en el byte mas significativo el valor buscado. 
 
-Una vez obtenido estos dos valores, hacemos un desplazamiento a izquierda de tres bytes, y en el double word mas significativo nos queda el valor deseado. Ahora hacemos un \textit{broadcast} a todos los double words y el registro nos queda con los valores deseados empaquetados a double word.
+Una vez obtenido estos dos valores, hacemos un desplazamiento a izquierda de tres bytes, y en el double word mas significativo nos queda el valor deseado. Ahora hacemos un \textit{broadcast} a todos los double words y el registro nos queda con los valores deseados empaquetados a \textit{double word}.
 
 La Figura \ref{est:normalizar-1} muestra como se van reduciendo los candidatos aplicando las operaciones antes descriptas.
 
@@ -45,4 +45,17 @@ La Figura \ref{est:normalizar-1} muestra como se van reduciendo los candidatos a
 \end{figure}
 
 
-\subsubsection*{C'alculo de valores}
+\subsubsection*{C'alculo de la constante $K$}
+
+Para calcular la constante $K$ a partir de el valor m'aximo y m'inimo obtenidos en el paso anterior, es importante tener en cuenta que dicho valor es un n'umero decimal. Es por esto que para no perder realizamos las cuentas utilizando como tipo de dato empaquetado al decimal con punto flotante de precisi'on simple. Entonces lo primero que realizamos fue una conversion de los registros que contenian el m'aximo y m'inimo empaquetados en \textit{double words} a un formato empquetado \textit{float single presicion}, luego, realizando las operaciones descriptas en la ecuaci'on \ref{eq:normalizar} obtenemos un registro con la constante empaquetada como \textit{float}. Lo mismo hacemos con el registro que contiene el m'inimo, pues lo necesitamos en los c'alculos
+
+
+\subsubsection*{Procesamiento de los p'ixeles}
+
+En esta etapa recorremos la matriz de a 16 p'ixeles, la desempaquetamos a \textit{words} separando y parte alta y baja. Cada parte es a su vez desempaquetada a  \textit{double words} y convertida a empaquetados de punto flotante. Entonces, por cada lectura nos quedan cuatro registros con cada uno cuatro valores listos para ser procesados sin perder precisi'on. A los mismos se les resta el valor m'inimo con la resta de punto flotante (\textit{subps}) y se multiplica por la constante $K$ (\textit{mulps}).
+
+Una vez calculado cada p'ixel se realiza el camino inverso al descript empaquetando el resultado. Primero se convierte el resultado de empaquetado de punto flotante a \textit{double word}, luego a \textit{word} y por 'ultimo a byte. Es importante resaltar que los empaquetamientos que realizamos son con saturaci'on signada. Es decir que si el valor esta fuera del rango permitido se satura al m'aximo o al m'inimo seg'un corresponda. 
+
+Una vez que el resultado es empaquetado, 'este se baja a memoria y se continua con la siguiente iteraci'on.
+
+

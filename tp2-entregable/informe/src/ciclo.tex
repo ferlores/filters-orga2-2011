@@ -2,6 +2,7 @@
 \label{sec:algoritmos}
 
 \subsection{Iterarando im'agenes}
+\label{sec:ciclos}
 La primera decisi'on a tomar a la hora de implementar los algoritmos fue como recorreremos las im'agenes. En \C\ optamos por la manera convencional, recorriendo secuencialmente la matriz, leyendo de a p'ixeles y cuando llegamos al final de cada fila salteamos el padding. Es claro que hay maneras mas eficiente pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos. 
 
 Por otro lado, la implementaci'on en \ass\ fu'e mas ingeniosa ya que al utilizar la tecnolog'ia SSE debiamos, en principio, aprovechar al m'aximo lectura de a 16 bytes. Los problemas se presentan cuando quiero asegurarme de que estoy procesando todos los p'ixeles y que estoy evitando correctamente el \textit{padding}. En este trab'ajo pr'actico procesamos im'agenes a color y en escala de grises. Aunque la estrategia fue la misma, se presentaron sutilies diferencias para estos dos casos. 
