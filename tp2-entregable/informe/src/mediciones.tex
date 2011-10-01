@@ -1,5 +1,15 @@
-
 \subsection{Mediciones}
+Para realizar las mediciones utilizamos las herramientas provistas por la c'atedra para la medici'on de ciclos de \textit{clock}. El objetivo ser'a medir los distintos algoritmos, comparando las distintas versiones para distintos tipos de imagenes de entrada. Para ello creamos un conjunto de \textit{scripts} de \textit{bash} que realizas las distintas mediciones que necesitamos. Los mismos se encuentran en la carpeta mediciones junto con una explicacion de como utilizarlo.
+
+Antes de comenzar tuvimos que tomar ciertas decisiones de c'omo ibamos a realizar dichas mediciones. El primer problema que encontramos al utilizar el reloj del procesador para medir es que nuestro proceso puede llegar a ser interrumpido por otros procesos o por el sistema operativo. Hemos tomado dos medidas al respecto, la primera es ejecutar las mediciones estableciendo m'axima la priodidad del proceso. Para ello Linux provee el comando \texttt{nice}, que ejecutandolo como \textit{root}, permite decirle al sistema operativo que nuestras mediciones tienen prioridad sobre los otros programas en ejecuci'on. 
+Mientras que la segunda medida fue realizar mil mediciones por cada prueba, promediando el resultado. El n'umero elegido aparece como una soluci'on de compromiso con el tiempo de ejecuci'on de las muestras.
+
+Otro factor a analizar fu'e que muestras seleccionamos para medir. Debido a la naturaleza de los algoritmos implementados, podemos ver facilmente que la complejidad esta relacionada directamente con el tama'no de la entrada. Es decir que las dos implementaciones de cada filtro se van a comportar diferente dependiendo del tama'no de la im'agen\footnote{Es importante aclarar que consideramos como tama'no de la imagen, la cantidad total de p'ixeles que esta tiene} y no del tipo de imagen a procesar. Por lo tanto podriamos tomar imagenes de distinto tamaño y comparar como se comportan los distintos filtros y las distintas implementaciones, observando las variaciones de \textit{clocks} con respecto a la cantidad de p'ixeles procesados. Sin embargo elegimos otro camino. Decidimos utilizar un tamaño fijo (dentro de los posible) de p'ixeles y analizar el comportamiento de los algoritmos al variar la relaci'on entre la cantidad de filas y de columnas de la imagen.
+
+Por otra parte, podriamos haber realizado mediciones para distintos 
+
+
+
 Una vez desarrolados los filtros tanto en \C \  como en \ass, necesitabamos par'ametros de comparaci'on
 para ver si efectivamente nuestras conjeturas iniciales eran ciertas o no.
 Adem'as de correr los test solicitados por la c'atedra se generaron casos de prueba,
