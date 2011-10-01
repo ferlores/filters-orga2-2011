@@ -1,6 +1,8 @@
 \section{Algoritmos}
 \label{sec:algoritmos}
 
+A la hora de implementar los algoritmos en \ass\ decidimos utilizar la tecnolog'ia SSE version 2. Si bien versiones mas actuales proveen instrucciones que en ciertos casos hubiesen sido mas efectivas para el procesamiento de bytes empaquetados, nos era dif'icil desarrolla en nuestras casas, donde la version SSE de los procesadores no era tan avanzada.
+
 \subsection{Iterarando im'agenes}
 \label{sec:ciclos}
 La primera decisi'on a tomar a la hora de implementar los algoritmos fue como recorreremos las im'agenes. En \C\ optamos por la manera convencional, recorriendo secuencialmente la matriz, leyendo de a p'ixeles y cuando llegamos al final de cada fila salteamos el padding. Es claro que hay maneras mas eficiente pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos. 
