@@ -1,4 +1,5 @@
 \section{Mediciones}
+\label{sec:mediciones}
 Para realizar las mediciones utilizamos las herramientas provistas por la c'atedra para la medici'on de ciclos de \textit{clock}. El objetivo ser'a medir los distintos algoritmos, comparando las distintas versiones para distintos tipos de imagenes de entrada. Para ello creamos un conjunto de \textit{scripts} de \textit{bash} que realizas las distintas mediciones que necesitamos. Los mismos se encuentran en la carpeta mediciones junto con una explicacion de como utilizarlo.
 
 \subsection{Estableciendo Criterios}
@@ -29,7 +30,7 @@ En cambio, los algoritmos que procesan im'agenes a color avanzan de a cinco p'ix
 \subsection{Eleccion de im'agenes}
 Como primera medida, realizamos mediciones con una im'agen de 800x600, para poder establecer un punto de comparaci'on para las otras im'agenes de entrada. Luego, teniendo en cuenta lo descripto en la secci'on anterior, elegimos tama'nos de im'agenes que provoquen casos favorables y casos desfavorables, para poder compararlos. 
 
-Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y negro im'agenes de 16 y 17 p'ixeles de ancho para los casos favorable y desfavorable respectivamente. Estos valores son los anchos m'as pequeños que producen los casos que buscamos. Por el contrario, para los algoritmos a color elegimos anchos de 10 y 11 p'ixeles. Es de esperar que en este conjunto de mediciones la penalizac'ion del \ass se vea exagerada.
+Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y negro im'agenes de 16 y 17 p'ixeles de ancho para los casos favorable y desfavorable respectivamente. Estos valores son los anchos m'as peque'nos que producen los casos que buscamos. Por el contrario, para los algoritmos a color elegimos anchos de 10 y 11 p'ixeles. Es de esperar que en este conjunto de mediciones la penalizac'ion del \ass se vea exagerada.
 
 Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando, a priori, diluir las penalizaciones cuando las haya. En este punto encontramos un imprevisto. La librer'ia openCV genera un error al intentar abrir im'agenes mas anchas que 1453 p'ixeles. Es por eso que elegimos un ancho lo mas cercano a ese valor y que fuera m'ultiplo de 16 y de 5, de esta manera nos servir'ia como caso favorable tanto para los algoritmos a color como los de blanco y negro. El ancho elegido fue 1440, ya que cumple las condiciones anteriores. Por otra parte elegimos como ancho para los casos desfavorables el valor 1441.
 
