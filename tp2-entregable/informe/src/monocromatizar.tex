@@ -4,12 +4,13 @@ El objetivo de la funcion monocromatizar es convertir una imagen a escala de gri
 cada pixel se compone de 3 bytes,uno por cada componente de color \textbf{RGB}. En su respectiva implementacion en 
 \C la imagen se recorre linealmente como una matriz, guardando los valores de cada componente de color
 que tienen los pixeles y aplic'andole una serie de operaciones que es la siguiente:
-\textbf{(R+2*G+B)/4}, finalmente esto es lo que se almacena en la imagen destino.\\
+\textbf{(R+2*G+B)/4}, finalmente esto es lo que se almacena en la imagen destino.
+
 La idea en \ass es similar solo que, aprovechando la capacidad de almacenamiento de los registros de 128 bits
 y teniendo en cuenta que en cada uno de estos registros entran 16 bytes, podemos procesar de hasta 5 pixeles
-por cada lectura de memoria, en lugar de 1.
-Inicialmente cuando leemos en memoria de la imagen fuente, cargamos 16 bytes en un registro de xmm dejando 
-las componentes de color de la siguiente manera: \\
+por cada lectura de memoria, en lugar de 1. Inicialmente cuando leemos en memoria de la imagen fuente, cargamos 16 bytes en un registro de xmm dejando 
+las componentes de color de la siguiente manera: 
+
 \begin{figure}[hb]
 \xmmW{texto}{B_5R_4 & G_4B_4 & R_3G_3 & B_3R_2 & G_2B_2 & R_1G_1 & B_1R_0 & G_0B_0}
 %\xmmD{texto}{0G_2 0B_2 & R_1G_1 & B_1R_0 & G_0B_0}
@@ -34,14 +35,17 @@ que no es posible  hacer las cuentas sin antes desempaquetar los datos ya que de
 presici'on o  podria saturar alguna suma, no obstante dado que la division por 4 es la 'ultima operacion que 
 se aplica el resultado final es expresable en un byte. Teniendo en cuenta eso procedimos de la siguiente 
 manera: 
+
 Por cada uno de los registro mencionados desempaquetamos tomando como segundo operando un registro de 128
-bits con ceros, y los dividimos en partes bajas y altas, como muestra la figura: \\
+bits con ceros, y los dividimos en partes bajas y altas, como muestra la figura: 
+
 \begin{figure}[hb]
 \xmmW{xmm}{ 0_0G_2  & 0_0B_2 & 0_0R_1 & 0_0G_1 & 0_0B_1 & 0_0R_0 & 00G_0 & 00B_0}
 \xmmW{xmm}{ 00 B_5  & 00 R_4 & 00 G_4 & 00B_4 & 00 R_3 & 00 G_3 & 00 B_3 & 00 R_2}
 \caption{desempaquetado}
 \label{est:m-uno}
 \end{figure}
+
 Para multiplicar y dividir usamos las instrucciones \textit{psrlw} y \textit{psllw} para realizar un corrimiento 
 de bits a derecha e izquierda respectivamente en cada word del registro. \\
 Una vez realizados los c'alculos necesarios notemos que tenemos las cuentas necesarias en dos registros
