@@ -44,15 +44,31 @@ En este experimento se miden los siguientes 'indice:
  \item \textbf{porcentaje de mejora}: porcentaje de eficiencia de un implementaci'on con respecto a la otra.
 \end{itemize}
 
-Podemos observar que en todos los filtros 
-la implementaci'on en \ass \ consume
+Podemos observar que en todos los filtros la implementaci'on en \ass \ consume
 menos ciclos de reloj, un resultado a que esta dentro de lo esperado, sin embargo llama la atenci'on
 lo significativa que es esta diferencia. Por ejemplo en el filtro invertir, que es el que menos instrucciones
 realiza, obtuvimos un porcentaje de mejora superior al 96$\%$. El caso del filtro que menos porcentaje
-de mejora tuvo fue monocromatizar_uno, que no obstante, obtuvo una mejora superior al 50$\%$. Si bien
+de mejora tuvo fue monocromatizar\_uno, que no obstante, obtuvo una mejora superior al 50$\%$. Si bien
 suponiamos que podia haber una diferencia en la eficiencia no sabiamos que seria tan marcada, lo cual es muy 
 positivo, ya que significa que dio r'editos implementar en un lenguaje de m'as bajo nivel y mayor dificultad
  a cambio de un mejor rendimiento,siempre utilizando la tecnologia \textit{SSE}.
+
+\begin{table}[h!]
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\sc{funci'on} & \sc{\# pixels }& \sc{ciclos C }& \sc{ciclos ASM }& \sc{$\delta$ ciclos }& \sc{\% mejora}\\ \hline
+invertir & 800x600 & 7.317.170 & 287.367 & 7.029.803 & 96,07\%\\ 
+normalizar & 800x600 & 23.331.351 & 1.539.564 & 21.791.786 & 93,40\%\\ 
+umbralizar & 800x600 & 13.538.943 & 540.008 & 12.998.935 & 96,01\%\\ 
+suavizar & 800x600 & 32.483.342 & 3.968.673 & 28.514.669 & 87,78\%\\ 
+monocromatizar\_uno & 800x600 & 17.332.554 & 5.513.335 & 11.819.219 & 68,19\%\\ 
+monocromatizar\_inf & 800x600 & 18.555.484 & 4.468.378 & 14.087.106 & 75,92\%\\ 
+separar\_canales & 800x600 & 20.421.239 & 6.219.616 & 14.201.623 & 69,54\%\\ 
+\hline
+\end{tabular}
+\caption{Resultados caso base}
+\label{tab:base}
+\end{table}
 
 \subsubsection{Imagenes altas}
 A partir de este experimento introdugimos un nuevo concepto de indice denominado
@@ -69,10 +85,29 @@ Otra observacio'n interesante es el porcentaje de penalizaci'on, notemos que dan
 y seguramente se debe a lo que dijimos en un principio, que el algoritmo debe reprocesar datos m'as de 
 una vez cada vez que itera sobre las 'ultima columnas.
 
+\begin{table}[h!]
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\sc{funci'on} & \sc{\# pixels} & \sc{ciclos C }& \sc{ciclos ASM }& \sc{$\Delta$ ciclos }& \sc{\% mejora }& \sc{penalizaci'on}\\ \hline
+invertir & 16x30000 & 7.706.474 & 408.430 & 7.298.044 & 94,70\% & \\ 
+ & 17x28234 & 7.642.414 & 1.799.789 & 5.842.625 & 76,45\% & 340,66\%\\ \hline
+normalizar & 16x30000 & 24.321.128 & 1.821.235 & 22.499.894 & 92,51\% & \\ 
+ & 17x28234 & 23.895.976 & 4.829.856 & 19.066.120 & 79,79\% & 165,20\%\\ \hline
+umbralizar & 16x30000 & 14.287.793 & 680.832 & 13.606.961 & 95,23\% & \\ 
+ & 17x28234 & 14.253.437 & 2.275.706 & 11.977.731 & 84,03\% & 234,25\%\\ \hline
+suavizar & 17x28234 & 29.283.006 & 3.773.630 & 25.509.376 & 87,11\% & \\ 
+ & 18x26666 & 29.320.184 & 7.404.941 & 21.915.243 & 74,74\% & 96,23\%\\ 
+\hline
+\end{tabular}
+\caption{Resultados Im'agenes altas blanco y negro}
+\label{tab:abyn}
+\end{table}
+
+
 Haciendo un an'alisis similar para el caso color, 
 podemos apreciar la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
 alto( mayor a 50\%) y el diferencial es similar en todos los filtros es decir,
-la diferencia m'axima entre el porcentaje de caso favorable y caso no favorable es de n 12\% para la funci'on monocromatizar_uno,
+la diferencia m'axima entre el porcentaje de caso favorable y caso no favorable es de n 12\% para la funci'on monocromatizar\_uno,
 el resto se mantiene abajo del 10\%. Un muy buen indicador de rendimiento ya que hay poca diferencia de mejora de
 comportamiento entre un caso favorable y otro no favorable.
 
@@ -95,6 +130,22 @@ y eso es claramente malo.
 Como una observaci'on general de estas mediciones de imagenes altas en contraste con el caso base podemos apreciar la 
 similitud en los ciclos de reloj de las implementaciones en \C \ y las diferencias en \ass \ sobre todo en los 
 casos no favorables esto se debe a la distribuci'on de los pixeles.
+
+\begin{table}[h!]
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\sc{\footnotesize funci'on} & \sc{\footnotesize\# pixels} & \sc{\footnotesize ciclos C }& \sc{\footnotesize ciclos ASM }& \sc{\footnotesize$\Delta$ ciclos }& \sc{\footnotesize\% mejora }& \sc{\footnotesize penalizaci'on}\\ \hline
+mono\_uno& 10x48000 & 18.232.058 & 6.168.852 & 12.063.205 & 66,16\% & \\ 
+ & 11x43636 & 18.059.469 & 8.144.680 & 9.914.789 & 54,90\% & 32,03\%\\ \hline
+mono\_inf & 10x48000 & 18.978.920 & 5.410.115 & 13.568.806 & 71,49\% & \\ 
+ & 11x43636 & 18.967.671 & 6.368.449 & 12.599.222 & 66,42\% & 17,71\%\\ \hline
+separar\_c & 10x48000 & 20.874.906 & 7.176.690 & 13.698.216 & 65,62\% & \\ 
+ & 11x43636 & 20.800.016 & 9.195.779 & 11.604.237 & 55,79\% & 28,13\%\\ \hline
+\end{tabular}
+\caption{Resultados Im'agenes altas color}
+\label{tab:acolor}
+\end{table}
+
 
 \subsubsection{Imagenes anchas}
 Analizemos la tabla de im'agenes anchas, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
@@ -122,5 +173,30 @@ Otro dato que llama la atenci'on es el filtro de suavizar que mantiene una regul
 \textbf{diferencia de ciclos} y \textbf{ciclosASM} con respecto al caso base, lo que nos permite concluir que es el filtro que
 presento la mayor similitud de rendimiento con a pesar de que la cantidad de filas es casi la mitad con respecto al caso
 base.
+
+
+
+\begin{table}[h!]
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\sc{\footnotesize funci'on} & \sc{\footnotesize\# pixels} & \sc{\footnotesize ciclos C }& \sc{\footnotesize ciclos ASM }& \sc{\footnotesize$\Delta$ ciclos }& \sc{\footnotesize\% mejora }& \sc{\footnotesize penalizaci'on}\\ \hline
+invertir & 1440x333 & 7.277.945 & 313.567 & 6.964.378 & 95,69\% &  \\ 
+  & 1441x333 & 7.274.547 & 459.617 & 6.814.930 & 93,68\% & 46,58\%\\ \hline
+normalizar & 1440x333 & 23.352.742 & 1.557.537 & 21.795.205 & 93,33\% &  \\ 
+  & 1441x333 & 23.326.450 & 1.793.687 & 21.532.763 & 92,31\% & 15,16\%\\ \hline
+umbralizar & 1440x333 & 13.004.767 & 543.850 & 12.460.917 & 95,82\% &  \\ 
+  & 1441x333 & 13.013.609 & 715.497 & 12.298.113 & 94,50\% & 31,56\%\\ \hline
+suavizar & 1440x333 & 32.468.271 & 3.905.847 & 28.562.424 & 87,97\% &  \\ 
+  & 1441x333 & 32.483.078 & 3.945.091 & 28.537.988 & 87,85\% & 1,00\%\\ \hline
+mono\_uno & 1440x333 & 17.292.896 & 5.499.913 & 11.792.983 & 68,20\% &  \\ 
+  & 1441x333 & 17.337.919 & 5.529.326 & 11.808.594 & 68,11\% & 0,53\%\\ \hline
+mono\_inf & 1440x333 & 18.526.267 & 4.450.636 & 14.075.631 & 75,98\% &  \\ 
+  & 1441x333 & 18.521.016 & 4.483.062 & 14.037.954 & 75,79\% & 0,73\%\\ \hline
+separar\_c& 1440x333 & 20.427.885 & 6.163.018 & 14.264.867 & 69,83\% &  \\ 
+  & 1441x333 & 20.457.241 & 6.214.148 & 14.243.092 & 69,62\% & 0,83\%\\ \hline
+\end{tabular}
+\caption{Resultados Im'agenes anchas}
+\label{tab:anchas}
+\end{table}
 
 
