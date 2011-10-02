@@ -37,14 +37,14 @@ Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando
 
 \subsection{Experimentos}
 \subsubsection{Caso base}
-En este experimento se miden los siguientes 'indice:
+En este experimento se miden los siguientes 'indices:
 \begin{itemize}
  \item \textbf{ciclos}: ciclos de reloj consumidos por cada implementaci'on.
  \item \textbf{diferencia de ciclos}: modulo de la diferencia entre ciclos de reloj en \C \ y en \ass.
  \item \textbf{porcentaje de mejora}: porcentaje de eficiencia de un implementaci'on con respecto a la otra.
 \end{itemize}
 
-Podemos observar que en todos los filtros la implementaci'on en \ass \ consume
+Podemos observar en el cuadro \ref{tab:base} que en todos los filtros la implementaci'on en \ass \ consume
 menos ciclos de reloj, un resultado a que esta dentro de lo esperado, sin embargo llama la atenci'on
 lo significativa que es esta diferencia. Por ejemplo en el filtro invertir, que es el que menos instrucciones
 realiza, obtuvimos un porcentaje de mejora superior al 96$\%$. El caso del filtro que menos porcentaje
@@ -76,7 +76,7 @@ A partir de este experimento introdugimos un nuevo concepto de indice denominado
 cada implementaci'on en \ass, mide que porcentaje representa la cantidad de ciclos en un ancho 
 favorable con respecto a uno no favorable.
 
-Estudiemos primero el caso de los filtros blanco y negro. Como muestra la tabla a'un existe una 
+Estudiemos primero el caso de los filtros blanco y negro. Como muestra el cuadro \ref{tab:abyn} a'un existe una 
 mejora de \ass  con respecto a \C \  en las dimensiones de 16x30000 y 17x28234. Con esto concluimos que aun
 en un caso no favorable es \ass \ sigue siendo m'as eficiente.
 
@@ -105,7 +105,7 @@ suavizar & 17x28234 & 29.283.006 & 3.773.630 & 25.509.376 & 87,11\% & \\
 
 
 Haciendo un an'alisis similar para el caso color, 
-podemos apreciar la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
+podemos apreciar en el cuadro \ref{tab:acolor} la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
 alto( mayor a 50\%) y el diferencial es similar en todos los filtros es decir,
 la diferencia m'axima entre el porcentaje de caso favorable y caso no favorable es de n 12\% para la funci'on monocromatizar\_uno,
 el resto se mantiene abajo del 10\%. Un muy buen indicador de rendimiento ya que hay poca diferencia de mejora de
@@ -148,7 +148,7 @@ separar\_c & 10x48000 & 20.874.906 & 7.176.690 & 13.698.216 & 65,62\% & \\
 
 
 \subsubsection{Imagenes anchas}
-Analizemos la tabla de im'agenes anchas, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
+Analizemos el cuadro \ref{tab:anchas} de im'agenes anchas, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
 casi tan alto como el de el caso base, en todos los filtros, esto a simple vista no deber'ia
  sorprendernos pero si observamos m'as atentamente el porcentaje de mejora en los casos desfavorables es 
 casi tan alto como en el caso favorable,algo que con \textbf{imagenes altas} no ocurria, por el contrario
