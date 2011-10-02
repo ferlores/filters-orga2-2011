@@ -1,15 +1,15 @@
 \section{Mediciones}
 \label{sec:mediciones}
-Para realizar las mediciones utilizamos las herramientas provistas por la c'atedra para la medici'on de ciclos de \textit{clock}, utilizando una computadora con procesador Intel T2500 2.0GHz Core Duo. El objetivo ser'a medir los distintos algoritmos, comparando las distintas versiones para distintos tipos de imagenes de entrada. Para ello creamos un conjunto de \textit{scripts} de \textit{bash} que realizas las distintas mediciones que necesitamos. Los mismos se encuentran en la carpeta mediciones junto con una explicacion de como utilizarlo.
+Para realizar las mediciones utilizamos las herramientas provistas por la c'atedra para la medici'on de ciclos de \textit{clock}, utilizando una computadora con procesador Intel T2500 2.0GHz Core Duo. El objetivo ser'a medir los distintos algoritmos, comparando las distintas versiones para distintos tipos de imagenes de entrada. Para ello creamos un conjunto de \textit{scripts} de \textit{bash} que realizan las distintas mediciones que necesitamos. Los mismos se encuentran en la carpeta mediciones junto con una explicaci'on de como utilizarlo.
 
 \subsection{Estableciendo Criterios}
 
-Antes de comenzar tuvimos que tomar ciertas decisiones de c'omo ibamos a realizar dichas mediciones. El primer problema que encontramos al utilizar el reloj del procesador para medir es que nuestro proceso puede llegar a ser interrumpido por otros procesos o por el sistema operativo. Hemos tomado dos medidas al respecto, la primera es ejecutar las mediciones estableciendo m'axima la priodidad del proceso. Para ello Linux provee el comando \texttt{nice}, que ejecutandolo como \textit{root}, permite decirle al sistema operativo que nuestras mediciones tienen prioridad sobre los otros programas en ejecuci'on. 
+Antes de comenzar tuvimos que tomar ciertas decisiones de c'omo ibamos a realizar dichas mediciones. El primer problema que encontramos al utilizar el reloj del procesador para medir es que nuestro proceso puede llegar a ser interrumpido por otros procesos o por el sistema operativo. Hemos tomado dos medidas al respecto, la primera es ejecutar las mediciones estableciendo m'axima la priodidad del proceso. Para ello Linux provee el comando \texttt{nice}, que ejecut'andolo como \textit{root}, permite decirle al sistema operativo que nuestras mediciones tienen prioridad sobre los otros programas en ejecuci'on. 
 Mientras que la segunda medida fue realizar mil mediciones por cada prueba, promediando el resultado. El n'umero elegido aparece como una soluci'on de compromiso con el tiempo de ejecuci'on de las muestras.
 
-Otro factor a analizar fue que muestras seleccionamos para medir. Debido a la naturaleza de los algoritmos implementados, podemos ver facilmente que la complejidad esta relacionada directamente con el tama'no de la entrada. Es decir que las dos implementaciones de cada filtro se van a comportar diferente dependiendo del tama'no de la im'agen\footnote{Es importante aclarar que consideramos como tama'no de la imagen, la cantidad total de p'ixeles que esta tiene} y no del tipo de imagen a procesar. Por lo tanto podriamos tomar imagenes de distinto tama'no y comparar como se comportan los distintos filtros y las distintas implementaciones, observando las variaciones de \textit{clocks} con respecto a la cantidad de p'ixeles procesados. Sin embargo elegimos otro camino. Decidimos utilizar un tama'no fijo (dentro de los posible) de p'ixeles y analizar el comportamiento de los algoritmos al variar la relaci'on entre la cantidad de filas y de columnas de la imagen. 
+Otro factor a analizar fue que muestras seleccionamos para medir. Debido a la naturaleza de los algoritmos implementados, podemos ver facilmente que la complejidad esta relacionada directamente con el tama'no de la entrada. Es decir que las dos implementaciones de cada filtro se van a comportar diferente dependiendo del tama'no de la im'agen\footnote{Es importante aclarar que consideramos como tama'no de la imagen, la cantidad total de p'ixeles que esta tiene} y no del tipo de imagen a procesar. Por lo tanto podriamos tomar imagenes de distinto tama'no y comparar como se comportan los distintos filtros y las distintas implementaciones, observando las variaciones de \textit{clocks} con respecto a la cantidad de p'ixeles procesados. Sin embargo elegimos otro camino. Decidimos utilizar un tama'no fijo (dentro de los posibles) de p'ixeles y analizar el comportamiento de los algoritmos al variar la relaci'on entre la cantidad de filas y de columnas de la imagen. 
 
-Para las mediciones base utilizamos una imagen de 800x600. Es decir que estamos trabajando con im'agenes de 480.000 p'ixeles (aprox. $0,5Mp$). Luego tomamos distintas ima'genes reacomodando las filas y columnas, seg'un criterios que explicaremos en la siguiente secc'on. Sin embargo a veces no fue posible llegar a la misma cantidad exacta de pixeles. En estos casos elegimos combinaciones donde la diferencia sea m'inima y podemos asegurar que en ningun caso la diferencia de tama'no supera un $0,1\%$ del total.
+Para las mediciones base utilizamos una imagen de 800x600. Es decir que estamos trabajando con im'agenes de 480.000 p'ixeles (aprox. $0,5Mp$). Luego tomamos distintas im'agenes reacomodando las filas y columnas, seg'un criterios que explicaremos en la siguiente secci'on. Sin embargo a veces no fue posible llegar a la misma cantidad exacta de p'ixeles. En estos casos elegimos combinaciones donde la diferencia sea m'inima y podemos asegurar que en ning'un caso la diferencia de tama'no supera un $0,1\%$ del total.
 
 \subsection{An'alisis de factores}
 Antes de decidir las combinaciones de filas y columnas, analizamos con que tipo de im'agenes nuestros algoritmos pod'ian
@@ -23,7 +23,7 @@ Entonces, para elegir exactamente las combinaciones de filas/columnas tenemos qu
 filtros: Los que toman como par'ametro de entrada im'agenes a color (monocromatizar, separar canales) y los que toman im'agenes en blanco y negro
 (umbralizar, invertir, normalizar, suavizar).
 
-Para los que toman imagen blanco y negro, los algoritmos procesan de a 16 pixeles por vez, con lo cual si el ancho es multiplo de 16 el algoritmo realizar'ia una cantidad justa de lecturas en memoria (\textit{caso favorable}). Por el contrario, cuando la anchura no es multiplo de 5 el algoritmo debe realizar una lectura extra al final de cada fila para procesar los bytes restantes(\textit{caso desfavorable}). Es posible que esta lectura extra se haga solo para procesar un pixel. Es decir que estariamos recalculando 15 bytes para procesar solo uno. Esta penalizaci'on se ver'ia acrecentada conforme aumenta la cantidad de filas.
+Para los que toman imagen blanco y negro, los algoritmos procesan de a 16 p'ixeles por vez, con lo cual si el ancho es multiplo de 16, el algoritmo realizar'ia una cantidad justa de lecturas en memoria (\textit{caso favorable}). Por el contrario, cuando la anchura no es multiplo de 5 el algoritmo debe realizar una lectura extra al final de cada fila para procesar los bytes restantes(\textit{caso desfavorable}). Es posible que esta lectura extra se haga solo para procesar un p'ixel. Es decir que estariamos recalculando 15 bytes para procesar solo uno. Esta penalizaci'on se ver'ia acrecentada conforme aumenta la cantidad de filas.
 
 En cambio, los algoritmos que procesan im'agenes a color avanzan de a cinco p'ixeles. Por lo que podemos aplicar el mismo razonamiento que para los algoritmos en blanco y negro modificando el factor de multiplicidad a 5.
 
@@ -32,14 +32,14 @@ Cabe destacar que el filtro suavizar debido a su naturaleza procesa de a 15 p'ix
 \subsection{Eleccion de im'agenes}
 Como primera medida, realizamos mediciones con una im'agen de 800x600, para poder establecer un punto de comparaci'on para las otras im'agenes de entrada. Luego, teniendo en cuenta lo descripto en la secci'on anterior, elegimos tama'nos de im'agenes que provoquen casos favorables y casos desfavorables, para poder compararlos. 
 
-Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y negro im'agenes de 16 y 17 p'ixeles de ancho para los casos favorable y desfavorable respectivamente. Estos valores son los anchos m'as peque'nos que producen los casos que buscamos. Por el contrario, para los algoritmos a color elegimos anchos de 10 y 11 p'ixeles. Para el filtro suavizar elegimos los anchos 17 y 18 p'ixeles. Es de esperar que en este conjunto de mediciones la penalizac'ion del \ass se vea exagerada.
+Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y negro im'agenes de 16 y 17 p'ixeles de ancho para los casos favorable y desfavorable respectivamente. Estos valores son los anchos m'as peque'nos que producen los casos que buscamos. Por el contrario, para los algoritmos a color elegimos anchos de 10 y 11 p'ixeles. Para el filtro suavizar elegimos los anchos 17 y 18 p'ixeles. Es de esperar que en este conjunto de mediciones la penalizaci'on del \ass \ se vea exagerada.
 
 Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando, a priori, diluir las penalizaciones cuando las haya. En este punto encontramos un imprevisto. La librer'ia openCV genera un error al intentar abrir im'agenes mas anchas que 1453 p'ixeles. Es por eso que elegimos un ancho lo mas cercano a ese valor y que fuera m'ultiplo de 16 y de 5, de esta manera nos servir'ia como caso favorable tanto para los algoritmos a color como los de blanco y negro. El ancho elegido fue 1440, ya que cumple las condiciones anteriores. Por otra parte elegimos como ancho para los casos desfavorables el valor 1441. Para el filtro suavizar elegimos los anchos 1442 y 1443 p'ixeles.
 
 
 \subsection{Experimentos}
 \subsubsection{Caso base}
-En este experimento se miden los siguientes 'indice:
+En este experimento se miden los siguientes 'indices:
 \begin{itemize}
  \item \textbf{ciclos}: ciclos de reloj consumidos por cada implementaci'on.
  \item \textbf{diferencia de ciclos}: modulo de la diferencia entre ciclos de reloj en \C \ y en \ass.
@@ -47,13 +47,13 @@ En este experimento se miden los siguientes 'indice:
 \end{itemize}
 
 Podemos observar que en todos los filtros la implementaci'on en \ass \ consume
-menos ciclos de reloj, un resultado a que esta dentro de lo esperado, sin embargo llama la atenci'on
+menos ciclos de reloj, un resultado  que esta dentro de lo esperado, sin embargo llama la atenci'on
 lo significativa que es esta diferencia. Por ejemplo en el filtro invertir, que es el que menos instrucciones
 realiza, obtuvimos un porcentaje de mejora superior al 96$\%$. El caso del filtro que menos porcentaje
 de mejora tuvo fue monocromatizar\_uno, que no obstante, obtuvo una mejora superior al 50$\%$. Si bien
 suponiamos que podia haber una diferencia en la eficiencia no sabiamos que seria tan marcada, lo cual es muy 
 positivo, ya que significa que dio r'editos implementar en un lenguaje de m'as bajo nivel y mayor dificultad
- a cambio de un mejor rendimiento,siempre utilizando la tecnologia \textit{SSE}.
+ a cambio de un mejor rendimiento, siempre utilizando la tecnologia \textit{SSE}.
 
 \begin{table}[h!]
 \begin{tabular}{|c|c|c|c|c|c|}
@@ -79,10 +79,10 @@ cada implementaci'on en \ass, mide que porcentaje representa la cantidad de cicl
 favorable con respecto a uno no favorable.
 
 Estudiemos primero el caso de los filtros blanco y negro. Como muestra la tabla a'un existe una 
-mejora de \ass  con respecto a \C \  en las dimensiones de 16x30000 y 17x28234. Con esto concluimos que aun
+mejora de \ass \ con respecto a \C \  en las dimensiones de 16x30000 y 17x28234. Con esto concluimos que a'un
 en un caso no favorable es \ass \ sigue siendo m'as eficiente.
 
-Otra observacio'n interesante es el porcentaje de penalizaci'on, notemos que dan 340\%, 165\% y
+Otra observaci'on interesante es el porcentaje de penalizaci'on, notemos que dan 340\%, 165\% y
 234\%, para invertir, normalizar y umbralizar respectivamente, estos porcentajes son altos 
 y seguramente se debe a lo que dijimos en un principio, que el algoritmo debe reprocesar datos m'as de 
 una vez cada vez que itera sobre las 'ultima columnas.
@@ -110,27 +110,27 @@ Haciendo un an'alisis similar para el caso color,
 podemos apreciar la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
 alto( mayor a 50\%) y el diferencial es similar en todos los filtros es decir,
 la diferencia m'axima entre el porcentaje de caso favorable y caso no favorable es de n 12\% para la funci'on monocromatizar\_uno,
-el resto se mantiene abajo del 10\%. Un muy buen indicador de rendimiento ya que hay poca diferencia de mejora de
+el resto se mantiene abajo del 10\%. Un indicador de similaridad en rendimiento ya que hay poca diferencia de mejora de
 comportamiento entre un caso favorable y otro no favorable.
 
-Para los casos no favorables es de espera que no haya una similitud con respecto al caso base en cuanto a ciclo de 
+Para los casos no favorables es de esperar que no haya una similitud con respecto al caso base en cuanto a ciclos de 
 reloj(implementacion en \ass ), esto se debe al reprocesaiento de datos. Al igual que en el caso de filtro blanco y negro
-hay el porcentaje de mejora de ciclos cay'o, consumiendo mas ciclos en los casos no favorables, si bien esto es una 
+ el porcentaje de mejora de ciclos cay'o, consumiendo m'as ciclos en los casos no favorables, si bien esto es una 
 observacion trivial, es un buen indicador de que los casos de prueba fueron bien seleccionados.
 
 Deteng'amonos un momento en los 'indices de penalizaci'on, podemos apreciar que los porcentajes son mucho 
 menores con respecto al caso de blanco y negro,lo cual significa que el costo de reprocesar de datos en
 las funciones de color fue mucho menor que en dichas funciones,esto seguamente se debe a que los filtros de de color
-trabajan con pixeles de 3 bytes cada uno, por lo tanto reprocesa menos pixeles.
+trabajan con p'ixeles de 3 bytes cada uno, por lo tanto reprocesa menos p'ixeles en un caso desfavorable.
 
-El 'unico filtro que result'o  llamativo el porcentaje de penalizaci'on es el suavizado, ya que dicho porcentaje es bajo lo cual
+El 'unico filtro en que result'o  llamativo el porcentaje de penalizaci'on es el suavizado, ya que dicho porcentaje es bajo lo cual
 nos hace inferir que tiene menos diferencia de comportamiento entre casos favorables y casos no favorables, a diferencia
-de los otros filtros donde la penalizaci'on es mayor. Si bien un bajo i'ndce de penalizaci'on podria significar algo bueno,
+de los otros filtros donde la penalizaci'on es mayor. Si bien un bajo i'ndce de penalizaci'on podr'ia significar algo bueno,
 tambien puede ocurrir que se deba a que en un caso favorable el algoritmo se comporta de manera similar a un caso no favorable
 y eso es claramente malo. 
 
-Como una observaci'on general de estas mediciones de imagenes altas en contraste con el caso base podemos apreciar la 
-similitud en los ciclos de reloj de las implementaciones en \C \ y las diferencias en \ass \ sobre todo en los 
+Como una observaci'on general de estas mediciones de im'agenes altas, en contraste con el caso base podemos apreciar la 
+similitud en los ciclos de reloj de las implementaciones en \C \ y las diferencias en \ass, sobre todo en los 
 casos no favorables esto se debe a la distribuci'on de los pixeles.
 
 \begin{table}[h!]
@@ -158,12 +158,12 @@ deca'ia bastante. Esto es positivo en terminos de performance y probablemente se
 debe reprocesar datos, no son influyentes ya que los aproximadamente 480000 est'an distribuidos en
 pocas filas.
 
-Observemos ahora los'indices de penalizaci'on podemos notar que si bien existen (vale decir hay un porcentaje
+Observemos ahora los 'indices de penalizaci'on podemos notar que si bien existen (vale decir hay un porcentaje
  de penalizaci'on) este es significativamente menor al de \textbf{imagenes altas} para todos los filtros,esto
 deber'ia captar nuesta atenci'on ya que por cada columna en los casos no favorables se reprocesan datos,pero
 si lo pensamos dos veces tiene mucho sentido, ya que cuando el ancho era variable, las matrices
-tenian m'as filas con lo cual asint'oticamente esa penalizaci'on iria incrementando, ahora las matrices
-tienen una cantidad de filas constantes (que encima es comparativamente chica con respecto al ancho),
+tenian m'as filas con lo cual asint'oticamente esa penalizaci'on ir'ia incrementando, ahora las matrices
+tienen una cantidad de filas constantes(que encima es comparativamente chica con respecto al ancho),
 por lo tanto ese reprocesamiento de datos, si bien no es despreciable, es efectivamente mucho menor,
 a tal punto de no afectar a la \textit{performance} del filtro.
 

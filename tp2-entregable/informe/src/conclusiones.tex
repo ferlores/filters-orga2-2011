@@ -1,30 +1,30 @@
 \section{Conclusiones}
 \label{sec:conclusiones}
 Como su nombre lo indica, en esta secci'on hablaremos de las concluciones que pudimos obtener durante el desarrollo del 
-trabajo pr'actico,a su vez repasando la hipotesis y conjeturas iniciales y relacionandola con los resultados de los experimentos.
+trabajo pr'actico,a su vez repasando la hipotesis y conjeturas iniciales y relacion'andola con los resultados de los experimentos.
 
-Como primer concluci'on en todos los filtros la implementaci'on en \C consume m'as ciclos de reloj que la implementaci'on que usa
+Como primer concluci'on, en todos los filtros, la implementaci'on en \C \ consume m'as ciclos de reloj que la implementaci'on que usa
 tenolog'ia \textit{SSE} a'un en los casos borde. Tal es la diferencia de \textit{performance} que es redituable el costo extra en 
 la dificultad de la implementaci'on,\textit{debugging} y adaptaci'on al lenguaje ensamblador.
 
-El alto en pixeles de una im'agen es un factor sumamente relevante en el rendimiento de los algoritmo tanto en los casos base
-como en los casos borde, a pesar de que la complejidad teorica es la misma.
+El alto en p'ixeles de una im'agen es un factor sumamente relevante en el rendimiento de los algoritmos tanto en los casos base,como el de
+imagenes altas y anchas, a pesar de que la complejidad teorica es la misma.
 
 La manera de recorrer los ciclos en determinados tipos de filtro pueden reutilizarse como es el caso de las funciones que van de color 
-a escala de grises, an'alogamente lo mismo ocurre con las imagenes en blanco y negro.
+a escala de grises, an'alogamente lo mismo ocurre con las im'agenes en blanco y negro.
 
 Siempre hay un menor porcentaje de penalizaci'on en los filtros que realizan m'as operaciones y accesos a memoria ya que 
 no hay tanta diferencia entre reprocesar datos y las operaciones intermedias en cada iteraci'on de un ciclo.
 
 El set de instrucciones fue m'as que suficiente para realizar las tareas pedidas.
 
-Compartivamente, el desarrolo en \ass \ fue la actvidad que m'as tipo abarc'o, con respecto al desarrollo de este informe y
+Compartivamente, el desarrollo en \ass \ fue la actvidad que m'as tiempo abarc'o, con respecto al desarrollo de este informe y
 el desarrollo en \C.
 
-Los casos de prueba seleccionados fueron reflejaron nuestras conjeturas iniciales y experimentalmente pudimos corroborar 
+Los casos de prueba seleccionados, reflejaron nuestras conjeturas iniciales y experimentalmente pudimos corroborar 
 que la selecci'on fue correcta.
 
-Hubieron cosas que pudimos haber hecho pero por limitaciones de tiempo no ptuudimos, entre ellas: alinear la memoria a 16 bytes
-y uilizar instrucciones de movimiento alineadas, compilar los filtros en \C \ usando las opciones de optimizaci'on del compilador
+Hubieron cosas que pudimos haber hecho pero por limitaciones de tiempo no tuvimos la oportunidad, entre ellas: alinear la memoria a 16 bytes
+y utilizar instrucciones de movimiento alineadas, compilar los filtros en \C \ usando las opciones de optimizaci'on del compilador
 gcc e implementar cada filtro en \ass \ sin utilizar \textit{SSE}.  
 

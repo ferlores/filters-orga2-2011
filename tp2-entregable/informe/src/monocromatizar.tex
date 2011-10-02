@@ -2,7 +2,7 @@
 \subsubsection{Monocromatizar \protect{$\epsilon = 1$} }
 El objetivo de la funcion monocromatizar es convertir una imagen a escala de grises, en la imagen fuente
 cada pixel se compone de 3 bytes,uno por cada componente de color \textbf{RGB}. En su respectiva implementacion en 
-\C la imagen se recorre linealmente como una matriz, guardando los valores de cada componente de color
+\C \ la imagen se recorre linealmente como una matriz, guardando los valores de cada componente de color
 que tienen los pixeles y aplic'andole una serie de operaciones que es la siguiente:
 \textbf{(R+2*G+B)/4}, finalmente esto es lo que se almacena en la imagen destino.
 
@@ -36,7 +36,7 @@ presici'on o  podria saturar alguna suma, no obstante dado que la division por 4
 se aplica el resultado final es expresable en un byte. Teniendo en cuenta eso procedimos de la siguiente 
 manera: 
 
-Por cada uno de los registro mencionados desempaquetamos tomando como segundo operando un registro de 128
+Por cada uno de los registros mencionados, desempaquetamos tomando como segundo operando un registro de 128
 bits con ceros, y los dividimos en partes bajas y altas, como muestra la figura \ref{est:m-tres} : 
 
 \begin{figure}[hb]
@@ -53,7 +53,7 @@ y separadas cada dos bytes con lo cual debemos proceder a unirlos para luego cop
 El proceso para unirlos consiste en dos partes, una es aplicar una m'ascara, debido a que no podemos 
 fiarnos del contenido de los bytes que saparan cada dato que necesitamos, esa m'ascara tendra unos 
 y ceros ya que al aplicarle \textit{pand} me quedan los datos necesarios separados por ceros.\\
-El siguiente diagrama(figura\ref{est:m-cuatro} )  muestra la parte antes mencionada(c representa los calculos pedidos):
+El siguiente diagrama(figura\ref{est:m-cuatro} )  muestra la parte antes mencionada(c representa los calculos pedidos):\\
 \begin{figure}[hb]
 \xmmW{datos1}{ 00 & c_2 & 00 & 00 & c_1 & 00 & 00 & c_0}
 \xmmW{mascara1}{ 00 & FF & 00 & 00 & FF & 00 & 00 & FF}
@@ -62,14 +62,14 @@ El siguiente diagrama(figura\ref{est:m-cuatro} )  muestra la parte antes mencion
 \caption{datos luego de hacer un and con las mascaras}
 \label{est:m-cuatro}
 \end{figure}
-La otra parte consiste en sumarlos una vez aplicada la mascara y utilizar las instruciones que provee
-la arquitectura para correr bytes y dwords dentro de un registro( \textit{pshuflw},\textit{pshufhw},
-\textit{pshufd}) con el fin de colocarlos de manera contigua en dos registros y luego enpaquetar. Si bien 
-estas instrucciones pueden afectar la performance son realmente de 'utiles e
+La otra parte consiste en sumarlos una vez aplicada la m'ascara y utilizar las instruciones que provee
+la arquitectura para intercambiar datos dentro de un registro(las mismas que se mencionan en
+\textbf{separar canales}) con el fin de colocarlos de manera contigua en dos registros y luego empaquetar. Si bien 
+estas instrucciones pueden afectar la performance son realmente  'utiles e
 indispensables para obtener la funcionalidad deseada(figura \ref{est:m-cinco}).
 \begin{figure}[hb]
 \xmmW{datos_sumados}{ 00 & c_2 & 00 & c_4 & c_1 & 00 & c_3 & c_0}
-\xmmW{aplicacion de corrimiento datos internos}{ 00 & 00 & c_4 & c_3 & c_2 & c_1 & c_0}
+\xmmW{intercambio}{ 00 & 00 & c_4 & c_3 & c_2 & c_1 & c_0}
 \caption{datos luego de hacer un and con las mascaras}
 \label{est:m-cinco}
 \end{figure}
@@ -82,27 +82,27 @@ proceso en las proximas iteraciones.\\
 
 \subsubsection{Monocromatizar \protect{$\epsilon = \infty $} }
 El objetivo de esta funcion es similar al anterior, solo que esta vez en lugar de aplicar operaciones
-una vez acomodados los datos solo debemos obtener el maximo.\\
+una vez acomodados los datos solo debemos obtener el m'aximo.\\
 En un principio el procedimiento es similar al de  $\epsilon= 1$, es decir leemos de memoria 16 bytes
-y realizamos copias de esa lectura en otros registros para correrlos adecuadamente(un registro corremos un byte 
- y el otro dos, para luego operar en paralelo y obtener la componente m'axima).  Ahora bien, 
-notemos que contamos con una ventaja con respecto al caso anterior y es que no necesitamos desenpaquetar
-ya que no realizamos operaciones de ningun tipo que puedan resultar en una saturaci'on o 
-resultado erroneo,mas bien nos piden la maxima componente de color de cada pixel. Luego de analizar 
-varias opciones utilizando m'ascaras de bits, o cuentas auxliliares optamos por utilizar la instrucciones
-\textit{pmaxub} que calcula en laximo byte a byte entre dos registros xmm, esto no solo facilita 
-el desarrollo sino que adem'as incrementa la performance ya que esta provista por la arquitectura y 
-esta optimizada. Entonces tendriamos algo asi como en la figura \ref{est:m-seis} (denomino m a los maximos):\\
+y realizamos copias de esa lectura en otros registros para correrlos adecuadamente(a un registro lo corremos un byte 
+ y a el otro dos, para luego operar en paralelo y obtener la componente m'axima). Ahora bien, 
+notemos que contamos con una ventaja con respecto al caso anterior y es que no necesitamos desempaquetar
+ya que no realizamos operaciones de ning'un tipo que puedan resultar en una saturaci'on o 
+resultado erroneo, m'as bien nos piden la m'axima componente de color de cada pixel. Luego de analizar 
+varias opciones que recurrian m'ascaras de bits, o cuentas auxliliares optamos por utilizar la instrucci'on
+\textit{pmaxub} que calcula en m'aximo byte a byte entre dos registros xmm, esto no solo facilita 
+el desarrollo sino que adem'as incrementa la performance, ya que esta provista por la arquitectura y 
+esta optimizada. Entonces tendriamos algo asi como en la figura \ref{est:m-seis} (denomino m a los m'aximos):\\
 \begin{figure}[hb]
 \xmmW{}{xxxx & xxm_4 & xx & m_3xx & xxm_2 & xx & m_1xx & xxm_0}
 \caption{datos una vez aplicados los sucesivo pmaxub}
 \label{est:m-seis}
 \end{figure}
-Una vez obtenidos los maximos de cada pixel(solo nos interesan 5 de ellos), debemos concentrarnos en
+Una vez obtenidos los m'aximos de cada pixel(solo nos interesan 5 de ellos), debemos concentrarnos en
 tenerlos en un registro de proposito general de manera contigua. 
 Copiamos este registro en otro ya que operaremos con ambos y podemos perder ciertos datos. Realizamos un 
-corrimiento de 8 bits a izquierda en cada word para obtener ceros a la izquierda de cada una de las partes bajas de
-cada word. En la otra copia hacemos algo parecido solo que hacemos un corrimiento a derecha y luego a izquierda
+corrimiento de 8 bits a izquierda en cada \textit{word} para obtener ceros a la izquierda de cada una de las partes bajas de
+cada \textit{word}. En la otra copia hacemos algo parecido solo que hacemos un corrimiento a derecha y luego a izquierda
 dejando los registros de la siguiente manera(figura \ref{est:m-siete}) : \\
 \begin{figure}[hb]
 \xmmW{corrimiento byte a izq}{xx00& m_400 & xx00 & xx00 & m_200 & xx00 & xx00 & m_000 }
@@ -111,8 +111,8 @@ dejando los registros de la siguiente manera(figura \ref{est:m-siete}) : \\
 \label{est:m-siete}
 \end{figure}
 Una vez logrado esto debemos proceder a deshacernos de los bytes que no sabemos que contienen y separan
-cada uno de los maximos, para ello los transformamos en ceros con una m'ascara y luego hacemos un \textit{por} 
-asi obtenemos los maximos en un solo registro( aunque esten desordenados)como muestra la figura \ref{est:m-ocho}.\\
+cada uno de los m'aximos, para ello los transformamos en ceros con una m'ascara y luego hacemos un \textit{por} 
+asi obtenemos los m'aximos en un solo registro(aunque esten desordenados) como muestra la figura \ref{est:m-ocho}.\\
 \begin{figure}[hb]
 \xmmW{datos1}{0000& m_400 & 0000 & 0000 & m_200 & 0000 & 0000 & m_000 }
 \xmmW{mascara1}{ 00 & FF & 00 & 00 & FF & 00 & 00 & FF}
@@ -122,10 +122,10 @@ asi obtenemos los maximos en un solo registro( aunque esten desordenados)como mu
 \caption{datos luego de hacer un and con las mascaras y or}
 \label{est:m-ocho}
 \end{figure}
-Nuevamente ordenamos los contenidos de los registros utilizando las instrucciones de corrimiento de bits
-dentro de un registro mencionadas en la funcion anterior, empaquetamos con un registro lleno de ceros
+Nuevamente ordenamos los contenidos de los registros utilizando las instrucciones de intercambio de bits
+dentro de un registro mencionadas previamente, empaquetamos con un registro lleno de ceros
  y de forma an'aloga realizamos el proceso de copiado a la imagen destino. La idea es que luego de
-hacer los corrimientos y los empaqutados los datos queden asi como muestra la figura \ref{est:m-nueve}:\\
+hacer los corrimientos y los empaquetados los datos queden as'i como muestra la figura \ref{est:m-nueve}:\\
 \begin{figure}[hb]
 \xmmW{datos1}{0000& 0000 & m_500 & m_400 & m_300 & m_200 & m_100 & m_000 }
 \xmmW{datos1}{00& 00 & m_5 & m_4 & m_3 & m_2& m_1 & m_0 }
