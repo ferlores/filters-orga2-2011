@@ -1,11 +1,11 @@
 \section{Algoritmos}
 \label{sec:algoritmos}
 
-A la hora de implementar los algoritmos en \ass\ decidimos utilizar la tecnolog'ia SSE version 2. Si bien versiones mas actuales proveen instrucciones que en ciertos casos hubiesen sido mas efectivas para el procesamiento de bytes empaquetados, nos era dif'icil desarrolla en nuestras casas, donde la version SSE de los procesadores no era tan avanzada.
+A la hora de implementar los algoritmos en \ass\ decidimos utilizar la tecnolog'ia SSE version 2. Si bien versiones mas actuales proveen instrucciones que en ciertos casos hubiesen sido m'as efectivas para el procesamiento de bytes empaquetados, nos era dif'icil desarrollar en nuestras casas, donde la version SSE de los procesadores no era tan avanzada.
 
 \subsection{Iterarando im'agenes}
 \label{sec:ciclos}
-La primera decisi'on a tomar a la hora de implementar los algoritmos fue como recorreremos las im'agenes. En \C\ optamos por la manera convencional, recorriendo secuencialmente la matriz, leyendo de a p'ixeles y cuando llegamos al final de cada fila salteamos el padding. Es claro que hay maneras mas eficiente pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos. 
+La primer decisi'on a tomar a la hora de implementar los algoritmos fue como recorreremos las im'agenes. En \C\ optamos por la manera convencional, recorriendo secuencialmente la matriz, leyendo de a p'ixeles y cuando llegamos al final de cada fila salteamos el padding. Es claro que hay maneras m'as eficientes pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos. 
 
 Por otro lado, la implementaci'on en \ass\ fu'e mas ingeniosa ya que al utilizar la tecnolog'ia SSE debiamos, en principio, aprovechar al m'aximo lectura de a 16 bytes. Los problemas se presentan cuando quiero asegurarme de que estoy procesando todos los p'ixeles y que estoy evitando correctamente el \textit{padding}. En este trab'ajo pr'actico procesamos im'agenes a color y en escala de grises. Aunque la estrategia fue la misma, se presentaron sutilies diferencias para estos dos casos. 
 
@@ -61,11 +61,11 @@ En este caso cada pixel de las imagenes de entrada esta representado por tres by
 \end{algorithmic}
 \end{algorithm}
 
-En \ass (Algoritmo \ref{alg:iteracionASM-RGB}), las lecturas de a 16 bytes nos dejan en los registros 5 p'ixeles completos mas el primer byte del siguiente. Aqui decidimos descartar ese 'ultimo byte, procesar los datos y escribir en la imagen de salida solamente los resultados obtenidos. Es decir que mientras la imagen de entrada es recorrida de a 15 bytes(5 p'ixeles), la imagen de salida es recorrida de a 5 bytes. Por este motivo resulta imperioso llevar dos iteradores de posicion.
+En \ass (Algoritmo \ref{alg:iteracionASM-RGB}), las lecturas de a 16 bytes nos dejan en los registros 5 p'ixeles completos mas el primer byte del siguiente. Aqu'i decidimos descartar ese 'ultimo byte, procesar los datos y escribir en la imagen de salida solamente los resultados obtenidos. Es decir que mientras la imagen de entrada es recorrida de a 15 bytes(5 p'ixeles), la imagen de salida es recorrida de a 5 bytes. Por este motivo resulta imperioso llevar dos iteradores de posicion.
 
 Tambi'en es necesario ajustar la ultima iteraci'on de cada fila. Cuando la lectura de los 'ultimos 16 bytes, estos no quedan cargados como queremos. Para poder procesar los 'ultimos 5 p'ixeles con las mismas instrucciones que tenemos en el ciclo debemos realizar un desplazamiento a derecha de un byte (Figura \ref{est:ciclo}).
 
-Por otro lado, una vez que realizamos la ultima iteraci'on, debemos ajustar la condicion de corte(linea \ref{alg:iteracionASM-RGB:corte}). Como estamos avanzando de a 15 bytes, vamos a haber finalizado la columna cuando la diferencia entre el iterador y el ancho total en bytes de la imagen de entrada sea igual a uno. Es facil de ver que esto solo sucede cuando se reajusta el 'indice(linea \ref{alg:iteracionASM-RGB:reajuste}), ya que no existe un caso donde falte procesar un solo byte si vengo iterando de a multiplos de 3.
+Por otro lado, una vez que realizamos la ultima iteraci'on, debemos ajustar la condici'on de corte(linea \ref{alg:iteracionASM-RGB:corte}). Como estamos avanzando de a 15 bytes, vamos a haber finalizado la columna cuando la diferencia entre el iterador y el ancho total en bytes de la imagen de entrada sea igual a uno. Es f'acil de ver que esto solo sucede cuando se reajusta el 'indice(linea \ref{alg:iteracionASM-RGB:reajuste}), ya que no existe un caso donde falte procesar un solo byte si vengo iterando de a multiplos de 3.
 
 \begin{algorithm}[h!]
 \caption{\sc{iteraci'on en assembler - color}}\label{alg:iteracionASM-RGB}
