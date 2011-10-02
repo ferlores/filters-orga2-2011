@@ -27,24 +27,26 @@ Para los que toman imagen blanco y negro, los algoritmos procesan de a 16 pixele
 
 En cambio, los algoritmos que procesan im'agenes a color avanzan de a cinco p'ixeles. Por lo que podemos aplicar el mismo razonamiento que para los algoritmos en blanco y negro modificando el factor de multiplicidad a 5.
 
+Cabe destacar que el filtro suavizar debido a su naturaleza procesa de a 15 p'ixeles, por lo que el caso favorable se calcula como un m'ultiplo de 15 sum'andole dos p'ixeles m'as correspondiente a los bordes que no se procesan.
+
 \subsection{Eleccion de im'agenes}
 Como primera medida, realizamos mediciones con una im'agen de 800x600, para poder establecer un punto de comparaci'on para las otras im'agenes de entrada. Luego, teniendo en cuenta lo descripto en la secci'on anterior, elegimos tama'nos de im'agenes que provoquen casos favorables y casos desfavorables, para poder compararlos. 
 
-Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y negro im'agenes de 16 y 17 p'ixeles de ancho para los casos favorable y desfavorable respectivamente. Estos valores son los anchos m'as peque'nos que producen los casos que buscamos. Por el contrario, para los algoritmos a color elegimos anchos de 10 y 11 p'ixeles. Es de esperar que en este conjunto de mediciones la penalizac'ion del \ass se vea exagerada.
+Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y negro im'agenes de 16 y 17 p'ixeles de ancho para los casos favorable y desfavorable respectivamente. Estos valores son los anchos m'as peque'nos que producen los casos que buscamos. Por el contrario, para los algoritmos a color elegimos anchos de 10 y 11 p'ixeles. Para el filtro suavizar elegimos los anchos 17 y 18 p'ixeles. Es de esperar que en este conjunto de mediciones la penalizac'ion del \ass se vea exagerada.
 
-Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando, a priori, diluir las penalizaciones cuando las haya. En este punto encontramos un imprevisto. La librer'ia openCV genera un error al intentar abrir im'agenes mas anchas que 1453 p'ixeles. Es por eso que elegimos un ancho lo mas cercano a ese valor y que fuera m'ultiplo de 16 y de 5, de esta manera nos servir'ia como caso favorable tanto para los algoritmos a color como los de blanco y negro. El ancho elegido fue 1440, ya que cumple las condiciones anteriores. Por otra parte elegimos como ancho para los casos desfavorables el valor 1441.
+Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando, a priori, diluir las penalizaciones cuando las haya. En este punto encontramos un imprevisto. La librer'ia openCV genera un error al intentar abrir im'agenes mas anchas que 1453 p'ixeles. Es por eso que elegimos un ancho lo mas cercano a ese valor y que fuera m'ultiplo de 16 y de 5, de esta manera nos servir'ia como caso favorable tanto para los algoritmos a color como los de blanco y negro. El ancho elegido fue 1440, ya que cumple las condiciones anteriores. Por otra parte elegimos como ancho para los casos desfavorables el valor 1441. Para el filtro suavizar elegimos los anchos 1442 y 1443 p'ixeles.
 
 
 \subsection{Experimentos}
 \subsubsection{Caso base}
-En este experimento se miden los siguientes 'indices:
+En este experimento se miden los siguientes 'indice:
 \begin{itemize}
  \item \textbf{ciclos}: ciclos de reloj consumidos por cada implementaci'on.
  \item \textbf{diferencia de ciclos}: modulo de la diferencia entre ciclos de reloj en \C \ y en \ass.
  \item \textbf{porcentaje de mejora}: porcentaje de eficiencia de un implementaci'on con respecto a la otra.
 \end{itemize}
 
-Podemos observar en el cuadro \ref{tab:base} que en todos los filtros la implementaci'on en \ass \ consume
+Podemos observar que en todos los filtros la implementaci'on en \ass \ consume
 menos ciclos de reloj, un resultado a que esta dentro de lo esperado, sin embargo llama la atenci'on
 lo significativa que es esta diferencia. Por ejemplo en el filtro invertir, que es el que menos instrucciones
 realiza, obtuvimos un porcentaje de mejora superior al 96$\%$. El caso del filtro que menos porcentaje
@@ -76,7 +78,7 @@ A partir de este experimento introdugimos un nuevo concepto de indice denominado
 cada implementaci'on en \ass, mide que porcentaje representa la cantidad de ciclos en un ancho 
 favorable con respecto a uno no favorable.
 
-Estudiemos primero el caso de los filtros blanco y negro. Como muestra el cuadro \ref{tab:abyn} a'un existe una 
+Estudiemos primero el caso de los filtros blanco y negro. Como muestra la tabla a'un existe una 
 mejora de \ass  con respecto a \C \  en las dimensiones de 16x30000 y 17x28234. Con esto concluimos que aun
 en un caso no favorable es \ass \ sigue siendo m'as eficiente.
 
@@ -105,7 +107,7 @@ suavizar & 17x28234 & 29.283.006 & 3.773.630 & 25.509.376 & 87,11\% & \\
 
 
 Haciendo un an'alisis similar para el caso color, 
-podemos apreciar en el cuadro \ref{tab:acolor} la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
+podemos apreciar la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
 alto( mayor a 50\%) y el diferencial es similar en todos los filtros es decir,
 la diferencia m'axima entre el porcentaje de caso favorable y caso no favorable es de n 12\% para la funci'on monocromatizar\_uno,
 el resto se mantiene abajo del 10\%. Un muy buen indicador de rendimiento ya que hay poca diferencia de mejora de
@@ -148,7 +150,7 @@ separar\_c & 10x48000 & 20.874.906 & 7.176.690 & 13.698.216 & 65,62\% & \\
 
 
 \subsubsection{Imagenes anchas}
-Analizemos el cuadro \ref{tab:anchas} de im'agenes anchas, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
+Analizemos la tabla de im'agenes anchas, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
 casi tan alto como el de el caso base, en todos los filtros, esto a simple vista no deber'ia
  sorprendernos pero si observamos m'as atentamente el porcentaje de mejora en los casos desfavorables es 
 casi tan alto como en el caso favorable,algo que con \textbf{imagenes altas} no ocurria, por el contrario
@@ -186,8 +188,8 @@ normalizar & 1440x333 & 23.352.742 & 1.557.537 & 21.795.205 & 93,33\% &  \\
   & 1441x333 & 23.326.450 & 1.793.687 & 21.532.763 & 92,31\% & 15,16\%\\ \hline
 umbralizar & 1440x333 & 13.004.767 & 543.850 & 12.460.917 & 95,82\% &  \\ 
   & 1441x333 & 13.013.609 & 715.497 & 12.298.113 & 94,50\% & 31,56\%\\ \hline
-suavizar & 1440x333 & 32.468.271 & 3.905.847 & 28.562.424 & 87,97\% &  \\ 
-  & 1441x333 & 32.483.078 & 3.945.091 & 28.537.988 & 87,85\% & 1,00\%\\ \hline
+suavizar & 1442x333 & 32.468.271 & 3.905.847 & 28.562.424 & 87,97\% &  \\ 
+  & 1443x333 & 32.483.078 & 3.945.091 & 28.537.988 & 87,85\% & 1,00\%\\ \hline
 mono\_uno & 1440x333 & 17.292.896 & 5.499.913 & 11.792.983 & 68,20\% &  \\ 
   & 1441x333 & 17.337.919 & 5.529.326 & 11.808.594 & 68,11\% & 0,53\%\\ \hline
 mono\_inf & 1440x333 & 18.526.267 & 4.450.636 & 14.075.631 & 75,98\% &  \\ 
