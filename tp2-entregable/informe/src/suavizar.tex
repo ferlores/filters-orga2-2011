@@ -21,9 +21,9 @@ Comenzamos el algoritmo levantando de la imagen la primer linea 3 veces pero cor
 tercer oportunidad, qued'ando de la siguente manera \ref{est:s-dos} :
 
 \begin{figure}[ht]
-%\xmmW{paso 1.}{a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1 & a_0}
-%\xmmW{paso 2.}{a_16 & a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1}
-%\xmmW{paso 3.}{a_17 & a_16 & a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2}
+\xmmW{paso 1.}{a_15a_14 & a_13a_12 & a_11a_10 & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2 & a_1a_0}
+\xmmW{paso 2.}{a_16a_15 & a_14a_13 & a_12a_11 & a_10a_9 & a_8a_7 & a_6a_5 & a_4a_3 & a_2a_1}
+\xmmW{paso 3.}{a_17a_16 & a_15a_14 & a_13a_12 & a_11a_10 & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2}
 \xmmW{paso 7}{FF & FF & FF & FF & FF & FF & FF & FF}
 \label{est:s-dos}
 \end{figure}
@@ -32,12 +32,12 @@ Luego desempaquetamos los datos para operar de a words, con lo cual primero copi
 Ya copiados los registros procedimos a desempaquetarlos, previamente habiendo limpiado el registro xmm7 y nos queda \ref{est:s-tres} :
 
 \begin{figure}[ht]
-%\xmmW{paso 4.}{0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & a_11 & 0 a_10 & 0 a_9 & 0 a_8}
-%\xmmW{paso 1.}{0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1 & 0 a_0}
-%\xmmW{paso 5.}{0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 & 0 a_9}
-%\xmmW{paso 2.}{0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1}
-%\xmmW{paso 6.}{0 a_17 & 0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 }
-%\xmmW{paso 3.}{0 a_9 & 0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2}
+\xmmW{paso 4.}{0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & a_11 & 0 a_10 & 0 a_9 & 0 a_8}
+\xmmW{paso 1.}{0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1 & 0 a_0}
+\xmmW{paso 5.}{0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 & 0 a_9}
+\xmmW{paso 2.}{0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1}
+\xmmW{paso 6.}{0 a_17 & 0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 }
+\xmmW{paso 3.}{0 a_9 & 0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2}
 \xmmW{paso 7}{FF & FF & FF & FF & FF & FF & FF & FF}
 \caption{los registros 1,2,3 corresponden a partes bajas y los 4,5,6 a partes altasAsm}
 \label{est:s-tres}

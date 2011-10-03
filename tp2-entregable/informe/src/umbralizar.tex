@@ -3,7 +3,8 @@ El fin de esta funci'on es obtener una imagen en tres colores con lo cual cada p
 mismo y dependiendo de este se devuelve un p'ixel en la imagen resultante de color negro, gris o blanco, 
 comparando con un umbral m'aximo y otro m'inimo.
 Esto se define con la siguiente funcion.
-%I_out(p)=\begin{Bmatrix} 0 & \mbox{ si }& p \leq umbral_min \\128 & \mbox{si}& d \\c & \mbox{si}& p \gt umbral_maximo \end{matrix}
+
+$$Iout(p) = \left\{\begin{array}{lcc} 0 & \text{si } p \leq umbralMin\\  128 & \text{si } umbralMin < p \leq umbralMax \\ 255 & \text{si } p > umbralMax \end{array} \right. $$
 Para realizar este algoritmo primero vimos que era necesario tener los umbrales, con lo cual primero definimos el umbral 
 m'inimo colocando en un registro de proposito general el umbral m'inimo que recibimos como par'ametro de entrada, 
 luego realizamos un \textit{shift} de 8 bits a la izquierda y volvimos a sumar el umbral m'inimo repitiendo este procedimiento 3 veces mas, 
