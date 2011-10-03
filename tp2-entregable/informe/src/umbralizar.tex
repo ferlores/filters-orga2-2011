@@ -1,1 +1,29 @@
 \subsection{Umbralizar}
+El fin de esta funcion es obtener una imagen en tres colores con lo cual cada pixel se va a procesar observando el valor del mismo y dependiendo de este se devuelve un pixel en la imagen resultante de color negro, gris o blanco, comparando con un umbral maximo y otro minimo.
+
+Esto se define con la siguiente funcion.
+
+I_out(p)=\begin{Bmatrix} 0 & \mbox{ si }& p \leq umbral_min \\128 & \mbox{si}& d \\c & \mbox{si}& p \gt umbral_maximo \end{matrix}
+
+
+Para realizar este algoritmo primero vimos que era necesario tener los umbrales con lo cual primero definimos el umbral minimo colocando en un registro de proposito general el umbral minimo que recibimos como parametro de entrada, luego shifteamos 8 bits a la izquierda y volvimos a sumar el umbral minimo repitiendo este procedimiento 3 veces mas, con lo cual en el registro nos quedo el umbral minimo repetido 5 veces.
+Despues movemos al registro xmm5 el registro de proposito general con el umbral minimo y utilizamos la instruccion para realizar un shufle de a double words y con lo que nos queda repetido el umbral en las posiciones del registro sse. 
+Repetimos esta operacion para el umbral maximo colocandolo en el registro xmm4 de la misma manera que lo hicimos con el umbral minimo.
+
+Por otro lado necesitabamos una mascara donde este el numero 128 que representa el gris en la imagen, Para el cual primero colocamos el numero 128 repetido 4 veces en un registro de proposito general,  este es definido en notacion hexadecimal como 80h. Luego colocamos este en el registro xmm6 y con la operacion pshufd lo repetimos este elemento en todas las otras double words contenidas dentro del registro.
+
+\begin{figure}[ht]
+\xmmW{paso 5.}{Umin & Umin & Umin & Umin & Umin & Umin & Umin & Umin}
+\xmmW{paso 4.}{Umax & Umax & Umax & Umax & Umax & Umax & Umax & Umax}
+\xmmW{paso 6.}{128 & 128 & 128 & 128 & 128 & 128 & 128 & 128}
+\end{figure}
+
+
+Una vez ya definidos los umbrales en los registros comenzamos a procesar los datos, primero levantamos la linea en el registro xmm0 , copiamos la mascara del umbral maximo en xmm3 y para saber cuales eran los elementos que estaban sobre el umbral restamos y saturamos a la copia del umbral el valor que tenemos en la linea de los pixeles leidos y con la funcion pcmpeqb con un registro vacio nos queda los numeros hexadecimales F en las posiciones donde es igual a cero , esto quiere decir que el umbral maximo en esas posiciones es superior al valor que se tiene en la imagen, quedandonos F en las pociones que estan sobre el umbral en el registro xmm3.
+
+Siguiente a esto realizamos la diferencia saturada entre los valores en los pixeles de la imagen y un registro que tiene el umbral minimo, con lo cual nos quedan ceros en los bytes que estan debajo del umbral minimo gracias a la saturacion, y con la funcion pcmpeqb nos queda una F en los bytes que estan debajo del umbral en el registro xmm0.
+
+Luego realizamos un OR con los dos registros calculados (xmm0, xmm3) y al resultado le aplicamos la funcion pcmpeqb con un registro vacio para obtener F donde haya ceros, de esta manera esas F representan los pixeles que se encuentran en el medio del umbral.
+
+Luego se le aplica la operacion AND a el resultado con la mascara que se tienen el valor que implicaria los grises, de esta manera nos queda el valor 128 en las pociones intermedias del umbral, y al realizarle la operacion OR con el registro xmm3 que contiene los extremos superiores obtenemos 255 que representa el Blanco en las posiciones que estan sobre el umbral maximo, una vez realizado esto procedemos a guardar el dato.
+
