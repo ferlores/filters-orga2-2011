@@ -36,10 +36,10 @@ Para el segundo grupo de mediciones elegimos para los algoritmos en blanco y neg
 
 Luego realizamos otro conjunto de mediciones con imagenes mas anchas. Intentando, a priori, diluir las penalizaciones cuando las haya. En este punto encontramos un imprevisto. La librer'ia openCV genera un error al intentar abrir im'agenes mas anchas que 1453 p'ixeles. Es por eso que elegimos un ancho lo mas cercano a ese valor y que fuera m'ultiplo de 16 y de 5, de esta manera nos servir'ia como caso favorable tanto para los algoritmos a color como los de blanco y negro. El ancho elegido fue 1440, ya que cumple las condiciones anteriores. Por otra parte elegimos como ancho para los casos desfavorables el valor 1441. Para el filtro suavizar elegimos los anchos 1442 y 1443 p'ixeles.
 
-
 \subsection{Experimentos}
 \subsubsection{Caso base}
 En este experimento se miden los siguientes 'indices:
+
 \begin{itemize}
  \item \textbf{ciclos}: ciclos de reloj consumidos por cada implementaci'on.
  \item \textbf{diferencia de ciclos}: modulo de la diferencia entre ciclos de reloj en \C \ y en \ass.
@@ -105,7 +105,6 @@ suavizar & 17x28234 & 29.283.006 & 3.773.630 & 25.509.376 & 87,11\% & \\
 \label{tab:abyn}
 \end{table}
 
-
 Haciendo un an'alisis similar para el caso color, 
 podemos apreciar la diferencia de ciclos en \C \ y \ass \ y su porcentaje de mejora es en todos los casos
 alto( mayor a 50\%) y el diferencial es similar en todos los filtros es decir,
@@ -148,7 +147,6 @@ separar\_c & 10x48000 & 20.874.906 & 7.176.690 & 13.698.216 & 65,62\% & \\
 \label{tab:acolor}
 \end{table}
 
-
 \subsubsection{Imagenes anchas}
 Analizemos la tabla de im'agenes anchas, notemos en la tabla \textbf{color alto}, que el porcentaje de mejora es
 casi tan alto como el de el caso base, en todos los filtros, esto a simple vista no deber'ia
@@ -176,8 +174,6 @@ Otro dato que llama la atenci'on es el filtro de suavizar que mantiene una regul
 presento la mayor similitud de rendimiento con a pesar de que la cantidad de filas es casi la mitad con respecto al caso
 base.
 
-
-
 \begin{table}[h!]
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
@@ -200,5 +196,3 @@ separar\_c& 1440x333 & 20.427.885 & 6.163.018 & 14.264.867 & 69,83\% &  \\
 \caption{Resultados Im'agenes anchas}
 \label{tab:anchas}
 \end{table}
-
-

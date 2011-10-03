@@ -2,18 +2,16 @@
 El fin de esta funci'on es obtener una imagen en tres colores con lo cual cada pixel se va a procesar observando el valor del 
 mismo y dependiendo de este se devuelve un p'ixel en la imagen resultante de color negro, gris o blanco, 
 comparando con un umbral m'aximo y otro m'inimo.
-
 Esto se define con la siguiente funcion.
-
 %I_out(p)=\begin{Bmatrix} 0 & \mbox{ si }& p \leq umbral_min \\128 & \mbox{si}& d \\c & \mbox{si}& p \gt umbral_maximo \end{matrix}
 Para realizar este algoritmo primero vimos que era necesario tener los umbrales, con lo cual primero definimos el umbral 
 m'inimo colocando en un registro de proposito general el umbral m'inimo que recibimos como par'ametro de entrada, 
 luego realizamos un \textit{shift} de 8 bits a la izquierda y volvimos a sumar el umbral m'inimo repitiendo este procedimiento 3 veces mas, 
 con lo cual en el registro nos quedo el umbral m'inimo repetido 5 veces.
+
 Despues movemos al registro xmm5 el registro de prop'osito general con el umbral m'inimo y utilizamos la instruccion para 
 realizar un \textit{shufle} de a double words y con lo que nos queda repetido el umbral en las posiciones del registro \textit{sse}. 
 Repetimos esta operacion para el umbral m'aximo colocandolo en el registro xmm4 de la misma manera que lo hicimos con el umbral m'inimo.
-
 Por otro lado necesitabamos una m'ascara donde est'e el numero 128, que representa el gris en la im'agen.
 Para lo cual primero colocamos el numero 128 repetido 4 veces en un registro de proposito general,  
 este es definido en notacion hexadecimal como 80h. Luego colocamos este en el registro xmm6 y con la operacion 
@@ -37,7 +35,6 @@ en las pociones que estan sobre el umbral en el registro xmm3.
 Siguiente a esto realizamos la diferencia saturada entre los valores en los p'ixeles de la im'agen y un registro que tiene 
 el umbral m'inimo, con lo cual nos quedan ceros en los bytes que estan debajo del umbral m'inimo gracias a la saturacion,
 y con la instrucci'on \textit{pcmpeqb} nos queda una F en los bytes que estan debajo del umbral en el registro xmm0.
-
 Luego realizamos un OR con los dos registros calculados (xmm0, xmm3) y al resultado le aplicamos la instrucci'on \textit{pcmpeqb} con
 un registro vacio para obtener F donde haya ceros, de esta manera esas F representan los p'ixeles que se encuentran en el 
 medio del umbral.
@@ -46,4 +43,3 @@ Luego se le aplica la operacion AND a el resultado con la m'ascara, y se obtiene
 De esta manera nos queda el valor 128 en las pociones intermedias del umbral, y al realizarle la operaci'on OR con el registro 
 xmm3 que contiene los extremos superiores obtenemos 255 que representa el blanco en las posiciones que est'an sobre el umbral 
 m'aximo, una vez realizado esto procedemos a guardar el dato.
-
