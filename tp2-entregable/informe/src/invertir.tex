@@ -1,18 +1,23 @@
 \subsection{Invertir}
-El fin de invertir es que dado una imagen en escala de grises se le resta el valor maximo de un pixel al valor que esta en el pixel, de esta manera siempre se resta el valor 255 a el valor del pixel.
+El fin de invertir es que dado una im'agen en escala de grises se le resta el valor m'aximo de un p'ixel al valor que esta en el p'ixel, de esta manera siempre se resta el valor 255 a el valor del pixel.
 
-Con lo cual lo que realizamos es levantar el valor de los pixeles en un registro sse , el xmm0, y a un registro le aplicamos la instruccion pcmpeqb , con lo cual el registro queda completo de 0xF en el registro xmm7.
-Luego restamos con saturacion al registro xmm7 el valor de los pixeles de la imagen, el registro xmm0, asi de esta manera obtenemos el valor deseado, la resta es con saturacion ya que si no se produce overflow.
+Con lo cual lo que realizamos es levantar el valor de los p'ixeles en un registro \textit{sse} , el xmm0, y a un registro le aplicamos la instrucci'on \textit{pcmpeqb} , con lo cual el registro queda completo de 0xF en el registro xmm7.
+Luego restamos con saturaci'on al registro xmm7 el valor de los p'ixeles de la im'agen, el registro xmm0, asi de esta manera obtenemos el valor deseado, la resta es con saturaci'on ya que si no se produce overflow.
+La figura href{est:i-uno} muestra como quedan le'idos los datos en memoria:
 
 \begin{figure}[ht]
-\xmmW{paso 7.}{FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF}
-\xmmW{paso 0.}{a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1 & a_0}
+%\xmmW{paso 7}{FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF & FF}
+
+%\xmmW{paso 0.}{a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1 & a_0}
+
 \caption{Los registros antes de ser procesados}
+\label{est:i-uno}
 \end{figure}
 
 \begin{figure}[ht]
-\xmmW{paso 0.}{FF - a_15 &  FF - a_14 & FF - a_13 & FF - a_12 & FF - a_11 & FF - a_10 & FF - a_9 & FF - a_8 & FF - a_7 & FF - a_6 & FF - a_5 & FF - a_4 & FF - a_3 & FF - a_2 & FF - a_1 & FF - a_0}
-\caption{El regustro resultante}
+%\xmmW{paso 0.}{FF - a_15 &  FF - a_14 & FF - a_13 & FF - a_12 & FF - a_11 & FF - a_10 & FF - a_9 & FF - a_8 & FF - a_7 & FF - a_6 & FF - a_5 & FF - a_4 & FF - a_3 & FF - a_2 & FF - a_1 & FF - a_0}
+\caption{El registro resultante}
+\label{est:i-dos}
 \end{figure}
 
-Luego de procesado los datos guardamos el resultado en la imagen destino.
+Luego de procesado los datos guardamos el resultado en la imagen destino(figura \ref{est:i-dos}).

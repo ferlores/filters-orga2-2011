@@ -1,7 +1,9 @@
 \subsection{Suavizado Gaussiano}
-El objetivo de este filtro es obtener una imagen resultante con reduccion de ruido y difumacion. Para lo cual utilizaremos el metodo de aplicacion de mascaras con lo cual el pixel resultante se obtiene con la suma de los valores de los pixeles del entorno multiplicados por la mascara.
+El objetivo de este filtro es obtener una imagen resultante con reducci'on de ruido y difuci'on. 
+Para ello utilizaremos el m'etodo de aplicaci'on de m'ascaras, con lo cual el p'ixel resultante se obtiene con la suma
+de los valores de los p'ixeles del entorno multiplicados por la m'ascara.
 
-La mascara que utilizaremos sera la siguiente:
+La m'ascara que utilizaremos sera la siguiente(tabla \ref{tab:s-uno} ):
 
 \begin{tabular}{| c | c | c |}
 1/6 & 2/6 & 1/6 \\
@@ -10,42 +12,46 @@ La mascara que utilizaremos sera la siguiente:
 \hline
 1/6 & 2/6 & 1/6 \\
 \hline
+\label{tab:s-uno}
 \end{tabular}
 
-Con lo cual el pixel resultante sera el pixel que se encuentra en el centro del entorno, y el mismo tendra el siguiente valor
+Con lo cual el p'ixel resultante sera el p'ixel que se encuentra en el centro del entorno, y el mismo tendra el siguiente valor:
 
+Al ver que cada p'ixel deb'ia ser la suma de su entorno y que nosotros trabajar'iamos con los registros sse de 128 bits, decidimos 
+dividir en 3 partes el algoritmo para tratar cada una de las lineas de la matriz resultante.
 
-
-Al ver que cada pixel debia ser la suma de su entorno y nosotros trabajariamos con los registros sse de 128 bits, decidimos dividir en 3 partes el algoritmo para tratar cada una de las lineas de la matriz resultante.
-
-Comenzamos el algoritmo levantando de la imagen la primer linea 3 veces pero corriendonos 1 pixel en la segunda y  2 pixeles para la tercer linea que levantabamos quedandonos de la siguente manera \ref{est:m-uno}:
-
-\begin{figure}[ht]
-\xmmW{paso 1.}{a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1 & a_0}
-\xmmW{paso 2.}{a_16 & a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1}
-\xmmW{paso 3.}{a_17 & a_16 & a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2}
-\label{est:m-uno}
-\end{figure}
-
-
-Luego desempaquetamos los datos para operar de a words, con lo cual primero copiamos los registros que tenemos con los datos para operar todos los pixeles que levantamos, de esta manera nos queda xmm1 \= xmm4 , xmm2 \= xmm5 , xmm3 \= xmm6. Ya copiados los registros procedimos a desempaquetar los registros previamente habiendo limpiado el registro xmm7 y nos queda \ref{est:m-dos}:
+Comenzamos el algoritmo levantando de la imagen la primer linea 3 veces pero corriendonos 1 p'ixel en la segunda y 2 p'ixeles en la 
+tercer oportunidad, qued'ando de la siguente manera \ref{est:s-dos} :
 
 \begin{figure}[ht]
-\xmmW{paso 4.}{0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & a_11 & 0 a_10 & 0 a_9 & 0 a_8}
-\xmmW{paso 1.}{0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1 & 0 a_0}
-\xmmW{paso 5.}{0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 & 0 a_9}
-\xmmW{paso 2.}{0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1}
-\xmmW{paso 6.}{0 a_17 & 0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 }
-\xmmW{paso 3.}{0 a_9 & 0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2}
-\caption{los registros 1,2,3 corresponden a partes bajas y los 4,5,6 a partes altas\_asm}
-\label{est:m-dos}
+%\xmmW{paso 1.}{a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1 & a_0}
+%\xmmW{paso 2.}{a_16 & a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2 & a_1}
+%\xmmW{paso 3.}{a_17 & a_16 & a_15 & a_14 & a_13 & a_12 & & a_11 & a_10 & a_9 & a_8 & a_7 & a_6 & a_5 & a_4 & a_3 & a_2}
+\xmmW{paso 7}{FF & FF & FF & FF & FF & FF & FF & FF}
+\label{est:s-dos}
 \end{figure}
 
-Luego se hace un shift para la izquierda en los registros 2 y 5 que seria equivalente a multiplicar por 2, y sumamos las partes bajas guardando en el xmm0  y las partes altas en una variable local llamada parte_alta.
+Luego desempaquetamos los datos para operar de a words, con lo cual primero copiamos los registros que tenemos con los datos para operar todos los p'ixeles que levantamos, de esta manera nos queda xmm1 \= xmm4 , xmm2 \= xmm5 , xmm3 \= xmm6.
+Ya copiados los registros procedimos a desempaquetarlos, previamente habiendo limpiado el registro xmm7 y nos queda \ref{est:s-tres} :
 
-Ya procesada la primer linea de la mascara procedemos a la segunda linea , para la cual sumamos el ancho de la imagen en pixeles para pararnos en la linea que corresponden a la segunda linea, luego con el mismo metodo copiamos y desempaquetamos, usando los mismos registros que en la primer linea, a diferencia que esta vez se multiplican los registros xmm1, xmm4 , xmm3 y xmm6 por 2 y los registros xmm2 y xmm6 por 4 , sumamos estos a el acumuladores correspondientes.
- 
-Por ultimo pasamos a la tercer linea de la misma manera que la anterior levantamos 3 veces la linea moviendonos en 1 pixel con cada linea leida y realizamos lo mismo que la primer linea copiando, desempaquetando y multiplicando por 2 los registros xmm2 y xmm5, para luego sumar en los acumuladores correspondientes a la parte alta y parte baja.
-
+\begin{figure}[ht]
+%\xmmW{paso 4.}{0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & a_11 & 0 a_10 & 0 a_9 & 0 a_8}
+%\xmmW{paso 1.}{0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1 & 0 a_0}
+%\xmmW{paso 5.}{0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 & 0 a_9}
+%\xmmW{paso 2.}{0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1}
+%\xmmW{paso 6.}{0 a_17 & 0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 }
+%\xmmW{paso 3.}{0 a_9 & 0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2}
+\xmmW{paso 7}{FF & FF & FF & FF & FF & FF & FF & FF}
+\caption{los registros 1,2,3 corresponden a partes bajas y los 4,5,6 a partes altasAsm}
+\label{est:s-tres}
+\end{figure}
+Luego se hace un \textit{shift} para la izquierda en los registros 2 y 5, que ser'ia equivalente a multiplicar por 2, 
+y sumamos las partes bajas guard'andolas en el xmm0  y las partes altas en una variable local llamada parte_alta.
+Ya procesada la primer linea de la m'ascara procedemos a la segunda, para la cual sumamos el ancho de la i'magen en 
+p'ixeles para pararnos en la linea que corresponden a la segunda fila, luego con el mismo m'etodo copiamos y desempaquetamos, 
+usando los mismos registros que en la primer linea, a diferencia que esta vez se multiplican los 
+registros xmm1, xmm4 , xmm3 y xmm6 por 2 y los registros xmm2 y xmm6 por 4 , sumamos estos a los acumuladores correspondientes.
+Por 'ultimo pasamos a la tercer linea de la misma manera que la anterior, levantamos 3 veces de memoria, moviendonos en 1 
+p'ixel con cada linea leida y realizamos el mismo proceso que en la primer linea copiando, desempaquetando y multiplicando por 2 los 
+registros xmm2 y xmm5, para luego sumar en los acumuladores correspondientes a la parte alta y parte baja.
 Al finalizar de sumar todas las lineas procedemos al empaquetado de la parte alta con la parte baja y guardamos los datos.
-
