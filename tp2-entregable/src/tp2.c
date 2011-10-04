@@ -22,8 +22,6 @@ void aplicar_separar_canales (int tiempo, int cant_iteraciones, const char *nomb
 void aplicar_suavizar (int tiempo, int cant_iteraciones, const char *nomb_impl, const char* nomb_arch_entrada);
 void aplicar_umbralizar (int tiempo, int cant_iteraciones, const char *nomb_impl, const char* nomb_arch_entrada, unsigned char umbral_min, unsigned char umbral_max);
 
-void initialize(unsigned char *dst, int m, int row_size);
-
 int main( int argc, char** argv ) {
 	int siguiente_opcion;
 
@@ -134,7 +132,7 @@ int main( int argc, char** argv ) {
 	if ( verbose ) {
 		printf ( "Procesando imagen...\n");
 		printf ( "  Filtro             : %s\n", nomb_proceso);
-		printf ( "  Implementación     : %s\n", nombre_implementacion);
+		printf ( "  ImplementaciÃ³n     : %s\n", nombre_implementacion);
 		printf ( "  Archivo de entrada : %s\n", nomb_arch_entrada);
 	}
 
@@ -196,12 +194,12 @@ void imprimir_ayuda ( ) {
 	printf ( "       * separar_canales                                                                                    \n" );
 	printf ( "       * suavizar                                                                                           \n" );
 	printf ( "       * umbralizar                                                                                         \n" );
-	printf ( "           Parámetros     : umbral_minino [0, 255], umbral_maximo [0, 255] (umbral_minino <= umbral_maximo) \n" );
+	printf ( "           ParÃ¡metros     : umbral_minino [0, 255], umbral_maximo [0, 255] (umbral_minino <= umbral_maximo) \n" );
 	printf ( "           Ejemplo de uso : %s -i c umbralizar lena.bmp 65 140                                              \n", nombre_programa );
 	printf ( "                                                                                                            \n" );
 	printf ( "    -h, --help                                 Imprime esta ayuda                                           \n" );
 	printf ( "                                                                                                            \n" );
-	printf ( "    -i, --implementacion NOMBRE_MODO           Implementación sobre la que se ejecutará el filtro           \n" );
+	printf ( "    -i, --implementacion NOMBRE_MODO           ImplementaciÃ³n sobre la que se ejecutarÃ¡ el filtro           \n" );
 	printf ( "                                               seleccionado. Los implementaciones disponibles               \n" );
 	printf ( "                                               son: c, asm                                                  \n" );
 	printf ( "                                                                                                            \n" );
@@ -209,14 +207,14 @@ void imprimir_ayuda ( ) {
 	printf ( "                                               imagen de entrada una cantidad de veces igual a              \n" );
 	printf ( "                                               CANT_ITERACIONES                                             \n" );
 	printf ( "                                                                                                            \n" );
-	printf ( "    -v, --verbose                              Imprime información adicional                                \n" );
+	printf ( "    -v, --verbose                              Imprime informaciÃ³n adicional                                \n" );
 	printf ( "                                                                                                            \n" );
 }
 
 void imprimir_tiempos_ejecucion(unsigned long long int start, unsigned long long int end, int cant_iteraciones) {
 	unsigned long long int cant_ciclos = end-start;
 	
-	printf("Tiempo de ejecución:\n");
+	printf("Tiempo de ejecuciÃ³n:\n");
 	printf("  Comienzo                          : %llu\n", start);
 	printf("  Fin                               : %llu\n", end);
 	printf("  # iteraciones                     : %d\n", cant_iteraciones);
@@ -286,10 +284,6 @@ void aplicar_monocromatizar_inf (int tiempo, int cant_iteraciones, const char *n
 	// Creo una IplImage para cada salida esperada
 	if( (dst = cvCreateImage (cvGetSize (src), IPL_DEPTH_8U, 1) ) == 0 )
 		exit(EXIT_FAILURE);
-        
-        
-    initialize( (unsigned char*)dst->imageData, dst->height, dst->widthStep);
-
 
 	typedef void (monocromatizar_inf_fn_t) (unsigned char*, unsigned char*, int, int, int, int);
 
@@ -606,10 +600,4 @@ void aplicar_umbralizar (int tiempo, int cant_iteraciones, const char *nomb_impl
 
 	cvReleaseImage(&src);
 	cvReleaseImage(&dst);
-}
-
-void initialize(unsigned char *dst, int n, int row_size){
-    for(int f = 0 ; f < n*row_size; f++) {
-        dst[f] = 255;
-    }
 }
