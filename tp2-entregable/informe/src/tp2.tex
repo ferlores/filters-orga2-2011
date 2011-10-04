@@ -82,7 +82,7 @@
 \fancyhf{}
 \fancyfoot{}
 \fancyhead{}
-\lhead{\slshape \rightmark} % texto izquierda de la cabecera
+\lhead{\slshape \footnotesize{\leftmark}} % texto izquierda de la cabecera
 \rhead{\Titulo} % número de página a la derecha
 \rfoot{\thepage} 
 \pagestyle{fancy}
@@ -97,6 +97,8 @@
 \begin{document}
 
 \maketitle
+\tableofcontents
+\clearpage
 
 \include*{intro}
 \include*{ciclo}

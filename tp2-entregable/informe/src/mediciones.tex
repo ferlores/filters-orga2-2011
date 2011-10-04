@@ -11,7 +11,7 @@ Mientras que la segunda medida fue realizar mil mediciones por cada prueba, prom
 
 Otro factor a analizar fue que muestras seleccionamos para medir. Debido a la naturaleza de los algoritmos implementados, podemos ver facilmente que la complejidad esta relacionada directamente con el tama'no de la entrada. Es decir que las dos implementaciones de cada filtro se van a comportar diferente dependiendo del tama'no de la im'agen\footnote{Es importante aclarar que consideramos como tama'no de la imagen, la cantidad total de p'ixeles que esta tiene} y no del tipo de imagen a procesar. Por lo tanto podriamos tomar imagenes de distinto tama'no y comparar como se comportan los distintos filtros y las distintas implementaciones, observando las variaciones de \textit{clocks} con respecto a la cantidad de p'ixeles procesados. Sin embargo elegimos otro camino. Decidimos utilizar un tama'no fijo (dentro de los posibles) de p'ixeles y analizar el comportamiento de los algoritmos al variar la relaci'on entre la cantidad de filas y de columnas de la imagen. 
 
-Para las mediciones base utilizamos una imagen de 800x600. Es decir que estamos trabajando con im'agenes de 480.000 p'ixeles (aprox. $0,5Mp$). Luego tomamos distintas im'agenes reacomodando las filas y columnas, seg'un criterios que explicaremos en la siguiente secci'on. Sin embargo a veces no fue posible llegar a la misma cantidad exacta de p'ixeles. En estos casos elegimos combinaciones donde la diferencia sea m'inima y podemos asegurar que en ning'un caso la diferencia de tama'no supera un $0,1\%$ del total.
+Para las mediciones base utilizamos una imagen de 800x600. Es decir que estamos trabajando con im'agenes de 480.000 p'ixeles (aprox. 0,5Mp). Luego tomamos distintas im'agenes reacomodando las filas y columnas, seg'un criterios que explicaremos en la siguiente secci'on. Sin embargo a veces no fue posible llegar a la misma cantidad exacta de p'ixeles. En estos casos elegimos combinaciones donde la diferencia sea m'inima y podemos asegurar que en ning'un caso la diferencia de tama'no supera un $0,1\%$ del total.
 
 \subsection{An'alisis de factores}
 Antes de decidir las combinaciones de filas y columnas, analizamos con que tipo de im'agenes nuestros algoritmos pod'ian
@@ -92,7 +92,7 @@ El porcentaje de penalizaci'on para el filtro suavizar tambi'en nos result'o lla
 
 En este punto hemos realizado una revisi'on de la implementaci'on del c'odigo de suavizar y vimos que tambien seria posible desarrollar una version que procese de a menos bytes, de esta manera disminuiriamos en un tercio los accesos a memoria\footnote{esto es porque actualmente se leen 18 bytes por iteraci'on - tres lecturas corridas de a un byte}. Ser'ia interesante ver si realmente procesar de menos p'ixeles pero con menos accesos a memoria presenta una mejora en la \textit{performance}. Es una pena que hemos tenido el tiempo suficiente para realizar dicha comprobaci'on. Sin embargo queda como un trabajo a futuro.
 
-\begin{table}[h!]
+\begin{table}[ht!]
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
@@ -116,7 +116,7 @@ Por otra parte el cuadro \ref{tab:acolor} muestra los resultados para los filtro
 
 Como una observaci'on general de estas mediciones de im'agenes altas, en contraste con el caso base podemos apreciar c'omo la distribuci'on de p'ixeles no influencia significativamente en la cantidad de ciclos de reloj de las implementaciones en \C \ mientras que en \ass este factor puede llegar tener mucha relevancia. 
 
-\begin{table}[h!]
+\begin{table}[ht!]
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
@@ -148,7 +148,7 @@ Sin embargo, no todo es color de rosa en la vida, y nos preguntamos porqu'e suav
 Otra observaci'on general que notamos fue que aqui tambi'en la cantidad de ciclos consumidos por la implementaci'on en \C \ es
 similar al de los casos base, por el contrario la implementaci'on en \ass \ en todos los casos los filtros consumen m'as ciclos que en su caso base (salvo normalizar que la cantidad de ciclos es comparable).
 
-\begin{table}[h!]
+\begin{table}[H]
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
@@ -172,3 +172,4 @@ separar\_c& 1440x333 & 20.427.885 & 6.163.018 & 14.264.867 & 69,83\% &  \\
 \label{tab:anchas}
 \end{center}
 \end{table}
+

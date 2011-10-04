@@ -1,23 +1,9 @@
 \subsection{Suavizado Gaussiano}
 
-\subsubsection{Iteracion}
-Primero tuvimos que tener en cuenta ciertas limitaciones en la el calculo de los pixeles que nos impon'ia la 
-misma m'ascara, ya que al ser una m'ascara de 3x3 y calcular el pixel del centro, en los bordes no es posible
- ya que los pixeles no tienen entorno.
-Por otro lado, en ciclo se leen mas de 16 pixeles, a diferencia de los otros algoritmos, 
-ya que al realizar 3 lecturas moviendose de a 1 pixel se estan levantando 18 y se procesan solo  
-15, esto a su vez nos indica que al llegar al final de una fila debemos 
-tener en cuenta la cantidad de p'ixeles que procesamos con lo cual debemos preguntar si estamos 16 posiciones 
-antes del fin de la fila.
-
-\subsubsection{Algoritmo de proceso de datos}
 El objetivo de este filtro es obtener una imagen resultante con reducci'on de ruido y difuminaci'on. 
-Para ello utilizaremos el m'etodo de aplicaci'on de m'ascaras, con lo cual el p'ixel resultante se obtiene con la suma
-de los valores de los p'ixeles del entorno multiplicados por la m'ascara.
+Para ello debemos procesar cada p'ixel utilizando la informaci'on de sus aleda'nos. La idea es calcluar un tipo de promedio ponderado de los valores del punto que estoy analizando con sus nueve vecinos inmediatos. En la figura \ref{tab:s-uno} podemos ver los coeficientes de multiplicaci'on de los p'ixeles.
 
-La m'ascara que utilizaremos sera la siguiente(tabla \ref{tab:s-uno} ):
-
-\begin{table}[h!]
+\begin{figure}[h!]
 \begin{center}
 \begin{tabular}{| c | c | c |}
 \hline
@@ -26,68 +12,54 @@ La m'ascara que utilizaremos sera la siguiente(tabla \ref{tab:s-uno} ):
 1/16 & 2/16 & 1/16 \\ \hline
 \end{tabular}
 \end{center}
-\caption{Mascara a aplicar}
+\caption{Promedio ponderado del entorno}
 \label{tab:s-uno}
-\end{table}
+\end{figure}
 
 Con lo cual el p'ixel resultante sera el p'ixel que se encuentra en el centro del entorno, y el mismo tendra el siguiente valor:
+\\
 $$
-Iout(i,j) /= I_{in}(i-1,j-1) \cdot{} 1/16 + I_{in}(i-1,j) + I_{in}(i-1,j+1) \cdot{} 1/16 + I_{in}(i+0,j-1) \cdot{} 2/16 + I_{in}(i+0,j)  \cdot{} 4/16 +  I_{in}(i+0,j+1)  \cdot{} 2/16 + I_{in}(i+1,j-1)  \cdot{} 1/16 + I_{in}(i+1,j) \cdot{} 2/16 + I_{in}(i+1,j+1)  \cdot{} 1/16
-$$
-La implementaci'on en C es trivial teniendo la formula mensionada anteriormente.
+\begin{array}{rl}
+I_{out}(i,j) =& I_{in}(i-1,j-1) \cdot{} 1/16 + I_{in}(i-1,j) \cdot{} 2/16 + I_{in}(i-1,j+1) \cdot{} 1/16 +\\
+		 & I_{in}(i+0,j-1) \cdot{} 2/16 + I_{in}(i+0,j)  \cdot{} 4/16 +  I_{in}(i+0,j+1)  \cdot{} 2/16 +\\
+		 & I_{in}(i+1,j-1)  \cdot{} 1/16 + I_{in}(i+1,j) \cdot{} 2/16 + I_{in}(i+1,j+1)  \cdot{} 1/16
 
-Por el lado de la implementacion en \ass, al ver que cada p'ixel deb'ia ser la suma de su entorno y 
-que nosotros trabajar'iamos con los registros \textit{sse} de 128 bits, decidimos 
+\end{array}
+$$
+\\
+Aca tambi'en la implementaci'on en C es trivial teniendo la formula mencionada anteriormente. B'asicamente nos valemos de que acceder a las posiciones de la matriz en \C\ es inmediato y directo. Es decir que en cualquier momento podemos acceder a cualquier posicion de la matriz con los 'indices correspondientes. 
+
+Por el lado de la implementacion en \ass\ vuelve a ser mas compleja. Al ver que cada p'ixel deb'ia ser la suma de su entorno ponderado, decidimos 
 dividir en 3 partes el algoritmo para tratar cada una de las lineas de la matriz resultante.
 
-Comenzamos el algoritmo realizando una lectura de 16 bytes a partir de un puntero base(no es el base pointer), 
-luego realizamos una segunda y tercer lectura(para guarda informaci'on del entorno)
-desplazando el puntero base en uno y dos bytes respectivamente.
-La siguiente im'agen muestra esas lecturas(figura \ref{est:s-dos} ):
+Comenzamos el algoritmo realizando una lectura de 16 bytes, luego realizamos una segunda y tercer lectura sucesiva(para guarda informaci'on del entorno)
+desplazando el puntero base en uno y dos bytes respectivamente. La figura \ref{est:s-dos} muestra esas lecturas. El objetivo aca nuevamente es que queden alineados los datos que necesito sumar.
 
+
+\newcolumntype{C}{>{\footnotesize\centering}p{22pt}}
 \begin{figure}[h!]
-\xmmW{paso 1.}{a_15a_14 & a_13a_12 & a_11a_10 & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2 & a_1a_0}
-\xmmW{paso 2.}{a_16a_15 & a_14a_13 & a_12a_11 & a_10a_9 & a_8a_7 & a_6a_5 & a_4a_3 & a_2a_1}
-\xmmW{paso 3.}{a_17a_16 & a_15a_14 & a_13a_12 & a_11a_10 & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2}
-\xmmW{paso 7}{FF & FF & FF & FF & FF & FF & FF & FF}
+\xmmW{paso 1.}{a_{15}a_{14} & a_{13}a_{12} & a_{11}a_{10} & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2 & a_1a_0}
+\xmmW{paso 2.}{a_{16}a_{15} & a_{14}a_{13} & a_{12}a_{11} & a_{10}a_9 & a_8a_7 & a_6a_5 & a_4a_3 & a_2a_1}
+\xmmW{paso 3.}{a_{17}a_{16} & a_{15}a_{14} & a_{13}a_{12} & a_{11}a_{10} & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2}
 \caption{Levantado de datos de la primer linea}
 \label{est:s-dos}
 \end{figure}
+\newcolumntype{C}{>{\footnotesize\centering}p{18pt}}
 
-Luego desempaquetamos los datos para operar como words, con lo cual primero copiamos los registros que 
-tenemos con los datos para operar todos los p'ixeles que levantamos, ya que al desempaquetar los mismos 
-quedaran words con datos donde su parte alta es cero.
-Ya copiados los registros procedimos a desempaquetarlos, previamente habiendo dejado un registro 
-lleno con ceros(contra el cual hacemos el desmpaquetado) quedando as'i figura \ref{est:s-tres}.
+Luego desempaquetamos los datos para operar como words, obteniendo asi dos registros por cada uno de los anteriores, uno para la parte baja y otro para la alta. Es importante destacar que los desempaquetamientos siempre los hacemos con registros que tienen todo ceros, de esta manera el valor que nos interesa se ve inalterado. 
 
-\begin{figure}[h!]
-\xmmW{reg 4.}{0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & a_11 & 0 a_10 & 0 a_9 & 0 a_8}
-\xmmW{reg 1.}{0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1 & 0 a_0}
-\xmmW{reg 5.}{0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 & 0 a_9}
-\xmmW{reg 2.}{0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2 & 0 a_1}
-\xmmW{reg 6.}{0 a_17 & 0 a_16 & 0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & 0 a_11 & 0 a_10 }
-\xmmW{reg 3.}{0 a_9 & 0 a_8 & 0 a_7 & 0 a_6 & 0 a_5 & 0 a_4 & 0 a_3 & 0 a_2}
-\xmmW{reg 7}{FF & FF & FF & FF & FF & FF & FF & FF}
-\caption{los registros 1,2,3 corresponden a partes bajas y los 4,5,6 a partes altasAsm}
-\label{est:s-tres}
-\end{figure}
-Luego se utiliza la operaci'on \textit{psllw}, que ser'ia equivalente a multiplicar por 2, en los 
-registros de la segunda lectura y sumamos las partes bajas guard'andolas en los acumuladores.
-Ya procesada la primer linea de la m'ascara procedemos a la segunda, para la cual sumamos el ancho de la 
-im'agen en 
-p'ixeles para pararnos en la segunda fila de la matriz, luego con el mismo m'etodo copiamos 
-y desempaquetamos,  
-usando los mismos registros que en la primer linea(ya que podemos reutilizarlos debido a que los datos est'an
-guardados), a diferencia que esta vez se multiplican por 2 los 
-registros de la primera y tercer operacio'n de lectura por otra parte los registros correspondientes a 
-la segunda lecutra se multiplican 4, luego sumamos estos a los acumuladores correspondientes.
+Luego se utiliza la operaci'on \textit{psllw} para realizar un desplazamiento empaquetado de a words de un bit (que ser'ia equivalente a multiplicar por 2) en los registros de la segunda lectura y sumamos las partes bajas guard'andolas en los acumuladores.
 
-Por 'ultimo pasamos a la tercer linea de la misma manera que la anterior, realizamos tres lecturas a memoria
-cada una desplazada en un byte y realizamos el mismo proceso que en la primer linea ya que 
-las operaciones que deben hacerse son las mismas(ver tabla \ref{tab:s-uno}) copiando, desempaquetando 
-y multiplicando, para luego sumar en los acumuladores correspondientes a la parte alta y parte baja, y dividirlos por 16.
-Al finalizar de sumar todas las lineas procedemos al empaquetado de la parte alta con la parte baja y 
-guardamos los datos.
+Ya procesada la primer linea del entorno procedemos a la segunda. Sumamos a nuestro 'indice el ancho de la 
+im'agen (contemplando el \textit{padding}) para pararnos en la segunda fila de la matriz, realizamos nuevamente tres lecturas desplazadas, desempaquetamos y multiplicamos los registros por sus correspondientes valores. En este caso 4 para el centro y 2 para los extremos. Aca nuevamente utilizamos instrucciones de desplazamiento para la multiplicaci'on. Una vez procesada la parte alta y baja de la segunda linea, la acumulamos con los resultados de la primera.
 
+Por 'ultimo pasamos a la tercer linea de la misma manera que la anterior, y realizamos el mismo procedimiento: tres lecturas desfazadas, desempaquetamos,  multiplicamos, y acumulamos los valores correspondientes a la parte alta y parte baja. En este punto s'olo nos queda dividirlos por 16. Lo realizamos nuevamente con una operaci'on de desplazamiento de bits. 
 
+Ahora solo nos queda empaquetar los datos con saturaci'on y escribirlos en la imagen destino. Es importante notar que en este algoritmo utilizamos muchos registros debido a las lecturas desplazadas. En cierto punto no tuvimos mas registros libres por lo que tuvimos que utilizar una variable local de 16 bytes para guardar uno de los acumuladores. Que como trabajo a futuro ver si es posible realizar una implementaci'on que no utilice esa memoria auxiliar, ni que realice tantos accesos a memoria. Probablemente utilizando la misma estrategia aqui descripta pero procesando de a menos datos, es decir utilizando solamente las informaci'on que obtenemos con una sola lectura y no con tres desfazadas.
 
+\subsubsection*{Iterando la imagen}
+En este algoritmo tuvimos que modificar nuestro ciclo gen'erico, pues estamos leyendo de a 18 bytes debido a las tres lecturas desfazadas. es decir que debemos asegurarnos de que 
+
+Primero tuvimos que tener en cuenta ciertas limitaciones en la el calculo de los pixeles que nos impon'ia el procedimiento, ya que al utilizar un entorno de 3x3 para calcular el pixel del centro, en los bordes no es posible calcularlo. Es por esto que nuestro algoritmo recorre todo menos los bordes de la imagen de entrada. 
+
+Por otro lado, en ciclo se leen mas de 16 pixeles, a diferencia de los otros algoritmos, ya que al realizar 3 lecturas moviendose de a 1 pixel se estan levantando 18 y se procesan solo 15. Entonces debemos asegurarnos de siempre tener esos 18 p'ixeles delante nuestro. Si no los tenemos debemos realizar el reajuste para procesar los 'ultimos p'ixeles. 
