@@ -1,29 +1,27 @@
 \section{Conclusiones}
 \label{sec:conclusiones}
-Como su nombre lo indica, en esta secci'on hablaremos de las concluciones que pudimos obtener durante el desarrollo del 
-trabajo pr'actico,a su vez repasando la hipotesis y conjeturas iniciales y relacion'andola con los resultados de los experimentos.
+\begin{itemize}
+\item En todos los filtros y las im'agenes que procesamos la tecnolog'ia \textit{SSE} supera ampliamente la implementaci'on en \C \ en t'erminos de \textit{performance}, a'un en los casos borde. Sin embargo tambi'en ese ahorro tiempo de ejecuci'on se ve traducido en un esfuerzo mucho mayor en la etapa de desarrollo de los filtros. Mientras que cada algoritmo se resolv'ia en \C\ en minutos, la implementaci'on en \ass\ llevaba varias horas y tal vez dias. Es cierto que esto se debe que no estabamos acostumbrados a trabajar con dicha tecnolog'ia, sin embargo no solo el desarrollo fue lento sino tambien fue tedioso y a veces encontramos muchas dificultades a la hora de encontrar errores. Inmaginamos que en ciertos casos tal es la diferencia de \textit{performance} es determinante y por ende es redituable el costo extra de la implementaci'on,\textit{debugging} y adaptaci'on al lenguaje ensamblador.
 
-Como primer concluci'on, en todos los filtros, la implementaci'on en \C \ consume m'as ciclos de reloj que la implementaci'on que usa
-tenolog'ia \textit{SSE} a'un en los casos borde. Tal es la diferencia de \textit{performance} que es redituable el costo extra en 
-la dificultad de la implementaci'on,\textit{debugging} y adaptaci'on al lenguaje ensamblador.
+\item Nuestra conjetura inicial era que la implementaci'on en C deberia ser alrededor de 16 veces mas r'apida que la de \ass. Nunca inmaginamos que pudiera ser tan grande, tal vez sobreestimamos lo que el compilador de C hace a la hora de compilar. Tal vez utilizando opciones de optimizaci'on nos hubiesemos acercado mas a esa realci'on te'orica.
 
-El alto en p'ixeles de una im'agen es un factor sumamente relevante en el rendimiento de los algoritmos tanto en los casos base,como el de
-imagenes altas y anchas, a pesar de que la complejidad teorica es la misma.
+\item La distribuci'on de p'ixeles dentro de una im'agen puede llegar a ser un factor a tener en cuenta para cuando se aplica la versi'on optimizada. Por el contrario, las implentaciones en \C\ se comportaron de manera estable a lo largo de todos los experimentos.
 
-La manera de recorrer los ciclos en determinados tipos de filtro pueden reutilizarse como es el caso de las funciones que van de color 
+\item La manera de recorrer las im'agenes en determinados tipos de filtro pudieron reutilizarse como es el caso de las funciones que van de color 
 a escala de grises, an'alogamente lo mismo ocurre con las im'agenes en blanco y negro.
 
-Siempre hay un menor porcentaje de penalizaci'on en los filtros que realizan m'as operaciones y accesos a memoria ya que 
+\item Siempre hay un menor porcentaje de penalizaci'on en los filtros que realizan m'as operaciones y accesos a memoria ya que 
 no hay tanta diferencia entre reprocesar datos y las operaciones intermedias en cada iteraci'on de un ciclo.
 
-El set de instrucciones fue m'as que suficiente para realizar las tareas pedidas.
+\item Seguramente no estamos contemplando cierta informacion, pues si bien los resultados en general daban como esperabamos a veces las diferencias son mas grandes o mas peque'nas de lo que esperabamos o podemos justificar con los elementos que contamos. Creemos que un analisis mas profundo, en conjunto con otros experimentos que individualicen otros aspectos del procesador podrian echar mas luz sobre los misterios de la optimizacion de bajo nivel. 
 
-Compartivamente, el desarrollo en \ass \ fue la actvidad que m'as tiempo abarc'o, con respecto al desarrollo de este informe y
+\item El set de instrucciones de la verion 2 fue m'as que suficiente para realizar las tareas pedidas.
+
+\item Compartivamente, el desarrollo en \ass \ fue la actvidad que m'as tiempo abarc'o, con respecto al desarrollo de este informe, mediciones y
 el desarrollo en \C.
 
-Los casos de prueba seleccionados, reflejaron nuestras conjeturas iniciales y experimentalmente pudimos corroborar 
+\item Los casos de prueba seleccionados ayudaron a probar nuestras conjeturas iniciales y experimentalmente pudimos corroborar 
 que la selecci'on fue correcta.
 
-Hubieron cosas que pudimos haber hecho pero por limitaciones de tiempo no tuvimos la oportunidad, entre ellas: alinear la memoria a 16 bytes
-y utilizar instrucciones de movimiento alineadas, compilar los filtros en \C \ usando las opciones de optimizaci'on del compilador
-gcc e implementar cada filtro en \ass \ sin utilizar \textit{SSE}.  
+\item Hubieron experimentos que no pudimos realizar por limitaciones de tiempo pero que nos hubiesen gustado ver, entre ellos: alinear la memoria a 16 bytes para utilizar la instruccion de movimiento alineado y ver las diferencias de \textit{performance}, realizar mediciones contra los filtros en \C \ usando las opciones de optimizaci'on del compilador e implementar cada filtro en \ass \ sin utilizar tecnolog'ia \textit{SSE}.  
+\end{itemize}

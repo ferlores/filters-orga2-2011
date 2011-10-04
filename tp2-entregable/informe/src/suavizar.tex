@@ -1,11 +1,11 @@
 \subsection{Suavizado Gaussiano}
 
-\subsection{Iteracion}
+\subsubsection{Iteracion}
 A diferencia de los otros algoritmos, este es muy similar en algunos aspectos a simple vista pero es diferente.
 Primero tuvimos que tener en cuenta ciertas limitaciones en la el calculo de los pixeles que nos impon'ia la misma m'ascara, ya que al ser una m'ascara de 3x3 y calcular el pixel del centro, en los bordes no es posible ya que los pixeles no tienen entorno.
 Por otro lado, en ciclo se leen mas de 16 pixeles por linea, a diferencia de los otros algoritmos en assembler, ya que al realizar 3 lecturas moviendose de a 1 pixel se estan levantando 18 y se procesan 16 esta es una ventaja que nos proveen los registros SSE , ventaja que no tenemos en lenguaje en C que se lee de un pixel por itereacion, esto a su vez nos indica que al llegar al final de una fila debemos tener en cuenta la cantidad de pixeles que procesamos con lo cual debemos preguntar si estamos 16 posiciones antes del fin de la fila.
 
-\subsection{Algoritmo de proceso de datos}
+\subsubsection{Algoritmo de proceso de datos}
 El objetivo de este filtro es obtener una imagen resultante con reducci'on de ruido y difuminaci'on. 
 Para ello utilizaremos el m'etodo de aplicaci'on de m'ascaras, con lo cual el p'ixel resultante se obtiene con la suma
 de los valores de los p'ixeles del entorno multiplicados por la m'ascara.
@@ -26,9 +26,9 @@ La m'ascara que utilizaremos sera la siguiente(tabla \ref{tab:s-uno} ):
 \end{table}
 
 Con lo cual el p'ixel resultante sera el p'ixel que se encuentra en el centro del entorno, y el mismo tendra el siguiente valor:
-
+$$
 I_out(i,j) /= I_{in}(i-1,j-1) \cdot{} 1/16 + I_{in}(i-1,j) + I_{in}(i-1,j+1) \cdot{} 1/16 + I_{in}(i+0,j-1) \cdot{} 2/16 + I_{in}(i+0,j) \cdot{} 4/16 +  I_{in}(i+0,j+1) \cdot{} 2/16 + I_{in}(i+1,j-1) \cdot{} 1/16 + I_{in}(i+1,j) \cdot{} 2/16 + I_{in}(i+1,j+1) \cdot{} 1/16
-
+$$
 La implementaci'on en C es trivial teniendo la formula mensionada anteriormente.
 
 Por el lado de la implementacion en assember al ver que cada p'ixel deb'ia ser la suma de su entorno y que nosotros trabajar'iamos con los registros sse de 128 bits, decidimos 
