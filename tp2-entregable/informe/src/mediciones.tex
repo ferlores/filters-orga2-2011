@@ -56,6 +56,7 @@ positivo, ya que significa que dio r'editos implementar en un lenguaje de m'as b
  a cambio de un mejor rendimiento, siempre utilizando la tecnologia \textit{SSE}.
 
 \begin{table}[h!]
+\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
 \sc{funci'on} & \sc{\# pixels }& \sc{ciclos C }& \sc{ciclos ASM }& \sc{$\delta$ ciclos }& \sc{\% mejora}\\ \hline
@@ -70,6 +71,7 @@ separar\_canales & 800x600 & 20.421.239 & 6.219.616 & 14.201.623 & 69,54\%\\
 \end{tabular}
 \caption{Resultados caso base}
 \label{tab:base}
+\end{center}
 \end{table}
 
 \subsubsection{Imagenes altas}
@@ -88,6 +90,7 @@ y seguramente se debe a lo que dijimos en un principio, que el algoritmo debe re
 una vez cada vez que itera sobre las 'ultima columnas.
 
 \begin{table}[h!]
+\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 \sc{funci'on} & \sc{\# pixels} & \sc{ciclos C }& \sc{ciclos ASM }& \sc{$\Delta$ ciclos }& \sc{\% mejora }& \sc{penalizaci'on}\\ \hline
@@ -103,6 +106,7 @@ suavizar & 17x28234 & 29.283.006 & 3.773.630 & 25.509.376 & 87,11\% & \\
 \end{tabular}
 \caption{Resultados Im'agenes altas blanco y negro}
 \label{tab:abyn}
+\end{center}
 \end{table}
 
 Haciendo un an'alisis similar para el caso color, 
@@ -133,6 +137,7 @@ similitud en los ciclos de reloj de las implementaciones en \C \ y las diferenci
 casos no favorables esto se debe a la distribuci'on de los pixeles.
 
 \begin{table}[h!]
+\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 \sc{\footnotesize funci'on} & \sc{\footnotesize\# pixels} & \sc{\footnotesize ciclos C }& \sc{\footnotesize ciclos ASM }& \sc{\footnotesize$\Delta$ ciclos }& \sc{\footnotesize\% mejora }& \sc{\footnotesize penalizaci'on}\\ \hline
@@ -145,6 +150,7 @@ separar\_c & 10x48000 & 20.874.906 & 7.176.690 & 13.698.216 & 65,62\% & \\
 \end{tabular}
 \caption{Resultados Im'agenes altas color}
 \label{tab:acolor}
+\end{center}
 \end{table}
 
 \subsubsection{Imagenes anchas}
@@ -175,6 +181,7 @@ presento la mayor similitud de rendimiento con a pesar de que la cantidad de fil
 base.
 
 \begin{table}[h!]
+\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 \sc{\footnotesize funci'on} & \sc{\footnotesize\# pixels} & \sc{\footnotesize ciclos C }& \sc{\footnotesize ciclos ASM }& \sc{\footnotesize$\Delta$ ciclos }& \sc{\footnotesize\% mejora }& \sc{\footnotesize penalizaci'on}\\ \hline
@@ -195,4 +202,5 @@ separar\_c& 1440x333 & 20.427.885 & 6.163.018 & 14.264.867 & 69,83\% &  \\
 \end{tabular}
 \caption{Resultados Im'agenes anchas}
 \label{tab:anchas}
+\end{center}
 \end{table}

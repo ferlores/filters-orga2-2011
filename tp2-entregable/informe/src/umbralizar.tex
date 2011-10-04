@@ -1,28 +1,24 @@
 \subsection{Umbralizar}
-El fin de esta funci'on es obtener una imagen en tres colores con lo cual cada pixel se va a procesar observando el valor del 
-mismo y dependiendo de este se devuelve un p'ixel en la imagen resultante de color negro, gris o blanco, 
-comparando con un umbral m'aximo y otro m'inimo.
-Esto se define con la siguiente funcion.
+Este filtro proproduce im'agenes con solamente tres colores (blanco, gris y negro), dependiendo del valor que tenga cada p'ixel.
+El procesamiento de cada p'ixel esta definido por la siguiente funci'on:
 
-$$Iout(p) = \left\{\begin{array}{lcc} 0 & \text{si } p \leq umbralMin\\  128 & \text{si } umbralMin < p \leq umbralMax \\ 255 & \text{si } p > umbralMax \end{array} \right. $$
-Para realizar este algoritmo primero vimos que era necesario tener los umbrales, con lo cual primero definimos el umbral 
-m'inimo colocando en un registro de proposito general el umbral m'inimo que recibimos como par'ametro de entrada, 
-luego realizamos un \textit{shift} de 8 bits a la izquierda y volvimos a sumar el umbral m'inimo repitiendo este procedimiento 3 veces mas, 
-con lo cual en el registro nos quedo el umbral m'inimo repetido 5 veces.
+$$I_{out}(p) = \left\{\begin{array}{lcc} 0 & \text{si } p \leq umbralMin\\  128 & \text{si } umbralMin < p \leq umbralMax \\ 255 & \text{si } p > umbralMax \end{array} \right. $$
 
-Despues movemos al registro xmm5 el registro de prop'osito general con el umbral m'inimo y utilizamos la instruccion para 
-realizar un \textit{shufle} de a double words y con lo que nos queda repetido el umbral en las posiciones del registro \textit{sse}. 
-Repetimos esta operacion para el umbral m'aximo colocandolo en el registro xmm4 de la misma manera que lo hicimos con el umbral m'inimo.
+La implementaci'on en \C\ es nuevamente trival. Recorremos, como siempre en estos casos, secuencialmente de a un byte mientras que el procesamiento de cada p'ixel se reduce a dos comparaciones para elegir el valor correcto del resultado.
+
+En cambio, para la implementaci'on en \ass\ tenemos varios pasos. Primero vimos que para realizar las comparaciones era necesario tener los umbrales empaquetados en los registros de 128 bits. Para esto cargamos los valores que recibimos como par'ametro de entrada en un registro de proposito general. Luego realizamos desplazamientos de a de 8 bits a la izquierda y sucesivas sumas del valor hasta que conseguimos un doble word lleno. Despues movemos a dos registros de 128 bits el registro de prop'osito general con el umbral m'inimo y m'aximo y utilizamos la instruccion de intercambio \textit{shufle} de double words para replicar el valor a lo largo de todo el registro SSE.
+
 Por otro lado necesitabamos una m'ascara donde est'e el numero 128, que representa el gris en la im'agen.
 Para lo cual primero colocamos el numero 128 repetido 4 veces en un registro de proposito general,  
 este es definido en notacion hexadecimal como 80h. Luego colocamos este en el registro xmm6 y con la operacion 
 \textit{pshufd},repetimos este elemento en todas las otras \textit{double words} dentro del registro.
 El resultado de este proceso se ve en la figura \ref{est:u-uno}.
 
-\begin{figure}[ht]
+\begin{figure}[h!]
 \xmmW{paso 5}{Umin & Umin & Umin & Umin & Umin & Umin & Umin & Umin}
 \xmmW{paso 4}{Umax & Umax & Umax & Umax & Umax & Umax & Umax & Umax}
 \xmmW{paso 6}{128 & 128 & 128 & 128 & 128 & 128 & 128 & 128}
+\caption{???????????????????????????????}
 \label{est:u-uno}
 \end{figure}
 
