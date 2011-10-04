@@ -1,7 +1,12 @@
+Para realizar mediciones ejecutar primero medgen.sh para generar las 
+imagenes a medir, luego ejecutar medir.sh pasandole como parametro el 
+directorio que tiene la definicion del caso a medir o para correr todas
+las mediciones ejecutar medirTodo.sh. Los resultados se imprimen por 
+pantalla y ademas se agregan al final de mediciones.csv. 
+
 
 ######### medir.sh
-Para realizar mediciones ejecutar medir.sh pasandole como parametro el 
-directorio que tiene la definicion del caso a medir.
+Ejecuta un caso de test. Por ejemplo:
 
 # ./medir.sh casoByN 
 o
@@ -19,3 +24,8 @@ del archivo mediciones.csv, por lo puede ser levantado con una planilla de calcu
 ######## medirTodo.sh
 Para automatizar todas las mediciones utilizamos un script que vacia el directorio 
 de las imagenes de prueba, las recrea y ejecuta todos los casos de test
+
+
+
+####### medgen.sh
+Crea en el directorio de tests las imagenes para correr las mediciones.
