@@ -6,12 +6,13 @@ $$I_{out}(p) = \left\{\begin{array}{lcc} 0 & \text{si } p \leq umbralMin\\  128 
 
 La implementaci'on en \C\ es nuevamente trival. Recorremos, como siempre en estos casos, secuencialmente de a un byte mientras que el procesamiento de cada p'ixel se reduce a dos comparaciones para elegir el valor correcto del resultado.
 
-En cambio, para la implementaci'on en \ass\ tenemos varios pasos. Primero vimos que para realizar las comparaciones era necesario tener los umbrales empaquetados en los registros de 128 bits. Para esto cargamos los valores que recibimos como par'ametro de entrada en un registro de proposito general. Luego realizamos desplazamientos de a de 8 bits a la izquierda y sucesivas sumas del valor hasta que conseguimos un doble word lleno. Despues movemos a dos registros de 128 bits el registro de prop'osito general con el umbral m'inimo y m'aximo y utilizamos la instruccion de intercambio \textit{shufle} de double words para replicar el valor a lo largo de todo el registro SSE.
+En cambio, para la implementaci'on en \ass\ procesaremos de a 16 bytes, y no tendremos que desempaquetar los valores
 
-Por otro lado necesitabamos una m'ascara donde est'e el numero 128, que representa el gris en la im'agen.
-Para lo cual primero colocamos el numero 128 repetido 4 veces en un registro de proposito general,  
-este es definido en notacion hexadecimal como 80h. Luego colocamos este en el registro xmm6 y con la operacion 
-\textit{pshufd},repetimos este elemento en todas las otras \textit{double words} dentro del registro.
+tenemos varios pasos. Primero vimos que para realizar las comparaciones era necesario tener los umbrales empaquetados(de a bytes) en los registros de 128 bits. Para esto cargamos los valores que recibimos como par'ametro de entrada en un registro de proposito general. Luego realizamos desplazamientos de a de 8 bits a la izquierda y sucesivas sumas del valor hasta que conseguimos un doble word lleno. Despues movemos a dos registros de 128 bits el registro de prop'osito general con el umbral m'inimo y m'aximo y utilizamos la instruccion de intercambio \textit{shufle} de double words para replicar el valor a lo largo de todo el registro SSE. 
+
+Por otro lado tambi'en necesitabamos un registro que contenga el n'umero 128, que representa el gris en la im'agen.
+Para obtenerlo realizamos el mismo procedimiento que hicimos con los valores m'inimos y m'aximos, solo que el valor inicial lo obtenemos a aprtir de la constante 8080h\footnote{el valor 80h corresponde al valor 128 en decimal} .
+
 El resultado de este proceso se ve en la figura \ref{est:u-uno}.
 
 \begin{figure}[h!]
@@ -22,21 +23,14 @@ El resultado de este proceso se ve en la figura \ref{est:u-uno}.
 \label{est:u-uno}
 \end{figure}
 
-Una vez ya definidos los umbrales en los registros comenzamos a procesar los datos, primero levantamos la linea 
-en el registro xmm0, copiamos la m'ascara del umbral m'aximo en xmm3 y para saber cuales eran los elementos que estaban
-sobre el umbral restamos y saturamos a la copia del umbral el valor que tenemos en la linea de los p'ixeles leidos y con 
-la instrucci'on \textit{pcmpeqb} contra un registro vacio, nos quedan los n'umeros hexadecimales F en las posiciones donde es igual a cero, 
-esto quiere decir que el umbral m'aximo en esas posiciones es superior al valor que se tiene en la imagen, quedandonos F 
-en las pociones que estan sobre el umbral en el registro xmm3.
 
-Siguiente a esto realizamos la diferencia saturada entre los valores en los p'ixeles de la im'agen y un registro que tiene 
-el umbral m'inimo, con lo cual nos quedan ceros en los bytes que estan debajo del umbral m'inimo gracias a la saturacion,
-y con la instrucci'on \textit{pcmpeqb} nos queda una F en los bytes que estan debajo del umbral en el registro xmm0.
-Luego realizamos un OR con los dos registros calculados (xmm0, xmm3) y al resultado le aplicamos la instrucci'on \textit{pcmpeqb} con
-un registro vacio para obtener F donde haya ceros, de esta manera esas F representan los p'ixeles que se encuentran en el 
-medio del umbral.
+Una vez ya definidos los umbrales en los registros comenzamos a procesar los datos. Para saber cuales son los elementos que estan por
+sobre el umbral hacemos una resta saturada entre el registro que contiene el umbral m'aximo y los valores originales de la im'agen. De esta manera nos quedan ceros en los valores que eran mayores o iguales al m'aximo y valores distintos a cero en las otras posiciones. Entonces utilizamos 
+la instrucci'on \textit{pcmpeqb} para armar una m'ascara a partir de la comparaci'on de este resultado contra un registro lleno de ceros, obteniendo por resultado Fh en las posiciones donde el valor original era mayor al umbral y ceros en las otras posiciones.
 
-Luego se le aplica la operacion AND a el resultado con la m'ascara, y se obtiene el valor que implicar'ia los grises.
-De esta manera nos queda el valor 128 en las pociones intermedias del umbral, y al realizarle la operaci'on OR con el registro 
-xmm3 que contiene los extremos superiores obtenemos 255 que representa el blanco en las posiciones que est'an sobre el umbral 
-m'aximo, una vez realizado esto procedemos a guardar el dato.
+Ahora realizo un procedimiento similar. Realizamos una resta saturada es entre el valor original y el valor m'inimo, dando por resultado un registro con ceros en los bytes que estan debajo del umbral m'inimo (nuevamente gracias a la saturacion). Luego, utilizando la instrucci'on \textit{pcmpeqb} contra un registro lleno de ceros, armamos otra m'ascara con Fh en los bytes que estan debajo del umbral m'inimo.
+
+Luego combinamos las dos m'ascaras con un \textit{por} y al resultado le aplicamos la instrucci'on \textit{pcmpeqb} con
+un registro con ceros. Esta 'ultima operacion es, en este caso, similar a una negacion bit a bit. Por lo que obtenemos Fh donde hab'ia antes ceros, es decir, en las posiciones donde se encuentran los valores medios de la imagen.
+
+Por 'ultimo, utilizamos esta 'ultima m'ascara junto con el registro que contiene la constante 128 para realizar un \textit{pand} y obtener como resultado un registro con los grises en sus posiciones correspondientes. Por 'ultimo solo queda colocar blancos en las posiciones donde la imagen es mayor al umbral. Recordamos que tenemos calculada una mascara con Fh en esas posiciones y ceros en las demas, por lo que un simple \textit{por} combinaria este registro el con registro con grises, obteniendo los bytes necesarios para escribirlos en la nueva imagen.

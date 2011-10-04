@@ -1,21 +1,6 @@
 \subsection{Invertir}
-El fin de invertir es que dado una im'agen en escala de grises se le resta el valor m'aximo de un p'ixel al valor que esta en el p'ixel, de esta manera siempre se resta el valor 255 a el valor del pixel.
+En este filtro, dada una im'agen en escala de grises, debemos calcular la resta entre el valor m'aximo de un p'ixel y el valor de la imagen, es decir, calcular la resta entre 255 y el p'ixel dado.
 
-Con lo cual lo que realizamos es levantar el valor de los p'ixeles en un registro \textit{sse} , el xmm0, y a un registro le aplicamos la instrucci'on \textit{pcmpeqb} , con lo cual el registro queda completo de 0xF en el registro xmm7.
-Luego restamos con saturaci'on al registro xmm7 el valor de los p'ixeles de la im'agen, el registro xmm0, asi de esta manera obtenemos el valor deseado, la resta es con saturaci'on ya que si no se produce overflow.
-La figura href{est:i-uno} muestra como quedan le'idos los datos en memoria:
+La implementaci'on en \C\ es mas que trivial, ademas del ciclo ya explicado (con su correspondiente procesamiento lineal de a byte), es solo una resta lo que realiza la funci'on.
 
-\begin{figure}[ht]
-\xmmW{paso 7}{FFFF & FFFF & FFFF & FFFF & FFFF & FFFF & FFFF & FFFF}
-\xmmW{paso 0.}{a_15a_14 & a_13a_12 & a_11a_10 & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2 & a_1a_0}
-\caption{Los registros antes de ser procesados}
-\label{est:i-uno}
-\end{figure}
-
-\begin{figure}[ht]
-\xmmW{paso 0.}{FFa_15FFa_14 & FFa_13FFa_12 & FFa_11FFa_10 & FFa_9FFa_8 & FFa_7FFa_6 & FFa_5FFa_4 & FFa_3FFa_2 & FFa_1FFa_0}
-\caption{El registro resultante}
-\label{est:i-dos}
-\end{figure}
-
-Luego de procesado los datos guardamos el resultado en la imagen destino(figura \ref{est:i-dos}).
+Por otra parte en \ass\ lo primero que realizamos es cargar un registro con el valor 255 en cada byte. Para esto usando cualquier registro aplicamos la instrucci'on \textit{pcmpeqb} contra si mismo, dejando todos bits en uno, con lo cual el registro queda completo del valor deseado. Luego realizamos la resta entera saturada \textit{psubb} (aunqe podria ser tambien la no saturada), asi de esta manera obtenemos los valores procesados.
