@@ -3,7 +3,7 @@
 \begin{itemize}
 \item En todos los filtros y las im'agenes que procesamos la tecnolog'ia \textit{SSE} supera ampliamente la implementaci'on en \C \ en t'erminos de \textit{performance}, a'un en los casos borde. Sin embargo tambi'en ese ahorro tiempo de ejecuci'on se ve traducido en un esfuerzo mucho mayor en la etapa de desarrollo de los filtros. Mientras que cada algoritmo se resolv'ia en \C\ en minutos, la implementaci'on en \ass\ llevaba varias horas y tal vez dias. Es cierto que esto se debe que no estabamos acostumbrados a trabajar con dicha tecnolog'ia, sin embargo no solo el desarrollo fue lento sino tambien fue tedioso y a veces encontramos muchas dificultades a la hora de encontrar errores. Inmaginamos que en ciertos casos tal es la diferencia de \textit{performance} es determinante y por ende es redituable el costo extra de la implementaci'on,\textit{debugging} y adaptaci'on al lenguaje ensamblador.
 
-\item Nuestra conjetura inicial era que la implementaci'on en C deberia ser alrededor de 16 veces mas r'apida que la de \ass. Nunca inmaginamos que pudiera ser tan grande, tal vez sobreestimamos lo que el compilador de C hace a la hora de compilar. Tal vez utilizando opciones de optimizaci'on nos hubiesemos acercado mas a esa realci'on te'orica.
+\item Nuestra conjetura inicial era que la implementaci'on en C deberia ser alrededor de 16 veces mas lenta que la de \ass. Nunca inmaginamos que pudiera ser tan grande la diferencia, tal vez sobreestimamos lo que el compilador de C hace a la hora de compilar. Tal vez utilizando opciones de optimizaci'on nos hubiesemos acercado mas a esa realci'on te'orica.
 
 \item La distribuci'on de p'ixeles dentro de una im'agen puede llegar a ser un factor a tener en cuenta para cuando se aplica la versi'on optimizada. Por el contrario, las implentaciones en \C\ se comportaron de manera estable a lo largo de todos los experimentos.
 
@@ -13,7 +13,7 @@ a escala de grises, an'alogamente lo mismo ocurre con las im'agenes en blanco y 
 \item Siempre hay un menor porcentaje de penalizaci'on en los filtros que realizan m'as operaciones y accesos a memoria ya que 
 no hay tanta diferencia entre reprocesar datos y las operaciones intermedias en cada iteraci'on de un ciclo.
 
-\item Seguramente no estamos contemplando cierta informacion, pues si bien los resultados en general daban como esperabamos a veces las diferencias son mas grandes o mas peque'nas de lo que esperabamos o podemos justificar con los elementos que contamos. Creemos que un analisis mas profundo, en conjunto con otros experimentos que individualicen otros aspectos del procesador podrian echar mas luz sobre los misterios de la optimizacion de bajo nivel. 
+\item Seguramente no estamos contemplando cierta informacion, pues si bien los resultados en general daban como esperabamos a veces las diferencias son mas grandes o mas peque'nas de lo que esperabamos o podemos justificar con los elementos que contamos. Creemos que un an'alisis mas profundo, en conjunto con otros experimentos que individualicen otros aspectos del procesador podrian echar mas luz sobre los misterios de la optimizaci'on de bajo nivel. 
 
 \item El set de instrucciones de la verion 2 fue m'as que suficiente para realizar las tareas pedidas.
 

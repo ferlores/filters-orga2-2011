@@ -1,11 +1,11 @@
 \subsection{Monocromatizar}
 \subsubsection{Monocromatizar \protect{$\epsilon = 1$} }
 El objetivo de la funcion monocromatizar es convertir una imagen color a escala de grises. En la implementaci'on en 
-\C\ la imagen se recorre linealmente como una matriz, pixel a pixel, accediendo a los valores de cada componente de color para realizar el siguiente c'alculo: \textbf{(R+2*G+B)/4}, siendo el resultado lo que se almacena en la imagen destino.
+\C\ la imagen se recorre linealmente como una matriz, p'ixel a p'ixel, accediendo a los valores de cada componente de color para realizar el siguiente c'alculo: \textbf{(R+2*G+B)/4}, siendo el resultado lo que se almacena en la imagen destino.
 
 La idea en \ass es similar solo que, aprovechando la capacidad de almacenamiento de los registros de 128 bits
-y teniendo en cuenta que en cada uno de estos registros entran 16 bytes, podemos procesar de hasta 5 pixeles
-por cada lectura de memoria, en lugar de avanzar de a uno. En importante destacar que, como dijimos en la secci'on \ref{sec:ciclos-color}, inicialmente cuando leemos en memoria la imagen fuente, tambi'en cargamos un tercio del sexto pixel sin embargo esta informaci'on se descarta.
+y teniendo en cuenta que en cada uno de estos registros entran 16 bytes, podemos procesar de hasta 5 p'ixeles
+por cada lectura de memoria, en lugar de avanzar de a uno. En importante destacar que, como dijimos en la secci'on \ref{sec:ciclos-color}, inicialmente cuando leemos en memoria la imagen fuente, tambi'en cargamos un tercio del sexto p'ixel sin embargo esta informaci'on se descarta.
 
 Lo primero que hacemos, es triplicar lo leido en memoria y aplicar desplazamientos a derecha con el fin de queden alineados los registros para una posterior suma. La figura \ref{est:m-dos} muestra como quedan los registros despu'es de dichos desplazamientos. En este momento, por ejemplo, en el byte menos significativo de cada registro tenemos el valor de color del primero p'ixel. Los valores del siguiente p'ixel se encuentran en la cuarta posici'on, y asi sucesivamente se pueden identificar cuales son los bytes que contienen los valores alineados.
 
@@ -45,7 +45,7 @@ El proceso para unirlos consiste en dos partes, una es aplicar una m'ascara para
 \end{figure}
 
 Una vez que los resultados quedaron combinados en un 'unico registro utilizamos instrucciones que provee la arquitectura para intercambiar datos dentro de un registro (similar a lo realizado en \textbf{separar canales}) con el fin de colocarlos de manera contigua y luego empaquetar. Si bien 
-estas instrucciones pueden afectar la performance son realmente  'utiles e indispensables para obtener la funcionalidad deseada. Una vez empaquetado nuevamente a bytes, copiamos el \textit{double word} menos significativo a memoria y con eso cubrimos los primeros 4 pixeles procesados.
+estas instrucciones pueden afectar la performance son realmente  'utiles e indispensables para obtener la funcionalidad deseada. Una vez empaquetado nuevamente a bytes, copiamos el \textit{double word} menos significativo a memoria y con eso cubrimos los primeros 4 p'ixeles procesados.
 Luego hacemos un corrimiento del registro a fin que el 'ultimo dato procesado quede en la posci'on menos significativa. Aqui nuevamente nos vemos obligados a usar un registro de prop'osito general para copiar el 'ultimo byte a memoria.
 
 \subsubsection{Monocromatizar \protect{$\epsilon = \infty $} }
@@ -59,7 +59,7 @@ El procedimiento para la implentaci'on en \ass\ es similar cuando  $\epsilon= 1$
 \label{est:m-seis}
 \end{figure}
 
-Una vez obtenidos los m'aximos de cada pixel(solo nos interesan 5 de ellos), debemos reubicarlos para que queden de manera contigua. Para esto utilizamos la misma estrategia que en separar canales. Duplicamos el registro y realizamos un corrimiento de un byte a izquierda en cada \textit{word} para obtener ceros a la izquierda de cada una de las partes bajas de cada \textit{word}. En la otra copia hacemos un corrimiento a derecha y luego a izquierda separando esta vez los valores que fueron perdidos en la operaci'on del otro registro (figura \ref{est:m-siete}). 
+Una vez obtenidos los m'aximos de cada p'ixel(solo nos interesan 5 de ellos), debemos reubicarlos para que queden de manera contigua. Para esto utilizamos la misma estrategia que en separar canales. Duplicamos el registro y realizamos un corrimiento de un byte a izquierda en cada \textit{word} para obtener ceros a la izquierda de cada una de las partes bajas de cada \textit{word}. En la otra copia hacemos un corrimiento a derecha y luego a izquierda separando esta vez los valores que fueron perdidos en la operaci'on del otro registro (figura \ref{est:m-siete}). 
 
 
 \begin{figure}[h!]

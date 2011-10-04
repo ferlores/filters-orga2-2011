@@ -55,7 +55,7 @@ realiza, obtuvimos un porcentaje de mejora superior al 96$\%$. El caso del filtr
 de mejora tuvo fue monocromatizar\_uno, que no obstante, obtuvo una mejora superior al 50$\%$. Si bien
 suponiamos que podia haber una diferencia en la eficiencia no sabiamos que seria tan marcada, lo cual es muy 
 positivo, ya que significa que dio r'editos implementar en un lenguaje de m'as bajo nivel y mayor dificultad
- a cambio de un mejor rendimiento, siempre utilizando la tecnologia \textit{SSE}.
+ a cambio de un mejor rendimiento, siempre utilizando la tecnolog'ia \textit{SSE}.
  
 \begin{table}[h!]
 \begin{center}
@@ -83,7 +83,7 @@ En este experimento introdujimos un nuevo 'indice denominado \textbf{penalizaci'
 
 En el cuadro \ref{tab:base} podemos observar los resultados para los filtros que toman im'agenes en escala de grises. En ella podemos ver una 
 gran mejora de \ass \ con respecto a \C \  tanto en la imagen de 16x30000 como en la de 17x28234. Con esto concluimos que a'un
-en un caso no favorable este sigue siendo m'as eficiente. Sin embargo, podemos ver tambien que en los casos no favorables, la implementaci'on en \ass\ demora mucho mas que en los favorables. 
+en un caso no favorable este sigue siendo m'as eficiente. Sin embargo, podemos ver tambien que en los casos no favorables, la implementaci'on en \ass \ demora mucho mas que en los favorables. 
 
 Es notable tambi'en el monstruoso porcentaje de penalizaci'on (340\%, 165\% y
 234\%, para invertir, normalizar y umbralizar respectivamente), confirmando nuestras conjeturas sobre los casos favorables y desfavorables. Puntualmente esperabamos una penalizaci'on de alrededor del doble, pero en la mayor'ia de casos fue m'as. Creemos que se debe, de alguna manera, a la complejidad del filtro, es decir a la cantidad de ciclos que toma el procesamiento de una iteraci'on. Por ejemplo, invertir que es por lejos la funcion mas simple de todas, el incremento es de casi tres veces y media, mientras que en normalizar, donde recorremos dos veces la imagen, tenemos un porcentaje mas bajo pero igualmente superior al doble. 
@@ -114,7 +114,7 @@ suavizar & 17x28234 & 29.283.006 & 3.773.630 & 25.509.376 & 87,11\% & \\
 
 Por otra parte el cuadro \ref{tab:acolor} muestra los resultados para los filtros que toman im'agenes a color. Aqui tambi'en podemos apreciar la gran diferencia de ciclos en \C \ y \ass \ con su porcentaje de mejora en todos los casos mayor que un 50\%. Sin embargo la penalizaci'on para los casos desfavorables no son tan grandes (entre 17\% y 32\%). Creemos que esto se debe a que no estamos en la misma situaci'on de caso favorable/desfavorable de las im'agenes en escala de grises. Para estarlo deberiamos haber procesado ima'agenes de 5 y 6 p'ixeles respectivamente. De esta manera, la primera imagen necesitar'ia solo un ciclo para procesar la fila y y el caso desfavorable necesitaria dos. Aqui el caso favorable necesita dos iteraciones, mientras que el desfavorable necesita 3. Esta diferencia expresada en porcentaje es menor. Cabe aclarar que no elegimos las imagenes reci'en descriptas pues nuestro algoritmo procesa imagenes color de como m'inimo 6 p'ixeles de ancho. 
 
-Como una observaci'on general de estas mediciones de im'agenes altas, en contraste con el caso base podemos apreciar c'omo la distribuci'on de p'ixeles no influencia significativamente en la cantidad de ciclos de reloj de las implementaciones en \C \ mientras que en \ass este factor puede llegar tener mucha relevancia. 
+Como una observaci'on general de estas mediciones de im'agenes altas, en contraste con el caso base podemos apreciar c'omo la distribuci'on de p'ixeles no influencia significativamente en la cantidad de ciclos de reloj de las implementaciones en \C \ mientras que en \ass \ este factor puede llegar tener mucha relevancia. 
 
 \begin{table}[ht!]
 \begin{center}
@@ -137,13 +137,13 @@ separar\_c & 10x48000 & 20.874.906 & 7.176.690 & 13.698.216 & 65,62\% & \\
 En este experimento comparamos todos los filtros para im'agenes mas anchas que altas, utilizando las medidas explicadas al inicio de esta secci'on.
 
 La tabla \ref{tab:anchas} nos muestra los resultados de este experimento. Primero podemos observar que el porcentaje de mejora entre las implentaciones es
-casi tan alto como el de el caso base en todos los filtros. Sin embargo en este experimento las penalizaciones sufridas por el \ass\ al procesar casos desfavorables no son tan grandes como en el experimento anterior. Esto vuelve a confirmar nuestras conjeturas sobre los casos favorables/desfavorables. 
+casi tan alto como el de el caso base en todos los filtros. Sin embargo en este experimento las penalizaciones sufridas por el \ass \ al procesar casos desfavorables no son tan grandes como en el experimento anterior. Esto vuelve a confirmar nuestras conjeturas sobre los casos favorables/desfavorables. 
 
 Que la penalizaci'on sea menor que en el experimento anterior muestra que efectivamente a im'agenes mas anchas el costo de tener que reprocesar algunos pocos p'ixeles se diluye. Podemos pensar al costo de reprocesamiento total como la cantidad de filas por el costo de una iteraci'on. Con las im'agenes altas, las matrices tenian muchas m'as filas con lo cual el costo era alto. Aqui, para la misma cantidad de p'ixeles totales, al tener menos filas, tenemos un costo menor.
 
 Tambi'en es interesante notar c'omo en los filtros que procesan blanco y negro(excepto suavizar) la penalizaci'on todavia es considerable, mientras que en los otros la diferencia es casi imperceptible. Creemos que esto se debe a que en los filtros a color, como cada p'ixel son en realidad tres bytes, la penalizaci'on se diluye mucho mas, pues la informaci'on que se esta procesando es tres veces mas grande que en los casos blanco y negro. Asi que es de esperar la diferencia fuera como m'inimo una tercera parte. 
 
-Sin embargo, no todo es color de rosa en la vida, y nos preguntamos porqu'e suavizar se parece mas a las funciones color que a las de su clase. Nuevamente creemos que tal vez se deba ya sea a la complejidad de la implentaci'on que realizamos(que tiene muchos accesos a memoria) o a la complejidad propia del algoritmo. Tambien es cierto que suavizar no fue el filtro que peor mejora tuvo en el caso base con respecto a la implementaci'on en \C\. Y aunque no podamos justificar totalmente el porqu'e, las evidencias muestran que este filtro es el mas estable de todos, pues a pesar de las variaciones que estamos realizando los resultados no cambian tanto como en los otros filtros y son siempre similares al caso base.
+Sin embargo, no todo es color de rosa en la vida, y nos preguntamos porqu'e suavizar se parece mas a las funciones color que a las de su clase. Nuevamente creemos que tal vez se deba ya sea a la complejidad de la implentaci'on que realizamos(que tiene muchos accesos a memoria) o a la complejidad propia del algoritmo. Tambien es cierto que suavizar no fue el filtro que peor mejora tuvo en el caso base con respecto a la implementaci'on en \C. Y aunque no podamos justificar totalmente el porqu'e, las evidencias muestran que este filtro es el mas estable de todos, pues a pesar de las variaciones que estamos realizando los resultados no cambian tanto como en los otros filtros y son siempre similares al caso base.
 
 Otra observaci'on general que notamos fue que aqui tambi'en la cantidad de ciclos consumidos por la implementaci'on en \C \ es
 similar al de los casos base, por el contrario la implementaci'on en \ass \ en todos los casos los filtros consumen m'as ciclos que en su caso base (salvo normalizar que la cantidad de ciclos es comparable).
