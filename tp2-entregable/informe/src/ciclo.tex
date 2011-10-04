@@ -7,11 +7,11 @@ A la hora de implementar los algoritmos en \ass\ decidimos utilizar la tecnolog'
 \label{sec:ciclos}
 La primer decisi'on a tomar a la hora de implementar los algoritmos fue como recorreremos las im'agenes. En \C\ optamos por la manera convencional, recorriendo secuencialmente la matriz, leyendo de a p'ixeles y cuando llegamos al final de cada fila salteamos el padding. Es claro que hay maneras m'as eficientes pero nos pareci'o apropiado tener esta implementaci'on como base de comparaci'on para todas las mejoras que implementaremos. 
 
-Por otro lado, la implementaci'on en \ass\ fu'e mas ingeniosa ya que al utilizar la tecnolog'ia SSE debiamos, en principio, aprovechar al m'aximo lectura de a 16 bytes. Los problemas se presentan cuando quiero asegurarme de que estoy procesando todos los p'ixeles y que estoy evitando correctamente el \textit{padding}. En este trab'ajo pr'actico procesamos im'agenes a color y en escala de grises. Aunque la estrategia fue la misma, se presentaron sutilies diferencias para estos dos casos. 
+Por otro lado, la implementaci'on en \ass\ fu'e mas ingeniosa ya que al utilizar la tecnolog'ia SSE debiamos, en principio, aprovechar al m'aximo lectura de a 16 bytes. Los problemas se presentan cuando quiero asegurarme de que estoy procesando todos los p'ixeles y que estoy evitando correctamente el \textit{padding}. En este trabajo pr'actico procesamos im'agenes a color y en escala de grises. Aunque la estrategia fue la misma, se presentaron sutiles diferencias para estos dos casos. 
 
 
 \subsubsection{Im'agenes escala de grises}
-En este caso cada p'ixel es representado por un byte. La iteraci'on en \C\ es bastante simple (Algoritmo \ref{alg:iteracionC-BN}). En cambio en \ass, cada vez que accedemos a memoria con un registro SSE estamos cargando 16 p'ixeles. Por lo tanto la estrategia ser'a recorrer cada fila realizando sucesivas lecturas hasta que queden menos de 16 p'ixeles para que termine la fila. Para procesar los 'ultimos datos, reposicionamos el 'indice para cargar los 'ultimos pixeles y volvemos a iterar. Es claro que algunos pixeles ser'an recalculados, pero de esta manera podemos reutilizar el c'odigo de las iteraciones normales. Cuando inicio el proceso de la nueva fila, avanzo el 'indice teniendo en cuenta el \textit{padding}. Podemos observar el pseudoc'odigo en el Algoritmo \ref{alg:iteracionASM-BN}. Cabe aclarar que los pseudoc'odigos presentados en el informe son de caracter ilustrativo, con el objetivo de explicar las estrategias utilizadas. Para un pseudoc'odigo mas detallado remitirse a los comentarios del c'odigo \ass.
+En este caso cada p'ixel es representado por un byte. La iteraci'on en \C\ es bastante simple (Algoritmo \ref{alg:iteracionC-BN}). En cambio en \ass, cada vez que accedemos a memoria con un registro SSE estamos cargando 16 p'ixeles. Por lo tanto la estrategia ser'a recorrer cada fila realizando sucesivas lecturas hasta que queden menos de 16 p'ixeles para que termine la fila. Para procesar los 'ultimos datos, reposicionamos el 'indice para cargar los 'ultimos p'ixeles y volvemos a iterar. Es claro que algunos p'ixeles ser'an recalculados, pero de esta manera podemos reutilizar el c'odigo de las iteraciones normales. Cuando inicio el proceso de la nueva fila, avanzo el 'indice teniendo en cuenta el \textit{padding}. Podemos observar el pseudoc'odigo en el Algoritmo \ref{alg:iteracionASM-BN}. Cabe aclarar que los pseudoc'odigos presentados en el informe son de caracter ilustrativo, con el objetivo de explicar las estrategias utilizadas. Para un pseudoc'odigo mas detallado remitirse a los comentarios del c'odigo \ass.
 
 \begin{algorithm}[h!]
 \caption{\sc{iteraci'on en c - escala de grises}}\label{alg:iteracionC-BN}
@@ -46,7 +46,7 @@ En este caso cada p'ixel es representado por un byte. La iteraci'on en \C\ es ba
 
 \subsubsection{Im'agenes a color}
 \label{sec:ciclos-color}
-En este caso cada pixel de las imagenes de entrada esta representado por tres bytes(BGR). La 'unica modificacion que sufre la implementacion en \C\ es que a la hora de acceder a la matriz de entrada multiplicamos el iterador de la columna por tres. Ademas podemos acceder a los distintos colores RGB desplazandonos cero, una o dos posiciones a partir de esa posicion (Algoritmo \ref{alg:iteracionC-RGB}).
+En este caso cada p'ixel de las imagenes de entrada esta representado por tres bytes(BGR). La 'unica modificacion que sufre la implementacion en \C\ es que a la hora de acceder a la matriz de entrada multiplicamos el iterador de la columna por tres. Adem'as podemos acceder a los distintos colores RGB desplazandonos cero, una o dos posiciones a partir de esa posici'on (Algoritmo \ref{alg:iteracionC-RGB}).
 
 
 \begin{algorithm}[h!]
@@ -62,7 +62,7 @@ En este caso cada pixel de las imagenes de entrada esta representado por tres by
 \end{algorithmic}
 \end{algorithm}
 
-En \ass (Algoritmo \ref{alg:iteracionASM-RGB}), las lecturas de a 16 bytes nos dejan en los registros 5 p'ixeles completos mas el primer byte del siguiente. Aqu'i decidimos descartar ese 'ultimo byte, procesar los datos y escribir en la imagen de salida solamente los resultados obtenidos. Es decir que mientras la imagen de entrada es recorrida de a 15 bytes(5 p'ixeles), la imagen de salida es recorrida de a 5 bytes. Por este motivo resulta imperioso llevar dos iteradores de posicion.
+En \ass (Algoritmo \ref{alg:iteracionASM-RGB}), las lecturas de a 16 bytes nos dejan en los registros 5 p'ixeles completos mas el primer byte del siguiente. Aqu'i decidimos descartar ese 'ultimo byte, procesar los datos y escribir en la imagen de salida solamente los resultados obtenidos. Es decir que mientras la imagen de entrada es recorrida de a 15 bytes(5 p'ixeles), la imagen de salida es recorrida de a 5 bytes. Por este motivo resulta imperioso llevar dos iteradores de posici'on.
 
 Tambi'en es necesario ajustar la ultima iteraci'on de cada fila. Cuando la lectura de los 'ultimos 16 bytes, estos no quedan cargados como queremos. Para poder procesar los 'ultimos 5 p'ixeles con las mismas instrucciones que tenemos en el ciclo debemos realizar un desplazamiento a derecha de un byte (figura \ref{est:ciclo}).
 

@@ -1,9 +1,14 @@
 \subsection{Suavizado Gaussiano}
 
 \subsubsection{Iteracion}
-A diferencia de los otros algoritmos, este es muy similar en algunos aspectos a simple vista pero es diferente.
-Primero tuvimos que tener en cuenta ciertas limitaciones en la el calculo de los pixeles que nos impon'ia la misma m'ascara, ya que al ser una m'ascara de 3x3 y calcular el pixel del centro, en los bordes no es posible ya que los pixeles no tienen entorno.
-Por otro lado, en ciclo se leen mas de 16 pixeles por linea, a diferencia de los otros algoritmos en assembler, ya que al realizar 3 lecturas moviendose de a 1 pixel se estan levantando 18 y se procesan 16 esta es una ventaja que nos proveen los registros SSE , ventaja que no tenemos en lenguaje en C que se lee de un pixel por itereacion, esto a su vez nos indica que al llegar al final de una fila debemos tener en cuenta la cantidad de pixeles que procesamos con lo cual debemos preguntar si estamos 16 posiciones antes del fin de la fila.
+Primero tuvimos que tener en cuenta ciertas limitaciones en la el calculo de los pixeles que nos impon'ia la 
+misma m'ascara, ya que al ser una m'ascara de 3x3 y calcular el pixel del centro, en los bordes no es posible
+ ya que los pixeles no tienen entorno.
+Por otro lado, en ciclo se leen mas de 16 pixeles, a diferencia de los otros algoritmos, 
+ya que al realizar 3 lecturas moviendose de a 1 pixel se estan levantando 18 y se procesan solo  
+15, esto a su vez nos indica que al llegar al final de una fila debemos 
+tener en cuenta la cantidad de p'ixeles que procesamos con lo cual debemos preguntar si estamos 16 posiciones 
+antes del fin de la fila.
 
 \subsubsection{Algoritmo de proceso de datos}
 El objetivo de este filtro es obtener una imagen resultante con reducci'on de ruido y difuminaci'on. 
@@ -16,9 +21,9 @@ La m'ascara que utilizaremos sera la siguiente(tabla \ref{tab:s-uno} ):
 \begin{center}
 \begin{tabular}{| c | c | c |}
 \hline
-1/6 & 2/6 & 1/6 \\ \hline
-2/6 & 4/6 & 2/6 \\ \hline
-1/6 & 2/6 & 1/6 \\ \hline
+1/16 & 2/16 & 1/16 \\ \hline
+2/16 & 4/16 & 2/16 \\ \hline
+1/16 & 2/16 & 1/16 \\ \hline
 \end{tabular}
 \end{center}
 \caption{Mascara a aplicar}
@@ -27,15 +32,18 @@ La m'ascara que utilizaremos sera la siguiente(tabla \ref{tab:s-uno} ):
 
 Con lo cual el p'ixel resultante sera el p'ixel que se encuentra en el centro del entorno, y el mismo tendra el siguiente valor:
 $$
-I_out(i,j) /= I_{in}(i-1,j-1) \cdot{} 1/16 + I_{in}(i-1,j) + I_{in}(i-1,j+1) \cdot{} 1/16 + I_{in}(i+0,j-1) \cdot{} 2/16 + I_{in}(i+0,j) \cdot{} 4/16 +  I_{in}(i+0,j+1) \cdot{} 2/16 + I_{in}(i+1,j-1) \cdot{} 1/16 + I_{in}(i+1,j) \cdot{} 2/16 + I_{in}(i+1,j+1) \cdot{} 1/16
+Iout(i,j) /= I_{in}(i-1,j-1) \cdot{} 1/16 + I_{in}(i-1,j) + I_{in}(i-1,j+1) \cdot{} 1/16 + I_{in}(i+0,j-1) \cdot{} 2/16 + I_{in}(i+0,j)  \cdot{} 4/16 +  I_{in}(i+0,j+1)  \cdot{} 2/16 + I_{in}(i+1,j-1)  \cdot{} 1/16 + I_{in}(i+1,j) \cdot{} 2/16 + I_{in}(i+1,j+1)  \cdot{} 1/16
 $$
 La implementaci'on en C es trivial teniendo la formula mensionada anteriormente.
 
-Por el lado de la implementacion en assember al ver que cada p'ixel deb'ia ser la suma de su entorno y que nosotros trabajar'iamos con los registros sse de 128 bits, decidimos 
+Por el lado de la implementacion en \ass, al ver que cada p'ixel deb'ia ser la suma de su entorno y 
+que nosotros trabajar'iamos con los registros \textit{sse} de 128 bits, decidimos 
 dividir en 3 partes el algoritmo para tratar cada una de las lineas de la matriz resultante.
 
-Comenzamos el algoritmo levantando de la imagen la primer linea 3 veces pero corriendonos 1 p'ixel en la segunda y 2 p'ixeles en la 
-tercer oportunidad, qued'ando de la siguente manera \ref{est:s-dos}.
+Comenzamos el algoritmo realizando una lectura de 16 bytes a partir de un puntero base(no es el base pointer), 
+luego realizamos una segunda y tercer lectura(para guarda informaci'on del entorno)
+desplazando el puntero base en uno y dos bytes respectivamente.
+La siguiente im'agen muestra esas lecturas(figura \ref{est:s-dos} ):
 
 \begin{figure}[h!]
 \xmmW{paso 1.}{a_15a_14 & a_13a_12 & a_11a_10 & a_9a_8 & a_7a_6 & a_5a_4 & a_3a_2 & a_1a_0}
@@ -46,8 +54,11 @@ tercer oportunidad, qued'ando de la siguente manera \ref{est:s-dos}.
 \label{est:s-dos}
 \end{figure}
 
-Luego desempaquetamos los datos para operar de a words, con lo cual primero copiamos los registros que tenemos con los datos para operar todos los p'ixeles que levantamos, ya que al desempaquetar los mismos quedaran words con datos donde su parte alta es cero.
-Ya copiados los registros procedimos a desempaquetarlos, previamente habiendo limpiado el registro que utlizamos para la operacion y nos queda \ref{est:s-tres} :
+Luego desempaquetamos los datos para operar como words, con lo cual primero copiamos los registros que 
+tenemos con los datos para operar todos los p'ixeles que levantamos, ya que al desempaquetar los mismos 
+quedaran words con datos donde su parte alta es cero.
+Ya copiados los registros procedimos a desempaquetarlos, previamente habiendo dejado un registro 
+lleno con ceros(contra el cual hacemos el desmpaquetado) quedando as'i figura \ref{est:s-tres}.
 
 \begin{figure}[h!]
 \xmmW{reg 4.}{0 a_15 & 0 a_14 & 0 a_13 & 0 a_12 & a_11 & 0 a_10 & 0 a_9 & 0 a_8}
@@ -60,16 +71,23 @@ Ya copiados los registros procedimos a desempaquetarlos, previamente habiendo li
 \caption{los registros 1,2,3 corresponden a partes bajas y los 4,5,6 a partes altasAsm}
 \label{est:s-tres}
 \end{figure}
-Luego se utiliza la operaci'on \textit{psllw} , que ser'ia equivalente a multiplicar por 2 ,en los registros de la segunda lectura 
-y sumamos las partes bajas guard'andolas en los acumuladores.
-Ya procesada la primer linea de la m'ascara procedemos a la segunda, para la cual sumamos el ancho de la i'magen en 
-p'ixeles para pararnos en la linea que corresponden a la segunda fila, luego con el mismo m'etodo copiamos y desempaquetamos, 
-usando los mismos registros que en la primer linea, a diferencia que esta vez se multiplican por 2 los 
-registros de la primera y tercer operacio'n de lectura y los registros correspondientes a la segunda lecutra se multiplican 4,y sumamos estos a los acumuladores correspondientes.
-Por 'ultimo pasamos a la tercer linea de la misma manera que la anterior, levantamos 3 veces de memoria, moviendonos en 1 
-p'ixel con cada linea leida y realizamos el mismo proceso que en la primer linea copiando, desempaquetando y multiplicando,
-para luego sumar en los acumuladores correspondientes a la parte alta y parte baja, y dividirlos por 16.
-Al finalizar de sumar todas las lineas procedemos al empaquetado de la parte alta con la parte baja y guardamos los datos.
+Luego se utiliza la operaci'on \textit{psllw}, que ser'ia equivalente a multiplicar por 2, en los 
+registros de la segunda lectura y sumamos las partes bajas guard'andolas en los acumuladores.
+Ya procesada la primer linea de la m'ascara procedemos a la segunda, para la cual sumamos el ancho de la 
+im'agen en 
+p'ixeles para pararnos en la segunda fila de la matriz, luego con el mismo m'etodo copiamos 
+y desempaquetamos,  
+usando los mismos registros que en la primer linea(ya que podemos reutilizarlos debido a que los datos est'an
+guardados), a diferencia que esta vez se multiplican por 2 los 
+registros de la primera y tercer operacio'n de lectura por otra parte los registros correspondientes a 
+la segunda lecutra se multiplican 4, luego sumamos estos a los acumuladores correspondientes.
+
+Por 'ultimo pasamos a la tercer linea de la misma manera que la anterior, realizamos tres lecturas a memoria
+cada una desplazada en un byte y realizamos el mismo proceso que en la primer linea ya que 
+las operaciones que deben hacerse son las mismas(ver tabla \ref{tab:s-uno}) copiando, desempaquetando 
+y multiplicando, para luego sumar en los acumuladores correspondientes a la parte alta y parte baja, y dividirlos por 16.
+Al finalizar de sumar todas las lineas procedemos al empaquetado de la parte alta con la parte baja y 
+guardamos los datos.
 
 
 
