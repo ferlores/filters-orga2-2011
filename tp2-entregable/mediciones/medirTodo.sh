@@ -2,7 +2,7 @@
 
 rm mediciones.csv
 rm -rf ../data/test-in/*
-../tests/testgen.sh
+./medgen.sh
 
 ./medir.sh casoBase
 ./medir.sh casoByN-alto
